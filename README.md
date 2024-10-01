@@ -1,6 +1,6 @@
 ### Các bước thực hiện :
 - B1 : Clone dự án nếu chưa
-- B2 : `git feath origin`
+- B2 : `git fetch origin`
 - B3 : `git pull origin develop` (Trước khi bắt đầu làm việc, luôn cập nhật code trên nhánh develop(B2 và B3) để tránh xung đột (làm điều này trước khi bắt đầu làm việc mỗi ngày).)
 Lưu ý: Nếu đang làm việc trên một tính năng mới, hãy chắc chắn rằng đã pull mới nhất từ develop để tránh sửa lỗi trên mã cũ
 - B4 : `git checkout develop` để đổi qua nhánh develop( mình chỉ sử dụng nhánh này, nhánh main là nhánh triển khai,hợp nhất khi không còn lỗi , Anh là người hợp nhất)
