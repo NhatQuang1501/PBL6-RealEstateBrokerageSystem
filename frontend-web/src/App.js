@@ -1,17 +1,19 @@
 import './App.css';
-import Header from './components/Header';
-import Footer from './components/Footer'
+import Header from './components/Header/header';
+import Footer from './components/Footer/footer'
 
 function App() {
   return (
-    <>
-      <Header/>
-      <h1 className="text-3xl font-bold underline">
-      Hello world 123
-    </h1>
-      <Footer/>
-    </>
-  );
+    <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow">
+            <div className="p-10 text-center">
+                <p>Hello 123</p>
+            </div>
+        </main>
+        <Footer />
+    </div>
+);
 }
 
 export default App;
