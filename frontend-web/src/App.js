@@ -1,6 +1,7 @@
 import './App.css';
 import Header from './components/Header/header';
 import Footer from './components/Footer/footer'
+import Introduce from './components/Introduce/introduce';
 
 function App() {
   return (
@@ -9,8 +10,9 @@ function App() {
         <main className="flex-grow">
             <div className="p-10 text-center">
                 <p>Hello 123</p>
-            </div>
+            </div> 
         </main>
+        <Introduce />  
         <Footer />
     </div>
 );
