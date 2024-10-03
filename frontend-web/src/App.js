@@ -1,18 +1,19 @@
 import './App.css';
 import Header from './components/Header/header';
 import Footer from './components/Footer/footer'
-import Introduce from './components/Introduce/introduce';
+// import Introduce from './components/Introduce/introduce';
+import Heropage from './components/HeroPage/heropage'
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div id='app' className="flex flex-col min-h-screen ">
         <Header />
         <main className="flex-grow">
             <div className="p-10 text-center">
-                <p>Hello 123</p>
+                <Heropage/>
             </div> 
         </main>
-        <Introduce />  
+        {/* <Introduce />   */}
         <Footer />
     </div>
 );

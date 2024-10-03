@@ -5,7 +5,18 @@
 * {
     box-sizing: border-box;
   }
-  html {
+  :root {
+    --font-heading: Sen, sans-serif;
+}
+html {
     font-size: 62.5%;
     scroll-behavior: smooth;
-  }
+}
+
+.main-content {
+  width: calc(100% - 432px);
+  font-size: 14px;
+  /* width: 1120px; */
+  margin-left: auto;
+  margin-right: auto;
+}

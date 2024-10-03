@@ -1,20 +1,30 @@
-import Logo from '../../assets/image/Logo.png';
+// import Logo from '../../assets/image/Logo.png';
 function Header() {
     return (
-        <div className='h-[15vh] w-screen px-28 flex items-center justify-between'>
-            <div id="logo-header">
-                <img src={Logo} alt="Logo" className="" />
+        <div className='h-[10vh] w-screen px-3 flex items-center justify-between main-content'>
+            <div id="logo-header" className="flex items-center gap-3">
+            <svg className="w-[33px] h-[33px] " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M48 0C21.5 0 0 21.5 0 48L0 464c0 26.5 21.5 48 48 48l96 0 0-80c0-26.5 21.5-48 48-48s48 21.5 48 48l0 80 89.9 0c-6.3-10.2-9.9-22.2-9.9-35.1c0-46.9 25.8-87.8 64-109.2l0-95.9L384 48c0-26.5-21.5-48-48-48L48 0zM64 240c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zm112-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM80 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zm80 16c0-8.8 7.2-16 16-16l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32zM272 96l32 0c8.8 0 16 7.2 16 16l0 32c0 8.8-7.2 16-16 16l-32 0c-8.8 0-16-7.2-16-16l0-32c0-8.8 7.2-16 16-16zM576 272a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM352 477.1c0 19.3 15.6 34.9 34.9 34.9l218.2 0c19.3 0 34.9-15.6 34.9-34.9c0-51.4-41.7-93.1-93.1-93.1l-101.8 0c-51.4 0-93.1 41.7-93.1 93.1z"/></svg>
+            <strong className="font-bold text-base">Homely</strong>
+               
             </div>
-            <div className="pb-4">
-                <ul className="flex pr-[12rem] font-montserrat text-[1.2rem] font-semibold">
-                    <li className="mx-6 pr-10 cursor-pointer hover:text-[#3CA9F9] transition duration-300 delay-100 flex items-center justify-center h-12">Nhà đất bán</li>
-                    <li className="mx-6 pr-10 cursor-pointer hover:text-[#3CA9F9] transition duration-300 delay-100 flex items-center justify-center h-12">Tin tức</li>
-                    <li className="mx-6 pr-10 cursor-pointer hover:text-[#3CA9F9] transition duration-300 delay-100 flex items-center justify-center h-12">Hướng dẫn</li>
-                    <li className="mx-6 pr-10 cursor-pointer hover:text-[#3CA9F9] transition duration-300 delay-100 flex items-center justify-center h-12">Liên hệ</li>
-                </ul>
-            </div>
-            <div className="pb-4">
-                <button className="bg-custom_yellow px-4 py-2 font-medium font-montserrat text-[1.2rem] rounded-md bg-[#3CA9F9] text-white">Đăng nhập</button>
+            <nav className="flex items-center w-[60%] px-6 ">
+          <ul className="flex space-x-6 gap-10">
+            <li>
+              <a href="#!" className="text-oxford-blue font-semibold hover:text-green-500">Nhà đất</a>
+            </li>
+            <li>
+              <a href="#!" className="text-oxford-blue font-semibold hover:text-green-500">Tin tức</a>
+            </li>
+            <li>
+              <a href="#!" className="text-oxford-blue font-semibold hover:text-green-500">Hướng dẫn</a>
+            </li>
+            <li>
+              <a href="#!" className="text-oxford-blue font-semibold hover:text-green-500">Liên hệ</a>
+            </li>
+          </ul>
+        </nav>
+            <div>
+                <button className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white">Đăng nhập</button>
             </div>
         </div>
     );
