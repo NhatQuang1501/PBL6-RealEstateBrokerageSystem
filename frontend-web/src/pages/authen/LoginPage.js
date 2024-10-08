@@ -1,5 +1,5 @@
-import LoginForm from "../../components/auth/LoginForm";
-import Header from "../../components/header/Header";
+import LoginForm from "../../components/Auth/LoginForm";
+import Header from "../../components/Header/header";
 const LoginPage = () => {
   return (
     <div className="bg-gray-200 min-h-screen">

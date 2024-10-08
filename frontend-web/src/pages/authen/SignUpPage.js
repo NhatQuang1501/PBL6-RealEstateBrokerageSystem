@@ -1,5 +1,5 @@
-import SignUpForm from "../../components/auth/SignUpForm";
-import Header from "../../components/header/Header";
+import SignUpForm from "../../components/Auth/SignUpForm";
+import Header from "../../components/Header/header";
 const SignUpPage = () => {
   return (
     <div className="bg-gray-200 min-h-screen">

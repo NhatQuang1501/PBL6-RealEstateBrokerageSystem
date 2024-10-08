@@ -1,11 +1,12 @@
 import "./App.css";
-import Header from "./components/header/Header";
-import Footer from "./components/footer/Footer";
-import Introduce from "./components/introduce/Introduce";
-import LoginForm from "./components/auth/LoginForm";
-import SignUpForm from "./components/auth/SignUpForm";
-import LoginPage from "./pages/authen/LoginPage";
+// import Header from "./components/header/Header";
+// import Footer from "./components/footer/Footer";
+// import Introduce from "./components/introduce/Introduce";
+// import LoginForm from "./components/auth/LoginForm";
+// import SignUpForm from "./components/auth/SignUpForm";
+// import LoginPage from "./pages/authen/LoginPage";
 import SignUpPage from "./pages/authen/SignUpPage";
+// import LoginTest from "./components/LoginTest/LoginTest";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
 
     // <LoginPage />
     <SignUpPage />
+    // <LoginTest/>
   );
 }
 
