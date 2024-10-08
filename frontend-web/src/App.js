@@ -9,7 +9,7 @@ function App() {
     <div id='app' className="flex flex-col min-h-screen ">
         <Header />
         <main className="flex-grow">
-            <div className="p-10 text-center">
+            <div className="">
                 <Heropage/>
             </div> 
         </main>
