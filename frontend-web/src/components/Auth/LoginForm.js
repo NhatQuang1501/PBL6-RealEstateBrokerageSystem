@@ -37,13 +37,11 @@ const LoginForm = () => {
         <div className="w-1/2 bg-[#3CA9F9] text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
           <h2 className="text-4xl font-bold mb-4">Chào mừng trở lại</h2>
           <p className="mb-6 text-[14px]">
-            Hãy đăng nhập để tiếp tục
-            Hoặc đăng ký nếu bạn chưa có tài khoản
-          </p>   
+            Hãy đăng nhập để tiếp tục Hoặc đăng ký nếu bạn chưa có tài khoản
+          </p>
           <button className="border-2 text-white border-solid border-white font-bold  w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300">
             Đăng ký
           </button>
-
         </div>
       </div>
     </div>
