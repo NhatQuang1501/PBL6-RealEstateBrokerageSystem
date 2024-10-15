@@ -1,21 +1,26 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header/header';
 import Footer from './components/Footer/footer'
 // import Introduce from './components/Introduce/introduce';
 import Heropage from './components/HeroPage/heropage'
+import LoginForm from './components/Auth/LoginForm'
+import SignUpForm from './components/Auth/SignUpForm';
+import Layout from './components/Layout/Layout';
 
 function App() {
   return (
+    <Router>
     <div id='app' className="flex flex-col min-h-screen ">
-        <Header />
-        <main className="flex-grow">
-            <div className="">
-                <Heropage/>
-            </div> 
-        </main>
-        {/* <Introduce />   */}
-        <Footer />
+        <Layout>
+        <Routes>
+            <Route path='/' element={<Heropage/>}></Route>
+            <Route path='/login' element={<LoginForm/>}></Route>
+            <Route path='/register' element={<SignUpForm/>}></Route>
+            </Routes>
+        </Layout>
     </div>
+    </Router>
 );
 }
 
