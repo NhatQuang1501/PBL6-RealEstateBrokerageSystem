@@ -14,12 +14,12 @@ const HeroSection = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(intervalId);
   }, [images.length]);
 
   return (
-    <section className="h-[100vh] overflow-hidden">
+    <section className="h-[78vh] overflow-hidden font-montserrat">
       <div className="container mx-auto w-full h-full">
         <div className="relative w-[88%] h-full m-auto overflow-hidden ">
       
