@@ -19,7 +19,7 @@ const HeroSection = () => {
   }, [images.length]);
 
   return (
-    <section className="h-[100vh] overflow-hidden">
+    <section className="h-[78vh] overflow-hidden">
       <div className="container mx-auto w-full h-full">
         <div className="relative rounded-lg w-[88%] h-full m-auto overflow-hidden">
       
