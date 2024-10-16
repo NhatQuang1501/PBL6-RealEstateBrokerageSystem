@@ -28,6 +28,7 @@ class Post(models.Model):
     city = models.CharField(max_length=100)
     district = models.CharField(max_length=100)
     street = models.CharField(max_length=100)
+    orientation = models.CharField(max_length=100, blank=True, null=True)
 
     area = models.FloatField()
     bedroom = models.IntegerField()

@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from api.models import UserRole
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, PostSerializer
-from .permissions import HasRole
+from .permissions import *
 from .models import Post
 
 
@@ -17,11 +17,12 @@ from .models import Post
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
-    # permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
     
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', '')
@@ -45,8 +46,7 @@ class LoginView(generics.GenericAPIView):
 
 
 class DashboardView(APIView):
-    permission_classes = [IsAuthenticated, HasRole]
-    required_role = 'user'
+    permission_classes = [IsAuthenticated, IsUser]
 
     def get(self, request):
         user = request.user
@@ -58,9 +58,10 @@ class DashboardView(APIView):
         
         
 class PostListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated, IsUserOrAdmin]
+    
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
     
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -69,7 +70,7 @@ class PostListCreateView(generics.ListCreateAPIView):
 class PostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUserOrAdmin]
     
     def get_queryset(self):
         return Post.objects.filter(author=self.request.user)

@@ -3,11 +3,6 @@ from django.contrib.auth.models import User
 from .models import Role, UserRole, Post
 
 
-# class UserSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ('id', 'username', 'email', 'date_joined')
-
 class UserSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
 
@@ -54,4 +49,4 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ('id', 'author', 'title', 'type', 'price', 'city', 'district', 'street', 'area', 'bedroom', 'bathroom', 'description', 'created_at', 'updated_at')
+        fields = ('id', 'author', 'title', 'type', 'price', 'city', 'district', 'street', 'orientation', 'area', 'bedroom', 'bathroom', 'description', 'created_at', 'updated_at')
