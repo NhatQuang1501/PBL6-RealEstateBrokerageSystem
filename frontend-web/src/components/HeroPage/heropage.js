@@ -14,14 +14,14 @@ const HeroSection = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000);
+    }, 5000);
     return () => clearInterval(intervalId);
   }, [images.length]);
 
   return (
-    <section className="h-[100vh] overflow-hidden">
+    <section className="h-[78vh] overflow-hidden font-montserrat">
       <div className="container mx-auto w-full h-full">
-        <div className="relative rounded-lg w-[88%] h-full m-auto overflow-hidden">
+        <div className="relative w-[88%] h-full m-auto overflow-hidden ">
       
           <div
             className="flex transition-transform duration-1000 ease-in-out "
@@ -34,7 +34,7 @@ const HeroSection = () => {
                 <img
                   src={image.url}
                   alt={image.alt}
-                  className="w-full h-full object-cover rounded-2xl"
+                  className="w-full h-full object-cover rounded-4xl"
                 />
               </div>
             ))}
