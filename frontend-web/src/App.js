@@ -9,6 +9,7 @@ import PostDetail from "./pages/user/PostDetail";
 import LoginPage from "./pages/authen/LoginPage";
 import SignUpPage from "./pages/authen/SignUpPage";
 import ForgotPassword from "./pages/authen/ForgotPassword";
+import CreatePost from "./pages/user/CreatePost";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
 
           <Route path="user/main-page-user" element={<MainPageUser />} />
           <Route path="user/detail-post" element={<PostDetail/>} />
+          <Route path="user/create-post" element={<CreatePost/>} />
         </Routes>
         <Footer />
       </Router>
