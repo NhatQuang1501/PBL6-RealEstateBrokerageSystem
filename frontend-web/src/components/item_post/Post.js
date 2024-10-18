@@ -1,16 +1,28 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faComment,
   faShareAlt,
   faBookmark,
+  faDollarSign,
+  faMapMarkerAlt,
+  faBed,
+  faRulerCombined,
+  faCompass,
+  faBath,
 } from "@fortawesome/free-solid-svg-icons";
 
 import ProfileInformmation from "../profile_information/ProfileInformation";
+import DetailDescription from "../detail_description/DetailDescription";
 
-function Post() {
+function Post({ post }) {
+  const navigate = useNavigate();
+
   const [isClicked, setIsClicked] = useState(false);
+
   const handleClick = () => {
     setTimeout(() => {
       setIsClicked(!isClicked);
@@ -24,47 +36,98 @@ function Post() {
     }, 80);
   };
 
+  const formatPrice = (price) => {
+    if (price >= 1_000_000_000) {
+      return `${(price / 1_000_000_000).toFixed(2)} tỷ VND`;
+    } else if (price >= 1_000_000) {
+      return `${(price / 1_000_000).toFixed(2)} triệu VND`;
+    } else {
+      return `${price} VND`;
+    }
+  };
+  const handleDetailClick = () => {
+    navigate("/user/detail-post");
+  };
+
   return (
-    <div className="w-[97%] mx-auto p-[1rem] bg-white rounded-lg shadow-md border-2 border-[#3CA9F9] border-double overflow-hidden font-montserrat">
+    <div className="w-full mx-auto p-[1rem] bg-white rounded-lg shadow-md border-2 border-[#3CA9F9] border-double overflow-hidden font-montserrat">
       {/* Header */}
-      <div className="flex justify-between items-center px-6 py-4 bg-white">
-        <h2 className="text-xl font-semibold text-[#3CA9F9]">
-          Bán nhà ở tại 123 Tôn Đức Thắng
-        </h2>
+      <div
+        className="flex justify-between items-center px-6 py-4 bg-white cursor-pointer"
+        onClick={handleDetailClick}
+      >
+        <h2 className="text-xl font-semibold text-[#3CA9F9]">{post.title}</h2>
         <button className="px-5 py-2 text-[#3CA9F9] border border-[#3CA9F9] rounded-[0.5rem]">
-          Đang bán
+          {post.id}
         </button>
       </div>
 
       {/* main_container */}
       <div className="flex flex-row px-2 py-2">
-        {/* Left (40%) */}
+        {/* Left (45%) */}
         <div className="w-[45%] pr-4">
           {/* Img */}
           <img
-            className="w-full h-[75%] object-cover rounded-md"
+            className="w-full h-[80%] object-cover rounded-md"
             src="https://th.bing.com/th/id/OIP.c_e6N6YtIVI2NFhW_Ugm6wHaF7?w=246&h=197&c=7&r=0&o=5&dpr=1.3&pid=1.7"
             alt="room_image"
           />
 
           {/* Profile Info */}
-          <ProfileInformmation />
+          <ProfileInformmation
+            name={post.author.username} // Truy cập đúng vào thuộc tính username của tác giả
+            date={post.created_at} // Truy cập vào ngày tạo bài viết
+          />
         </div>
 
-        {/* Right column (60%) */}
-        <div className="flex flex-col justify-between w-[55%] pl-4">
-          <div className="grid grid-cols-2 gap-4 p-5 text-gray-700 text-lg border-2 border-[#DCDCDC] border-double rounded-lg pb-[5rem] font-bold">
-            <div>
-              <p className="text-red-600">12 tỷ VND</p>
-              <p>Hải Châu, Đà Nẵng</p>
-              <p>5 phòng ngủ</p>
+        {/* Right column (55%) */}
+        <div className="flex flex-col gap-2 justify-between w-[55%] pl-4">
+          <div className="grid grid-cols-2 gap-4 p-2 text-gray-700 text-lg border-[1px] border-double border-[#3CA9F9] rounded-lg font-bold">
+            <div className="">
+              <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faDollarSign} className="mr-2" />
+                <span className="font-normal">Giá bán: </span>
+                {formatPrice(post.price)}
+              </p>
+              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
+                <span className="font-normal">Địa chỉ: </span> Đường{" "}
+                {post.street}, Quận {post.district}, Thành phố {post.city}
+              </p>
+              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faBed} className="mr-2" />
+                <span className="font-normal">Số phòng ngủ: </span>
+                {post.bedroom} phòng ngủ
+              </p>
             </div>
             <div>
-              <p className="text-red-600">1000m²</p>
-              <p>Đông Nam</p>
-              <p>5 phòng tắm</p>
+              <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
+                <span className="font-normal">Diện tích: </span>
+                {post.area}m²
+              </p>
+              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faCompass} className="mr-2" />
+                <span className="font-normal">Hướng: </span>
+                {post.orientation}
+              </p>
+              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                <FontAwesomeIcon icon={faBath} className="mr-2" />
+                <span className="font-normal">Số phòng tắm: </span>
+                {post.bathroom} phòng tắm
+              </p>
             </div>
           </div>
+
+          {/* Post */}
+          <DetailDescription
+            className="min-h-[30rem]"
+            // description="Bán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VND.Bán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VND"
+            description={post.description}
+            maxLength={110}
+            enableToggle={false}
+            moreLink="/user/detail-post"
+          />
 
           <div className="flex space-x-8 mt-4 justify-between">
             {/* Heart */}
@@ -141,4 +204,13 @@ function Post() {
   );
 }
 
+Post.propTypes = {
+  post: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+  }),
+};
+
+Post.defaultProps = {
+  post: null,
+};
 export default Post;

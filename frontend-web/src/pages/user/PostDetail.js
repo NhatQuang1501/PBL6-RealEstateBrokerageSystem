@@ -3,7 +3,13 @@ import DetailDescription from "../../components/detail_description/DetailDescrip
 import BasicInformation from "../../components/basic_information/BasicInformation";
 import ProfileInformation from "../../components/profile_information/ProfileInformation";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faComment, faShareAlt, faBookmark } from '@fortawesome/free-solid-svg-icons';
+import {
+  faHeart,
+  faComment,
+  faShareAlt,
+  faBookmark,
+  faListAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
 // import description from "../../components/mock_data/description";
 
@@ -47,62 +53,69 @@ nguồn cung ế nhưng lại thiếu vì không đáp ứng đúng nguồn cầ
 
 
   return (
-    <div className="p-6 mt-5 mb-5 max-w-5xl mx-auto bg-white rounded-lg border border-blue-200 shadow-md font-montserrat">
-      <h1 className="text-2xl font-bold text-[#3CA9F9] mb-4">
-        Cho thuê nhà ở tại 123 Tôn Đức Thắng đối diện ...
-      </h1>
+    <div className="flex flex-col items-center bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 font-montserrat">
+      <h3 className="mt-5 p-2 text-2xl font-bold text-white flex items-center gap-2 pl-5 w-[22rem] shadow-2xl shadow-[#E4FFFC] rounded-[3rem]">
+        <FontAwesomeIcon
+          icon={faListAlt}
+          className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
+        />
+        Chi tiết bài đăng
+      </h3>
+      <div className="p-6 mt-5 mb-5 max-w-5xl mx-auto rounded-lg bg-white border-double border-[#3CA9F9] border-[2px] shadow-md ">
+        <h1 className="text-2xl font-bold text-[#3CA9F9] mb-4">
+          Cho thuê nhà ở tại 123 Tôn Đức Thắng đối diện ...
+        </h1>
 
-      {/* Profile + reaction */}
-      <div className="flex flex-row justify-between">
-        <ProfileInformation />
-        <div className="flex space-x-8 mt-4 justify-end">
-          {/* Heart */}
-          <div className="flex items-end text-gray-500 space-x-1">
-            <button onClick={handleClick} className="focus:outline-none">
-              <FontAwesomeIcon
-                icon={faHeart}
-                className={`w-8 h-8 transition duration-100 ${
-                  isClicked ? "text-red-400" : "text-gray-500"
-                }`}
-              />
-            </button>
-            <span>33</span>
-          </div>
-          {/* Chat */}
-          <div className="flex items-end text-gray-500 space-x-1">
-            <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
-            <span>124</span>
-          </div>
-          {/* Share */}
-          <div className="flex items-end text-gray-500 space-x-1">
-            <FontAwesomeIcon icon={faShareAlt} className="w-8 h-8" />
-            <span>124</span>
-          </div>
-          {/* Save */}
-          <div className="flex items-end text-gray-500 space-x-1">
-            <button onClick={handleSaveClick} className="focus:outline-none">
-              <FontAwesomeIcon
-                icon={faBookmark}
-                className={`w-8 h-8 transition duration-100 ${
-                  isSaved ? "text-yellow-400" : "text-gray-500"
-                }`}
-              />
-            </button>
+        {/* Profile + reaction */}
+        <div className="flex flex-row justify-between">
+          <ProfileInformation />
+          <div className="flex space-x-8 mt-4 justify-end">
+            {/* Heart */}
+            <div className="flex items-end text-gray-500 space-x-1">
+              <button onClick={handleClick} className="focus:outline-none">
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  className={`w-8 h-8 transition duration-100 ${
+                    isClicked ? "text-red-400" : "text-gray-500"
+                  }`}
+                />
+              </button>
+              <span>33</span>
+            </div>
+            {/* Chat */}
+            <div className="flex items-end text-gray-500 space-x-1">
+              <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
+              <span>124</span>
+            </div>
+            {/* Share */}
+            <div className="flex items-end text-gray-500 space-x-1">
+              <FontAwesomeIcon icon={faShareAlt} className="w-8 h-8" />
+              <span>124</span>
+            </div>
+            {/* Save */}
+            <div className="flex items-end text-gray-500 space-x-1">
+              <button onClick={handleSaveClick} className="focus:outline-none">
+                <FontAwesomeIcon
+                  icon={faBookmark}
+                  className={`w-8 h-8 transition duration-100 ${
+                    isSaved ? "text-yellow-400" : "text-gray-500"
+                  }`}
+                />
+              </button>
 
-            <span>2</span>
+              <span>2</span>
+            </div>
           </div>
         </div>
+
+        <BasicInformation />
+        <ImageCard
+          title="Hình ảnh mô tả:"
+          imageUrl="https://th.bing.com/th/id/OIP.jbWA3pC_GsfnBH5IohOa8gHaFB?rs=1&pid=ImgDetMain"
+        />
+
+        <DetailDescription description={description} maxLength={5000000} />
       </div>
-
-      <BasicInformation />
-      <ImageCard
-        title="Hình ảnh mô tả:"
-        imageUrl="https://th.bing.com/th/id/OIP.jbWA3pC_GsfnBH5IohOa8gHaFB?rs=1&pid=ImgDetMain"
-      />
-
-      <DetailDescription
-      description= {description}
-       />
     </div>
   );
 };

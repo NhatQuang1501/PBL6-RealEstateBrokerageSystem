@@ -1,4 +1,30 @@
-const ProfileInformation = () => {
+const ProfileInformation = ({ name, date }) => {
+  const postDate = new Date(date);
+  const currentDate = new Date();
+  const timeDifference = currentDate - postDate; // Thời gian chênh lệch tính bằng milliseconds
+
+  // Chuyển đổi thời gian chênh lệch sang phút, giờ, và ngày
+  const seconds = Math.floor(timeDifference / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  // Tạo thông báo về thời gian đăng bài
+  let timeDisplay = "";
+  if (days >= 2) {
+    timeDisplay = `${days} ngày trước vào lúc ${postDate.toLocaleTimeString(
+      "vi-VN"
+    )}`;
+  } else if (days === 1) {
+    timeDisplay = `Hôm qua vào lúc ${postDate.toLocaleTimeString("vi-VN")}`;
+  } else if (hours >= 1) {
+    timeDisplay = `${hours} giờ trước`;
+  } else if (minutes >= 1) {
+    timeDisplay = `${minutes} phút trước`;
+  } else {
+    timeDisplay = "Vừa mới đăng";
+  }
+
   return (
     <div>
       {/* Profile Info */}
@@ -9,8 +35,10 @@ const ProfileInformation = () => {
           alt="avatar"
         />
         <div className="text-sm">
-          <p className="font-semibold">Nguyễn Văn A</p>
-          <p className="text-gray-500">12:00 pm 09/10/2024</p>
+          <p className="font-semibold">{name}</p>
+          <p className="text-gray-600 text-sm mt-2">
+            <span className="font-semibold">Đã đăng:</span> {timeDisplay}
+          </p>
         </div>
         <div className="flex space-x-8 justify-center items-center pl-10">
           <svg
