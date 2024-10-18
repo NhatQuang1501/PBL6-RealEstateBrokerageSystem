@@ -23,8 +23,8 @@ function App() {
           <Route path="authen/forgot-password" element={<ForgotPassword />} />
 
           <Route path="user/main-page-user" element={<MainPageUser />} />
-          <Route path="user/detail-post" element={<PostDetail/>} />
-          <Route path="user/create-post" element={<CreatePost/>} />
+          <Route path="user/detail-post/:id" element={<PostDetail />} />
+          <Route path="user/create-post" element={<CreatePost />} />
         </Routes>
         <Footer />
       </Router>

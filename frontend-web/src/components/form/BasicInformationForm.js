@@ -110,7 +110,9 @@ const BasicInformation = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Địa chỉ:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Địa chỉ:
+                  </label>
                   <input
                     type="text"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -119,7 +121,9 @@ const BasicInformation = () => {
 
                 {/* Giá bán */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Giá bán:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Giá bán:
+                  </label>
                   <input
                     type="number"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -128,7 +132,9 @@ const BasicInformation = () => {
 
                 {/* Diện tích */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Diện tích:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Diện tích:
+                  </label>
                   <input
                     type="number"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -137,7 +143,7 @@ const BasicInformation = () => {
 
                 {/* Tình trạng pháp lý */}
                 <div>
-                  <label className="block mb-2 text-gray-700">
+                  <label className="block mb-2 text-gray-700 font-bold">
                     Tình trạng pháp lý:
                   </label>
                   <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -150,22 +156,26 @@ const BasicInformation = () => {
 
                 {/* Hướng */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Hướng:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Hướng:
+                  </label>
                   <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="dong">Đông</option>
                     <option value="tay">Tây</option>
                     <option value="nam">Nam</option>
                     <option value="bac">Bắc</option>
-                    <option value="dong-tay">Đông-Tây</option>
-                    <option value="tay-nam">Tây-Nam</option>
+                    <option value="dong-tay">Đông-Bắc</option>
                     <option value="dong-nam">Đông-Nam</option>
                     <option value="tay-bac">Tây-Bắc</option>
+                    <option value="tay-nam">Tây-Nam</option>
                   </select>
                 </div>
 
                 {/* Số tầng */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Số tầng:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Số tầng:
+                  </label>
                   <input
                     type="number"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -174,7 +184,7 @@ const BasicInformation = () => {
 
                 {/* Số phòng ngủ */}
                 <div>
-                  <label className="block mb-2 text-gray-700">
+                  <label className="block mb-2 text-gray-700 font-bold">
                     Số phòng ngủ:
                   </label>
                   <input
@@ -185,7 +195,7 @@ const BasicInformation = () => {
 
                 {/* Số phòng tắm */}
                 <div>
-                  <label className="block mb-2 text-gray-700">
+                  <label className="block mb-2 text-gray-700 font-bold">
                     Số phòng tắm:
                   </label>
                   <input
@@ -196,7 +206,9 @@ const BasicInformation = () => {
 
                 {/* Ghi chú */}
                 <div className="md:col-span-2">
-                  <label className="block mb-2 text-gray-700">Ghi chú:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Ghi chú:
+                  </label>
                   <textarea className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
               </div>
@@ -219,7 +231,9 @@ const BasicInformation = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Địa chỉ:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Địa chỉ:
+                  </label>
                   <input
                     type="text"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -228,7 +242,9 @@ const BasicInformation = () => {
 
                 {/* Giá bán */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Giá bán:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Giá bán:
+                  </label>
                   <input
                     type="number"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -237,7 +253,9 @@ const BasicInformation = () => {
 
                 {/* Diện tích */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Diện tích:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Diện tích:
+                  </label>
                   <input
                     type="number"
                     className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -246,7 +264,7 @@ const BasicInformation = () => {
 
                 {/* Tình trạng pháp lý */}
                 <div>
-                  <label className="block mb-2 text-gray-700">
+                  <label className="block mb-2 text-gray-700 font-bold">
                     Tình trạng pháp lý:
                   </label>
                   <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -259,7 +277,9 @@ const BasicInformation = () => {
 
                 {/* Hướng */}
                 <div>
-                  <label className="block mb-2 text-gray-700">Hướng:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Hướng:
+                  </label>
                   <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="dong">Đông</option>
                     <option value="tay">Tây</option>
@@ -274,7 +294,9 @@ const BasicInformation = () => {
 
                 {/* Ghi chú */}
                 <div className="md:col-span-2">
-                  <label className="block mb-2 text-gray-700">Ghi chú:</label>
+                  <label className="block mb-2 text-gray-700 font-bold">
+                    Ghi chú:
+                  </label>
                   <textarea className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
                 </div>
               </div>

@@ -15,7 +15,7 @@ import {
   faBath,
 } from "@fortawesome/free-solid-svg-icons";
 
-import ProfileInformmation from "../profile_information/ProfileInformation";
+import ProfileInformation from "../profile_information/ProfileInformation";
 import DetailDescription from "../detail_description/DetailDescription";
 
 function Post({ post }) {
@@ -36,17 +36,23 @@ function Post({ post }) {
     }, 80);
   };
 
-  const formatPrice = (price) => {
-    if (price >= 1_000_000_000) {
-      return `${(price / 1_000_000_000).toFixed(2)} tỷ VND`;
-    } else if (price >= 1_000_000) {
-      return `${(price / 1_000_000).toFixed(2)} triệu VND`;
-    } else {
-      return `${price} VND`;
-    }
-  };
+const formatPrice = (price) => {
+  if (price >= 1_000_000_000) {
+    const billionValue = price / 1_000_000_000;
+    return Number.isInteger(billionValue)
+      ? `${billionValue} tỷ VND`
+      : `${billionValue.toFixed(3)} tỷ VND`;
+  } else if (price >= 1_000_000) {
+    const millionValue = price / 1_000_000;
+    return Number.isInteger(millionValue)
+      ? `${millionValue} triệu VND`
+      : `${millionValue.toFixed(3)} triệu VND`;
+  } else {
+    return `${price} VND`;
+  }
+};
   const handleDetailClick = () => {
-    navigate("/user/detail-post");
+    navigate(`/user/detail-post/${post.id}`);
   };
 
   return (
@@ -57,9 +63,9 @@ function Post({ post }) {
         onClick={handleDetailClick}
       >
         <h2 className="text-xl font-semibold text-[#3CA9F9]">{post.title}</h2>
-        <button className="px-5 py-2 text-[#3CA9F9] border border-[#3CA9F9] rounded-[0.5rem]">
+        <div className="px-5 w-[10rem] justify-center text-center py-2 text-[#3CA9F9] border-[2px] border-double border-[#3CA9F9] rounded-[0.5rem]">
           {post.id}
-        </button>
+        </div>
       </div>
 
       {/* main_container */}
@@ -74,7 +80,7 @@ function Post({ post }) {
           />
 
           {/* Profile Info */}
-          <ProfileInformmation
+          <ProfileInformation
             name={post.author.username} // Truy cập đúng vào thuộc tính username của tác giả
             date={post.created_at} // Truy cập vào ngày tạo bài viết
           />

@@ -100,7 +100,7 @@ const fetchSuggestions = async (query) => {
         <MapContainer
           center={[16.047079, 108.20623]}
           zoom={13}
-          style={{ height: "300px", width: "100%" }}
+          style={{ height: "600px", width: "100%" }}
           ref={mapRef}
         >
           <TileLayer

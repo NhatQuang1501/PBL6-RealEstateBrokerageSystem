@@ -2,7 +2,7 @@ import ImageCard from "../../components/image_card/ImageCard";
 import DetailDescription from "../../components/detail_description/DetailDescription";
 import BasicInformation from "../../components/basic_information/BasicInformation";
 import ProfileInformation from "../../components/profile_information/ProfileInformation";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faComment,
@@ -10,47 +10,56 @@ import {
   faBookmark,
   faListAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useState } from "react";
-// import description from "../../components/mock_data/description";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const DetailPost = () => {
-const description = `+ Vị trí: Đều là dòng hoa hậu gần công viên, gần 12 tòa chung cư, đi bộ
-3 bước ra khách sạn 5 sao Mariot. Nằm kề cận TP.HCM, đồng thời cũng là
-địa bàn phát triển mạnh về kinh tế, có nhiều khu công nghiệp nên ngoài
-hai thị trường lớn nhất cả nước (Hà Nội, TP.HCM), Bình Dương là một
-trong ít tỉnh thành có nhu cầu lớn về căn hộ chung cư. Tuy nhiên, trong
-hơn 2 năm qua, các dự án mới tại Bình Dương hầu hết đều tập trung ở phân
-khúc căn hộ trung, cao cấp, "tìm đỏ mắt" cũng không thấy căn hộ có giá
-quanh 1 tỷ đồng. Theo dữ liệu trực tuyến của Batdongsan.com.vn, trong
-nửa đầu năm 2024, giá căn hộ Bình Dương trung bình từ 35-40 triệu
-đồng/m2. Như vậy với căn hộ diện tích khoảng hơn 60m2 đã có giá từ 2 tỷ
-đồng. Những dự án liền kề TP.HCM giá trung bình thậm chí đã quanh ngưỡng
-45-50 triệu đồng/m2. Giá căn hộ tăng liên tiếp trong 2-3 năm qua khiến
-thanh khoản trên thị trường gặp nhiều khó khăn, dù nhu cầu mua căn hộ
-tại đây vẫn rất lớn. Chưa kể, nguồn cung ra thị trường "lệch pha" với
-nhu cầu và khả năng chi trả của người dân. Theo đó, đa số các căn hộ tại
-Bình Dương hiện nay đều ở tầm giá từ 2-3 tỷ đồng/căn trở lên, trong khi
-với thu nhập bình quân đầu người của Bình Dương trung bình khoảng 120
-triệu/năm thì căn hộ "vừa túi tiền" nằm ở khoảng giá 900 triệu đến dưới
-1,5 tỷ đồng. Tình trạng này khiến Bình Dương thiếu căn hộ phục vụ nhu
-cầu thực, trong khi lại dư thừa căn hộ giá cao. Thanh khoản kém, khiến
-nguồn cung ế nhưng lại thiếu vì không đáp ứng đúng nguồn cầu.`;
+  const { id } = useParams(); // Lấy id từ URL
+  // const id = 3;
+  const [post, setPost] = useState(null); // Lưu dữ liệu bài đăng
+  const [isClicked, setIsClicked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
-    const [isClicked, setIsClicked] = useState(false);
-    const handleClick = () => {
-      setTimeout(() => {
-        setIsClicked(!isClicked);
-      }, 80);
+  const handleClick = () => {
+    setTimeout(() => {
+      setIsClicked(!isClicked);
+    }, 80);
+  };
+
+  const handleSaveClick = () => {
+    setTimeout(() => {
+      setIsSaved(!isSaved);
+    }, 80);
+  };
+
+  useEffect(() => {
+    const fetchPostById = async () => {
+      try {
+        // Lấy bài đăng theo ID
+        let url = `http://127.0.0.1:8000/api/posts/${id}`; // Thêm id vào URL
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+
+        setPost(data); // Cập nhật bài đăng
+      } catch (error) {
+        console.error(error);
+      }
     };
 
-    const [isSaved, setIsSaved] = useState(false);
-    const handleSaveClick = () => {
-      setTimeout(() => {
-        setIsSaved(!isSaved);
-      }, 80);
-    }
+    fetchPostById(); // Gọi hàm lấy bài đăng theo ID
+  }, [id]);
 
-
+  if (!post) {
+    return <p>Loading...</p>; // Kiểm tra nếu post chưa có dữ liệu
+  }
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 font-montserrat">
@@ -62,13 +71,29 @@ nguồn cung ế nhưng lại thiếu vì không đáp ứng đúng nguồn cầ
         Chi tiết bài đăng
       </h3>
       <div className="p-6 mt-5 mb-5 max-w-5xl mx-auto rounded-lg bg-white border-double border-[#3CA9F9] border-[2px] shadow-md ">
-        <h1 className="text-2xl font-bold text-[#3CA9F9] mb-4">
-          Cho thuê nhà ở tại 123 Tôn Đức Thắng đối diện ...
-        </h1>
+        <div className="flex justify-between items-center px-6 py-4 bg-white">
+          <h1 className="text-2xl font-bold text-[#3CA9F9] mb-4">
+            {post.title}
+          </h1>
+          <div className="px-5 w-[10rem] justify-center text-center py-2 text-[#3CA9F9] border-[2px] border-double border-[#3CA9F9] rounded-[0.5rem]">
+            {post.id}
+          </div>
+        </div>
 
         {/* Profile + reaction */}
         <div className="flex flex-row justify-between">
-          <ProfileInformation />
+
+          <ProfileInformation
+            name={post.author.username} // Truy cập đúng vào thuộc tính username của tác giả
+            date={post.created_at} // Truy cập vào ngày tạo bài viết
+          />
+
+          <div className="mt-4 flex justify-center items-center">
+            <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
+              Thương lượng
+            </button>
+          </div>
+          
           <div className="flex space-x-8 mt-4 justify-end">
             {/* Heart */}
             <div className="flex items-end text-gray-500 space-x-1">
@@ -102,21 +127,30 @@ nguồn cung ế nhưng lại thiếu vì không đáp ứng đúng nguồn cầ
                   }`}
                 />
               </button>
-
               <span>2</span>
             </div>
           </div>
         </div>
 
-        <BasicInformation />
+        <BasicInformation
+          price={post.price}
+          area={post.area}
+          orientation={post.orientation}
+          bedroom={post.bedroom}
+          bathroom={post.bathroom}
+          street={post.street}
+          district={post.district}
+          city={post.city}
+          description={post.description}
+        />
         <ImageCard
           title="Hình ảnh mô tả:"
           imageUrl="https://th.bing.com/th/id/OIP.jbWA3pC_GsfnBH5IohOa8gHaFB?rs=1&pid=ImgDetMain"
         />
-
-        <DetailDescription description={description} maxLength={5000000} />
+        <DetailDescription description={post.description} maxLength={5000000} />
       </div>
     </div>
   );
 };
+
 export default DetailPost;
