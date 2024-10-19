@@ -1,6 +1,54 @@
-
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignUpForm = () => {
+  const [error, setError] = useState(null);
+  let navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("tutor");
+  const [confirmPassword, setConfirm] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError("Nhập đúng mật khẩu xác nhận");
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/register/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: {
+            email: email,
+            password: password,
+            role: role,
+          },
+        }),
+      });
+
+      const data = await response.json();
+      console.log(response);
+
+      if (response.ok) {
+        navigate("/authen/verif", { state: { email: email } });
+        // console.log(data);
+      } else {
+        setError(data.message || "Đã tồn tại người dùng có tên đăng nhập này");
+      }
+    } catch (error) {
+      console.log(error);
+      setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-[50rem] bg-gray-200 font-montserrat">
       <div className="flex w-3/4 max-w-[50%] min-h-[43rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden">
@@ -9,10 +57,8 @@ const SignUpForm = () => {
           <h2 className="text-4xl font-bold mb-4">Chào mừng người mới</h2>
 
           <p className="mb-6 text-[14px]">
-            Hãy đăng ký tài khoản
-            Hoặc đăng nhập nếu bạn đã có tài khoản
+            Hãy đăng ký tài khoản Hoặc đăng nhập nếu bạn đã có tài khoản
           </p>
-
 
           <button className="border-2 text-white border-solid border-white font-bold  w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300">
             Đăng nhập
