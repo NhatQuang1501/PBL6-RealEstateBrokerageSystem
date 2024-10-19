@@ -1,5 +1,5 @@
 
-import Introduce from "../../components/introduce/Introduce";
+import Introduce from "../../components/Introduce/introduce";
 import HeroSection from "../../components/HeroPage/heropage";
 import MainPageUser from "./MainPageUser";
 

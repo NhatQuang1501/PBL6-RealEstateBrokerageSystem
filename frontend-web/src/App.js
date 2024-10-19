@@ -1,14 +1,15 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
-import Header from "./components/header/header";
-import Footer from "./components/footer/footer";
+import Header from "./components/Header/header";
+import Footer from "./components/Footer/footer";
 import MainPageUser from "./pages/user/MainPageUser";
 import TestView from "./pages/user/TestView";
+import PostDetail from "./pages/user/PostDetail";
 import LoginPage from "./pages/authen/LoginPage";
 import SignUpPage from "./pages/authen/SignUpPage";
 import ForgotPassword from "./pages/authen/ForgotPassword";
-import Post from "./components/item_post/Post";
+import CreatePost from "./pages/user/CreatePost";
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
           <Route path="authen/forgot-password" element={<ForgotPassword />} />
 
           <Route path="user/main-page-user" element={<MainPageUser />} />
-          <Route path="post" element={Post} />
+          <Route path="user/detail-post/:id" element={<PostDetail />} />
+          <Route path="user/create-post" element={<CreatePost />} />
         </Routes>
         <Footer />
       </Router>
