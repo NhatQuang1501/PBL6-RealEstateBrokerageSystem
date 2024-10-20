@@ -36,21 +36,21 @@ function Post({ post }) {
     }, 80);
   };
 
-const formatPrice = (price) => {
-  if (price >= 1_000_000_000) {
-    const billionValue = price / 1_000_000_000;
-    return Number.isInteger(billionValue)
-      ? `${billionValue} tỷ VND`
-      : `${billionValue.toFixed(3)} tỷ VND`;
-  } else if (price >= 1_000_000) {
-    const millionValue = price / 1_000_000;
-    return Number.isInteger(millionValue)
-      ? `${millionValue} triệu VND`
-      : `${millionValue.toFixed(3)} triệu VND`;
-  } else {
-    return `${price} VND`;
-  }
-};
+  const formatPrice = (price) => {
+    if (price >= 1_000_000_000) {
+      const billionValue = price / 1_000_000_000;
+      return Number.isInteger(billionValue)
+        ? `${billionValue} tỷ VND`
+        : `${billionValue.toFixed(3)} tỷ VND`;
+    } else if (price >= 1_000_000) {
+      const millionValue = price / 1_000_000;
+      return Number.isInteger(millionValue)
+        ? `${millionValue} triệu VND`
+        : `${millionValue.toFixed(3)} triệu VND`;
+    } else {
+      return `${price} VND`;
+    }
+  };
   const handleDetailClick = () => {
     navigate(`/user/detail-post/${post.id}`);
   };
