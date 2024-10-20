@@ -67,8 +67,8 @@ class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # Lấy thông tin người dùng trực tiếp từ request.data thay vì từ "user"
-        user_data = request.data
+        # Lấy thông tin người dùng trực tiếp từ từ key "user"
+        user_data = request.data.get("user")
 
         if not user_data:
             return Response(
@@ -85,9 +85,13 @@ class RegisterView(APIView):
 
         # Lựa chọn serializer dựa trên vai trò
         if role == "user":
-            serializer = UserProfileSerializer(data=user_data)  # Sử dụng user_data
+            serializer = UserProfileSerializer(
+                data=request.data
+            )  # Sử dụng request.data vì được bọc trong key "user" để tạo profile
         elif role == "admin":
-            serializer = UserSerializer(data=user_data)  # Sử dụng user_data
+            serializer = UserSerializer(
+                data=user_data
+            )  # Sử dụng user_data như bình thường
 
         # Kiểm tra dữ liệu hợp lệ
         if serializer.is_valid():
@@ -96,10 +100,11 @@ class RegisterView(APIView):
             if role == "user":
                 # Gửi email xác thực cho người dùng
                 try:
+                    user = user.user
                     send_email_verification(user, request)
                 except Exception as e:
                     # Xoá người dùng nếu gửi email thất bại
-                    user.delete()
+                    User.objects.get(user_id=user.user_id).delete()
                     return Response(
                         {"message": "Gửi email xác thực thất bại", "error": str(e)},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR,

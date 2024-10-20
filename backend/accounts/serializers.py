@@ -81,7 +81,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not self.instance and "user" not in data:
             raise serializers.ValidationError(
-                {"user": "Điền thông tin tài khoản người dùng"}
+                {"user": "Hãy điền thông tin tài khoản đúng cú pháp)"}
             )
 
         return data
