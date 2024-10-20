@@ -75,7 +75,7 @@ class PostSerializer(serializers.ModelSerializer):
             representation.pop("orientation")
             representation.pop("frontage")
             representation.pop("bedroom")
-            representation.pop("batroom")
+            representation.pop("bathroom")
             representation.pop("floor")
             representation.pop("images")
             representation.pop("description")

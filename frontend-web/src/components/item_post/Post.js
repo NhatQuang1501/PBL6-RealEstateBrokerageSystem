@@ -52,7 +52,7 @@ function Post({ post }) {
     }
   };
   const handleDetailClick = () => {
-    navigate(`/user/detail-post/${post.id}`);
+    navigate(`/user/detail-post/${post.post_id}`);
   };
 
   return (
@@ -64,7 +64,7 @@ function Post({ post }) {
       >
         <h2 className="text-xl font-semibold text-[#3CA9F9]">{post.title}</h2>
         <div className="px-5 w-[10rem] justify-center text-center py-2 text-[#3CA9F9] border-[2px] border-double border-[#3CA9F9] rounded-[0.5rem]">
-          {post.id}
+          {post.sale_status}
         </div>
       </div>
 
@@ -81,7 +81,7 @@ function Post({ post }) {
 
           {/* Profile Info */}
           <ProfileInformation
-            name={post.author.username} // Truy cập đúng vào thuộc tính username của tác giả
+            name={post.username} // Truy cập đúng vào thuộc tính username của tác giả
             date={post.created_at} // Truy cập vào ngày tạo bài viết
           />
         </div>
@@ -97,8 +97,8 @@ function Post({ post }) {
               </p>
               <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
                 <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                <span className="font-normal">Địa chỉ: </span> Đường{" "}
-                {post.street}, Quận {post.district}, Thành phố {post.city}
+                <span className="font-normal">Địa chỉ: </span>
+                {post.address}, Quận {post.district}, Thành phố {post.city}
               </p>
               <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
                 <FontAwesomeIcon icon={faBed} className="mr-2" />
