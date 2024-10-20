@@ -10,6 +10,7 @@ import LoginPage from "./pages/authen/LoginPage";
 import SignUpPage from "./pages/authen/SignUpPage";
 import ForgotPassword from "./pages/authen/ForgotPassword";
 import CreatePost from "./pages/user/CreatePost";
+import VerifyEmail from "./pages/authen/VerifyEmail";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="authen/login" element={<LoginPage />} />
           <Route path="authen/register" element={<SignUpPage />} />
           <Route path="authen/forgot-password" element={<ForgotPassword />} />
+          <Route path="authen/verify-email" element={<VerifyEmail />} />
 
           <Route path="user/main-page-user" element={<MainPageUser />} />
           <Route path="user/detail-post/:id" element={<PostDetail />} />
