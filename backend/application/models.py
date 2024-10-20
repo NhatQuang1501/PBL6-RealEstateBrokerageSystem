@@ -44,7 +44,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.post_id
+        return str(self.post_id)
 
 
 # class Negotiation(models.Model):
