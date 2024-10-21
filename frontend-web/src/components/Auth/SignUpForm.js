@@ -60,7 +60,7 @@ const SignUpForm = () => {
             Hãy đăng ký tài khoản Hoặc đăng nhập nếu bạn đã có tài khoản
           </p>
 
-          <button className="border-2 text-white border-solid border-white font-bold  w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300"
+          <button className="border-2 text-white border-solid border-white font-bold  w-[110px] h-[35px] rounded-lg hover:bg-blue-600 transition duration-300"
           onClick={() => navigate("/authen/login")}
           >
             Đăng nhập

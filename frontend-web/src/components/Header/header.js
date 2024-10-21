@@ -1,11 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
 function Header() {
 
   let navigate = useNavigate();
 
-  const { sessionToken, setSessionToken, setRole, role } = useAppContext();
+  const { sessionToken, setSessionToken, setRole, role, name } = useAppContext();
 
   const handleLogout = async () => {
     try {
@@ -73,6 +73,14 @@ function Header() {
                     Liên hệ
                   </a>
                 </li>
+                <li>
+                  <Link
+                    to="/authen/login"
+                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                  >
+                    Đăng tin
+                  </Link>
+                </li>
               </ul>
             </nav>
             <div>
@@ -126,6 +134,14 @@ function Header() {
                     Liên hệ
                   </a>
                 </li>
+                <li>
+                  <Link
+                    to="/user/create-post"
+                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                  >
+                    Đăng tin
+                  </Link>
+                </li>
               </ul>
             </nav>
             <div className="flex flex-row gap-5">
@@ -135,7 +151,7 @@ function Header() {
                   alt="avatar"
                   className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9] object-cover"
                 />
-                {/* <p className="text-[#3CA9F9] font-semibold">{role}</p> */}
+                <p className="text-[#3CA9F9] font-semibold">{name}</p>
               </div>
               <button
                 className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white"

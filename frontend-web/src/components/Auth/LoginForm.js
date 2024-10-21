@@ -10,7 +10,7 @@ const LoginForm = () => {
   const [error, setError] = useState(null);
   let navigate = useNavigate();
 
-  const { setSessionToken, setRole, setId } = useAppContext();
+  const { setSessionToken, setRole, setId, setName } = useAppContext();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,21 +30,25 @@ const LoginForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSessionToken(data.access);
+        setSessionToken(data.tokens.access);
         setRole(data.role);
-        setId(data.id);
+        const role = data.role;
+        localStorage.setItem("refreshToken", data.tokens.refresh);
+        console.log("Đăng nhập thành công!");
+        console.log("Role: ", role);
+
+        setName(data.data.user.username);
+
+        setId(data.data.user_id);
         navigate("/");
       } else {
         setError(data.message || "Đăng nhập thất bại");
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error(error);
       setError("Có lỗi xảy ra. Vui lòng thử lại sau.");
     }
-  }
-
-
+  };
 
   return (
     <div className="flex items-center justify-center min-h-[50rem] bg-gray-200 font-montserrat">
@@ -87,7 +91,7 @@ const LoginForm = () => {
             </a>
             <div className="flex flex-col items-center">
               <button
-                className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300"
+                className="bg-[#3CA9F9] text-white font-bold w-[110px] h-[35px] p-1 rounded-lg hover:bg-blue-600 transition duration-300"
                 type="submit"
               >
                 Đăng nhập
