@@ -93,7 +93,7 @@ const DetailPost = () => {
               <div className="flex flex-row justify-between">
                 <div className="">
                   <ProfileInformation
-                    name={post.username} // Truy cập đúng vào thuộc tính username của tác giả
+                    name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
                     date={post.created_at} // Truy cập vào ngày tạo bài viết
                   />
                 </div>
@@ -150,6 +150,7 @@ const DetailPost = () => {
                 bathroom={post.bathroom}
                 floor={post.floor}
                 legal_status={post.legal_status}
+                frontage={post.frontage}
                 address={post.address}
                 district={post.district}
                 city={post.city}

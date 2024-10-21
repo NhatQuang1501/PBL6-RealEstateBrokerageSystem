@@ -81,7 +81,7 @@ function Post({ post }) {
 
           {/* Profile Info */}
           <ProfileInformation
-            name={post.username} // Truy cập đúng vào thuộc tính username của tác giả
+            name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
             date={post.created_at} // Truy cập vào ngày tạo bài viết
           />
         </div>

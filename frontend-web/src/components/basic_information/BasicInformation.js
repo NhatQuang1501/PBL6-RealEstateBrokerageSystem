@@ -18,7 +18,10 @@ const BasicInformation = ({
   orientation,
   bedroom,
   bathroom,
-  street,
+  floor,
+  legal_status,
+  frontage,
+  address,
   district,
   city,
   description,
@@ -63,44 +66,44 @@ const formatPrice = (price) => {
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faFileContract} className="mr-2" />
-            Pháp lý: (bổ sung)
+            Pháp lý:
           </p>
-          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">Sổ hồng</p>
+          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{legal_status}</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faRoad} className="mr-2" />
-            Mặt tiền: (bổ sung)
+            Mặt tiền:
           </p>
-          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">7m5</p>
+          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{frontage} m</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faCompass} className="mr-2" />
-            Hướng: (bổ sung)
+            Hướng:
           </p>
           <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{orientation}</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faBuilding} className="mr-2" />
-            Số tầng: (bổ sung)
+            Số tầng:
           </p>
-          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">4 tầng</p>
+          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{floor} tầng</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faBed} className="mr-2" />
             Phòng ngủ:
           </p>
-          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{bedroom}</p>
+          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{bedroom} phòng</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
             <FontAwesomeIcon icon={faBath} className="mr-2" />
             Phòng tắm:
           </p>
-          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{bathroom}</p>
+          <p className="text-[#3CA9F9] mt-2 leading-[1.2]">{bathroom} phòng</p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">
           <p className="font-semibold flex items-center">
@@ -108,7 +111,7 @@ const formatPrice = (price) => {
             Địa chỉ:
           </p>
           <p className="text-[#3CA9F9] mt-2 leading-[1.2]">
-            Đường {street}, Quận {district}, Thành phố {city}
+            {address}, Quận {district}, Thành phố {city}
           </p>
         </div>
         <div className="flex-1 p-2 border-2 border-gray-200 border-double rounded-2xl bg-[#E4FFFC] transform transition-transform duration-300 hover:-translate-y-1 shadow-md">

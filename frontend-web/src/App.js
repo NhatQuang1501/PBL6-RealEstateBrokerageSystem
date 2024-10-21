@@ -11,9 +11,11 @@ import SignUpPage from "./pages/authen/SignUpPage";
 import ForgotPassword from "./pages/authen/ForgotPassword";
 import CreatePost from "./pages/user/CreatePost";
 import VerifyEmail from "./pages/authen/VerifyEmail";
+import AppProvider from "./AppProvider";
 
 function App() {
   return (
+    <AppProvider>
     <div className=" id='app' className=" flex flex-col min-h-screen>
       <Router>
         <Header />
@@ -31,6 +33,7 @@ function App() {
         <Footer />
       </Router>
     </div>
+    </AppProvider>
   );
 }
 
