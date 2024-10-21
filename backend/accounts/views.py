@@ -133,27 +133,100 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# a
+# class LoginView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request):
+#         email = request.data.get("email", None)
+#         username = request.data.get("username", None)
+#         password = request.data.get("password", None)
+
+#         try:
+#             if email:
+#                 user = User.objects.filter(Q(email=email)).first()
+#             elif username:
+#                 user = User.objects.filter(Q(username=username)).first()
+#             else:
+#                 return Response(
+#                     {"message": "Nhập email hoặc username"},
+#                     status=status.HTTP_400_BAD_REQUEST,
+#                 )
+
+#             if user and user.check_password(password):
+#                 if user.is_verified == False:
+#                     return Response(
+#                         {"message": "Email chưa được xác thực"},
+#                         status=status.HTTP_400_BAD_REQUEST,
+#                     )
+
+#                 token = get_tokens_for_user(user)
+#                 role = user.role
+
+#                 # Check nếu người dùng có role 'user'
+#                 if role == "user":
+#                     user = UserProfile.objects.get(user=user)
+#                     serializer = UserProfileSerializer(user)
+#                 elif role == "admin":
+#                     serializer = UserSerializer(user)
+
+#                 return Response(
+#                     {
+#                         "message": "Đăng nhập thành công",
+#                         "data": serializer.data,
+#                         "tokens": token,
+#                         "role": role,
+#                     },
+#                     status=status.HTTP_200_OK,
+#                 )
+
+#             return Response(
+#                 {"message": "Thông tin đăng nhập không chính xác"},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         except Exception as e:
+#             return Response(
+#                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+#             )
+# a
+
+
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get("email", None)
-        username = request.data.get("username", None)
+        # Lấy thông tin email, username và password từ request
+        email_or_username = request.data.get("username", None)
         password = request.data.get("password", None)
 
-        try:
-            if email:
-                user = User.objects.filter(Q(email=email)).first()
-            elif username:
-                user = User.objects.filter(Q(username=username)).first()
-            else:
-                return Response(
-                    {"message": "Nhập email hoặc username"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        if not email_or_username and not password:
+            return Response(
+                {"message": "Hãy nhập email hoặc username và mật khẩu để đăng nhập"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        if not email_or_username:
+            return Response(
+                {"message": "Hãy nhập email hoặc username"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not password:
+            return Response(
+                {"message": "Hãy nhập mật khẩu"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            # Tìm người dùng theo email hoặc username
+            user = User.objects.filter(
+                Q(email=email_or_username) | Q(username=email_or_username)
+            ).first()
+
+            # Kiểm tra nếu tìm thấy người dùng và mật khẩu đúng
             if user and user.check_password(password):
-                if user.is_verified == False:
+                if not user.is_verified:
                     return Response(
                         {"message": "Email chưa được xác thực"},
                         status=status.HTTP_400_BAD_REQUEST,
@@ -164,11 +237,12 @@ class LoginView(APIView):
 
                 # Check nếu người dùng có role 'user'
                 if role == "user":
-                    user = UserProfile.objects.get(user=user)
-                    serializer = UserProfileSerializer(user)
+                    user_profile = UserProfile.objects.get(user=user)
+                    serializer = UserProfileSerializer(user_profile)
                 elif role == "admin":
                     serializer = UserSerializer(user)
 
+                # Trả về thông tin đăng nhập thành công cùng với token
                 return Response(
                     {
                         "message": "Đăng nhập thành công",
@@ -179,6 +253,7 @@ class LoginView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
+            # Nếu thông tin không chính xác
             return Response(
                 {"message": "Thông tin đăng nhập không chính xác"},
                 status=status.HTTP_400_BAD_REQUEST,
