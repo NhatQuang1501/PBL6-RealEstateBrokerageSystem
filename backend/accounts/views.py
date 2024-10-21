@@ -133,65 +133,6 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# a
-# class LoginView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request):
-#         email = request.data.get("email", None)
-#         username = request.data.get("username", None)
-#         password = request.data.get("password", None)
-
-#         try:
-#             if email:
-#                 user = User.objects.filter(Q(email=email)).first()
-#             elif username:
-#                 user = User.objects.filter(Q(username=username)).first()
-#             else:
-#                 return Response(
-#                     {"message": "Nhập email hoặc username"},
-#                     status=status.HTTP_400_BAD_REQUEST,
-#                 )
-
-#             if user and user.check_password(password):
-#                 if user.is_verified == False:
-#                     return Response(
-#                         {"message": "Email chưa được xác thực"},
-#                         status=status.HTTP_400_BAD_REQUEST,
-#                     )
-
-#                 token = get_tokens_for_user(user)
-#                 role = user.role
-
-#                 # Check nếu người dùng có role 'user'
-#                 if role == "user":
-#                     user = UserProfile.objects.get(user=user)
-#                     serializer = UserProfileSerializer(user)
-#                 elif role == "admin":
-#                     serializer = UserSerializer(user)
-
-#                 return Response(
-#                     {
-#                         "message": "Đăng nhập thành công",
-#                         "data": serializer.data,
-#                         "tokens": token,
-#                         "role": role,
-#                     },
-#                     status=status.HTTP_200_OK,
-#                 )
-
-#             return Response(
-#                 {"message": "Thông tin đăng nhập không chính xác"},
-#                 status=status.HTTP_400_BAD_REQUEST,
-#             )
-
-#         except Exception as e:
-#             return Response(
-#                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-#             )
-# a
-
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -235,7 +176,7 @@ class LoginView(APIView):
                 token = get_tokens_for_user(user)
                 role = user.role
 
-                # Check nếu người dùng có role 'user'
+                # Check role của người dùng
                 if role == "user":
                     user_profile = UserProfile.objects.get(user=user)
                     serializer = UserProfileSerializer(user_profile)
