@@ -18,7 +18,7 @@ function Header() {
       });
 
       if (response.ok) {
-        setSessionToken("");
+        setSessionToken(null);
         setRole("");
         localStorage.removeItem("refreshToken");
         navigate("/");
