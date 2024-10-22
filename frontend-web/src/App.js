@@ -10,9 +10,12 @@ import LoginPage from "./pages/authen/LoginPage";
 import SignUpPage from "./pages/authen/SignUpPage";
 import ForgotPassword from "./pages/authen/ForgotPassword";
 import CreatePost from "./pages/user/CreatePost";
+import VerifyEmail from "./pages/authen/VerifyEmail";
+import AppProvider from "./AppProvider";
 
 function App() {
   return (
+    <AppProvider>
     <div className=" id='app' className=" flex flex-col min-h-screen>
       <Router>
         <Header />
@@ -21,6 +24,7 @@ function App() {
           <Route path="authen/login" element={<LoginPage />} />
           <Route path="authen/register" element={<SignUpPage />} />
           <Route path="authen/forgot-password" element={<ForgotPassword />} />
+          <Route path="authen/verify-email" element={<VerifyEmail />} />
 
           <Route path="user/main-page-user" element={<MainPageUser />} />
           <Route path="user/detail-post/:id" element={<PostDetail />} />
@@ -29,6 +33,7 @@ function App() {
         <Footer />
       </Router>
     </div>
+    </AppProvider>
   );
 }
 

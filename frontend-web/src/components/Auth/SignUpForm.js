@@ -8,7 +8,6 @@ const SignUpForm = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("tutor");
   const [confirmPassword, setConfirm] = useState("");
 
   const handleSubmit = async (e) => {
@@ -20,16 +19,17 @@ const SignUpForm = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/register/`, {
+      const response = await fetch(`http://127.0.0.1:8000/auth/register/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           user: {
-            email: email,
-            password: password,
-            role: role,
+          email: email,
+          username: username,
+          password: password,
+          role: "user",
           },
         }),
       });
@@ -38,7 +38,7 @@ const SignUpForm = () => {
       console.log(response);
 
       if (response.ok) {
-        navigate("/authen/verif", { state: { email: email } });
+        navigate("/authen/verify-email", { state: { email: email } });
         // console.log(data);
       } else {
         setError(data.message || "Đã tồn tại người dùng có tên đăng nhập này");
@@ -60,7 +60,9 @@ const SignUpForm = () => {
             Hãy đăng ký tài khoản Hoặc đăng nhập nếu bạn đã có tài khoản
           </p>
 
-          <button className="border-2 text-white border-solid border-white font-bold  w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300">
+          <button className="border-2 text-white border-solid border-white font-bold  w-[110px] h-[35px] rounded-lg hover:bg-blue-600 transition duration-300"
+          onClick={() => navigate("/authen/login")}
+          >
             Đăng nhập
           </button>
         </div>
@@ -68,24 +70,61 @@ const SignUpForm = () => {
         {/* Thanh trái */}
         <div className="w-1/2 p-8 flex flex-col items-center justify-center">
           <h2 className="text-4xl font-bold text-black mb-6 pb-10">Đăng ký</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               type="email"
+              name="email"
+              required
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError("");
+              }}
               placeholder="Nhập email"
               className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <input
+              type="text"
+              name="username"
+              required
+              value={username}
+              onChange={(e) => {
+                setUsername(e.target.value);
+                setError("");
+              }}
+              placeholder="Nhập tên đăng nhập"
+              className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            <input
               type="password"
+              name="password"
+              required
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError("");
+              }}
               placeholder="Nhập mật khẩu"
               className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
             <input
               type="password"
+              name="confirmPassword"
+              required
+              value={confirmPassword}
+              onChange={(e) => {
+                setConfirm(e.target.value);
+                setError("");
+              }}
               placeholder="Nhập lại mật khẩu"
               className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
+            {error && <div className="text-red-500 mb-4">{error}</div>}
             <div className="flex flex-col items-center">
-              <button className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300">
+              <button
+                className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300"
+                type="submit"
+              >
                 Đăng ký
               </button>
             </div>

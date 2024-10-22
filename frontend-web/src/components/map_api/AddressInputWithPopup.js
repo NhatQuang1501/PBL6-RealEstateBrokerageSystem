@@ -42,7 +42,7 @@ const fetchSuggestions = async (query) => {
 
     debounceTimeoutRef.current = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 1000);
+    }, 500);
 
     return () => {
       if (debounceTimeoutRef.current) {
