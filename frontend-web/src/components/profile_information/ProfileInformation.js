@@ -44,12 +44,12 @@ const handleReportClick = () => {
       {/* Profile Info */}
       <div className="flex items-center">
         <img
-          className="w-12 h-12 rounded-full mr-3 mt-5 object-cover"
+          className="w-12 h-12 rounded-full mr-3 object-cover"
           src="https://i.ytimg.com/vi/EgkK6HfSOLY/hqdefault.jpg"
           alt="avatar"
         />
 
-        <div className="text-sm mt-3">
+        <div className="text-sm">
           <div className="flex items-center mt-4">
             <p className="font-extrabold text-[#3CA9F9] text-[1.5rem]">
               {name}

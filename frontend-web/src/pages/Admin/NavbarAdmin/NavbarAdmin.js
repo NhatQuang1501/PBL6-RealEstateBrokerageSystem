@@ -4,8 +4,6 @@ import Icon1 from '../../../assets/image/health.png'
 import Icon2 from '../../../assets/image/clipboard-text.png'
 import ArrowIcon from '../../../assets/image/Frame12.png'
 const Navbar = ({isCollapsed,toggleNavbar,handleMenuClick,activeMenu}) => {
-  // State điều khiển thu nhỏ navbar và mở rộng các mục con
-  // const [isCollapsed, setIsCollapsed] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [postMenuOpen, setPostMenuOpen] = useState(false);
   
@@ -46,7 +44,7 @@ const Navbar = ({isCollapsed,toggleNavbar,handleMenuClick,activeMenu}) => {
 
       {/* Danh sách Navbar */}
       <ul className="mt-8 space-y-2">
-        <li onClick={() => handleMenuClick("dashboard")} className="flex items-center gap-8 navbar-item p-3 hover:bg-[#9EBBD8] rounded-xl cursor-pointer">
+        <li onClick={() => handleMenuClick("dashboard")} className="flex items-center gap-12 navbar-item p-3 hover:bg-[#9EBBD8] rounded-xl cursor-pointer">
           <img src={Icon1} className="w-[23px] h-[23px]" alt=""/>
           <a href="#!" className={`block  rounded ${isCollapsed ? "hidden" : "block"}`}>
             Bảng điều khiển
