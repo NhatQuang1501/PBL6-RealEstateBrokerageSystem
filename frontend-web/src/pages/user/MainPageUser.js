@@ -45,8 +45,8 @@ const MainPageUser = () => {
   }, []);
 
   return (
-    <div className="font-montserrat">
-      <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem] shadow-lg shadow-[#E4FFFC] rounded-[3rem]">
+    <div className="font-montserrat main-content">
+      <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem] shadow-lg shadow-[#E4FFFC] rounded-[3rem] mb-3">
         <FontAwesomeIcon
           icon={faListAlt}
           className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"

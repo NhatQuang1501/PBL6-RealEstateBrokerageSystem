@@ -33,7 +33,7 @@ function Header() {
   return (
     <>
       {!sessionToken && role !== "user" ? (
-        <div className=" sticky top-0 h-[13vh] bg-white z-20 font-montserrat">
+        <div className=" sticky top-0 h-[13vh] bg-white font-montserrat z-50">
           <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px] " src={Logo} alt=""></img>
@@ -94,7 +94,7 @@ function Header() {
           </div>
         </div>
       ) : (
-        <div className=" sticky top-0 h-[13vh] bg-white z-20 font-montserrat">
+        <div className=" sticky top-0 h-[13vh] bg-white  font-montserrat z-50">
           <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px] " src={Logo} alt=""></img>

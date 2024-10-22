@@ -50,11 +50,11 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[50rem] bg-gray-200 font-montserrat">
-      <div className="flex w-3/4 max-w-[50%] min-h-[43rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden">
+    <div className="flex items-center justify-center bg-gray-200 font-montserrat">
+      <div className="flex w-3/4 max-w-[50%] min-h-[30rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-36">
         {/* Thanh phải */}
         <div className="w-1/2 bg-[#4F91F5] text-white p-8 flex flex-col items-center text-center justify-center rounded-tr-[6rem] rounded-br-[6rem] gap-[22px]">
-          <h2 className="text-4xl font-bold mb-4">Chào mừng người mới</h2>
+          <h2 className="text-2xl font-bold mb-4">Chào mừng người mới</h2>
 
           <p className="mb-6 text-[14px]">
             Hãy đăng ký tài khoản Hoặc đăng nhập nếu bạn đã có tài khoản
@@ -69,7 +69,7 @@ const SignUpForm = () => {
 
         {/* Thanh trái */}
         <div className="w-1/2 p-8 flex flex-col items-center justify-center">
-          <h2 className="text-4xl font-bold text-black mb-6 pb-10">Đăng ký</h2>
+          <h2 className="text-2xl font-bold text-black mb-6 pb-10">Đăng ký</h2>
           <form onSubmit={handleSubmit}>
             <input
               type="email"

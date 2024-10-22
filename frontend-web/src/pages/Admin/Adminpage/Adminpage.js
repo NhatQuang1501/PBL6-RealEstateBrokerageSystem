@@ -16,7 +16,7 @@ const Adminpage = () => {
   };
 
   return (
-    <div className="relative bg-[#9EBBD8] p-3 transition-width duration-300">
+    <div className="relative bg-[#9EBBD8] p-3 transition-width duration-300 font-montserrat">
       <Navbar isCollapsed={isCollapsed} activeMenu={activeMenu} toggleNavbar={toggleNavbar} handleMenuClick={handleMenuClick}/>
       <HeaderAdmin isCollapsed={isCollapsed}/>
       <AdminBody isCollapsed={isCollapsed} activeMenu={activeMenu}/>
