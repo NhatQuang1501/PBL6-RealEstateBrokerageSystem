@@ -10,6 +10,7 @@ const WaitingForApproval = () => {
   const [currentPage, setCurrentPage] = useState(1); 
   const [postsPerPage] = useState(2); 
   const [selectedPostId, setSelectedPostId] = useState(null);
+  
   const openPopup = (postId) => {
     setSelectedPostId(postId);
   };
@@ -17,32 +18,33 @@ const WaitingForApproval = () => {
   const closePopup = () => {
     setSelectedPostId(null);
   };
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/posts/', {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`, 
-          },
-        });
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/admin/posts/', {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`, 
+        },
+      });
 
-        console.log('Dữ liệu trả về:', response.data);
-        
-        const postsData = response.data.results; 
+      console.log('Dữ liệu trả về:', response.data);
+      
+      const postsData = response.data.results; 
 
-        if (Array.isArray(postsData)) {
-          const pendingPosts = postsData.filter(post => post.status === 'Đang chờ duyệt');
-          setPosts(pendingPosts);
-        } else {
-          console.error('Dữ liệu không phải là một mảng:', postsData);
-          setPosts([]); 
-        }
-
-      } catch (error) {
-        console.error('Error fetching posts:', error);
+      if (Array.isArray(postsData)) {
+        const pendingPosts = postsData.filter(post => post.status === 'Đang chờ duyệt');
+        setPosts(pendingPosts);
+      } else {
+        console.error('Dữ liệu không phải là một mảng:', postsData);
+        setPosts([]); 
       }
-    };
 
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+    }
+  };
+
+  useEffect(() => {
+  
     fetchPosts();
   }, [sessionToken]);
 
@@ -54,12 +56,17 @@ const WaitingForApproval = () => {
 
   const handleApprovePost = async (postId) => {
     try {
-      await axios.patch(`http://127.0.0.1:8000/api/posts/${postId}/`, { status: 'đã duyệt' }, {
+      await axios.post(`http://127.0.0.1:8000/api/admin/posts/`, 
+      { 
+        post_id: postId,
+        status: 'Đã duyệt' 
+      }, 
+      {
         headers: {
           Authorization: `Bearer ${sessionToken}`,
-        },
+        }
       });
-      
+      fetchPosts();
       setPosts(posts.map(post => 
         post.post_id === postId ? { ...post, status: 'đã duyệt' } : post
       ));
@@ -113,8 +120,8 @@ const WaitingForApproval = () => {
                   Duyệt bài đăng
                 </button>
                 <button onClick={() => openPopup(post.post_id)} className="px-5 py-2 text-blue-500 border border-[#3CA9F9] rounded-lg">
-            Chi tiết
-          </button>
+                  Chi tiết
+                </button>
                 <button className="px-5 py-2 text-[#3CA9F7] border border-[#3CA9F9] rounded-lg">Xóa bài đăng</button>
               </div>
             </div>
