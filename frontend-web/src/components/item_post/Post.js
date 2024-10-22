@@ -88,47 +88,86 @@ function Post({ post }) {
 
         {/* Right column (55%) */}
         <div className="flex flex-col gap-2 justify-between w-[55%] pl-4">
-          <div className="grid grid-cols-2 gap-4 p-2 text-gray-700 text-lg border-[1px] border-double border-[#3CA9F9] rounded-lg font-bold">
-            <div className="">
-              <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faDollarSign} className="mr-2" />
-                <span className="font-normal">Giá bán: </span>
-                {formatPrice(post.price)}
-              </p>
-              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                <span className="font-normal">Địa chỉ: </span>
-                {post.address}, Quận {post.district}, Thành phố {post.city}
-              </p>
-              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faBed} className="mr-2" />
-                <span className="font-normal">Số phòng ngủ: </span>
-                {post.bedroom} phòng ngủ
-              </p>
+          {post.estate_type === "Nhà" && (
+            <div className="grid grid-cols-2 gap-4 p-2 text-gray-700 text-lg border-[1px] border-double border-[#3CA9F9] rounded-lg font-bold">
+              <div className="">
+                <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faDollarSign} className="mr-2" />
+                  <span className="font-normal">Giá bán: </span>
+                  {formatPrice(post.price)}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
+                  <span className="font-normal">Địa chỉ: </span>
+                  {post.address}, Quận {post.district}, Thành phố {post.city}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faBed} className="mr-2" />
+                  <span className="font-normal">Số phòng ngủ: </span>
+                  {post.bedroom} phòng ngủ
+                </p>
+              </div>
+              <div>
+                <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
+                  <span className="font-normal">Diện tích: </span>
+                  {post.area}m²
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faCompass} className="mr-2" />
+                  <span className="font-normal">Hướng nhà: </span>
+                  {post.orientation}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faBath} className="mr-2" />
+                  <span className="font-normal">Số phòng tắm: </span>
+                  {post.bathroom} phòng tắm
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
-                <span className="font-normal">Diện tích: </span>
-                {post.area}m²
-              </p>
-              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faCompass} className="mr-2" />
-                <span className="font-normal">Hướng: </span>
-                {post.orientation}
-              </p>
-              <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
-                <FontAwesomeIcon icon={faBath} className="mr-2" />
-                <span className="font-normal">Số phòng tắm: </span>
-                {post.bathroom} phòng tắm
-              </p>
+          )}
+          {post.estate_type === "Đất" && (
+            <div className="grid grid-cols-2 gap-4 p-2 text-gray-700 text-lg border-[1px] border-double border-[#3CA9F9] rounded-lg font-bold">
+              <div className="">
+                <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faDollarSign} className="mr-2" />
+                  <span className="font-normal">Giá bán: </span>
+                  {formatPrice(post.price)}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
+                  <span className="font-normal">Địa chỉ: </span>
+                  {post.address}, Quận {post.district}, Thành phố {post.city}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faBed} className="mr-2" />
+                  <span className="font-normal">Mặt tiền (m): </span>
+                  {post.frontage}
+                </p>
+              </div>
+              <div>
+                <p className="text-red-600 mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
+                  <span className="font-normal">Diện tích: </span>
+                  {post.area}m²
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faCompass} className="mr-2" />
+                  <span className="font-normal">Hướng đất: </span>
+                  {post.orientation}
+                </p>
+                <p className="mt-2 border-[1px] border-[#3CA9F9] border-double rounded-xl p-1 text-center shadow-sm shadow-gray-500 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-200 transition-all duration-500 hover:shadow-2xl">
+                  <FontAwesomeIcon icon={faBath} className="mr-2" />
+                  <span className="font-normal">Tình trạng pháp lý: </span>
+                  {post.legal_status}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Post */}
           <DetailDescription
             className="min-h-[30rem]"
-            // description="Bán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VND.Bán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VNDBán nhà ở tại 123 Tôn Đức Thắng, Hải Châu, Đà Nẵng. Diện tích 1000m², 5 phòng ngủ, 5 phòng tắm. Hướng Đông Nam. Giá 12 tỷ VND"
             description={post.description}
             maxLength={110}
             enableToggle={false}
