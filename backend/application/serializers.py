@@ -5,16 +5,36 @@ from accounts.enums import *
 
 
 class PostSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
-    fullname = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Post
-        fields = "__all__"
+        fields = [
+            "user",
+            "post_id",
+            "title",
+            "estate_type",
+            "price",
+            "status",
+            "city",
+            "district",
+            "street",
+            "address",
+            "orientation",
+            "area",
+            "frontage",
+            "bedroom",
+            "bathroom",
+            "floor",
+            "legal_status",
+            "sale_status",
+            "images",
+            "description",
+            "created_at",
+            "updated_at",
+        ]
         extra_kwargs = {
             "post_id": {"read_only": True},
-            "username": {"read_only": True},
-            "fullname": {"read_only": True},
             "created_at": {"read_only": True},
             "updated_at": {"read_only": True},
             "status": {"read_only": True},
@@ -66,19 +86,6 @@ class PostSerializer(serializers.ModelSerializer):
             )
 
         request_type = self.context.get("request_type")
-
-        if request_type == "list":
-            representation.pop("created_at")
-            representation.pop("updated_at")
-            representation.pop("district")
-            representation.pop("street")
-            representation.pop("orientation")
-            representation.pop("frontage")
-            representation.pop("bedroom")
-            representation.pop("batroom")
-            representation.pop("floor")
-            representation.pop("images")
-            representation.pop("description")
 
         return representation
 
@@ -135,6 +142,14 @@ class PostSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+    def get_user(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user_id)
+        return {
+            "user_id": obj.user_id.user_id,
+            "username": obj.user_id.username,
+            "fullname": user_profile.fullname,
+        }
 
     def get_fullname(self, obj):
         user = UserProfile.objects.get(user=obj.user_id)

@@ -27,7 +27,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     role = serializers.CharField(write_only=True, required=False)
 
     default_error_messages = {
-        "username": "The username must contain at least one alphabetic character"
+        "username": "Username phải chứa ít nhất một ký tự chữ cái",
     }
 
     class Meta:
@@ -54,7 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     user = RegisterSerializer(required=False)
-    user_id = serializers.IntegerField(source="user.user_id", read_only=True)
+    user_id = serializers.UUIDField(source="user.user_id", read_only=True)
 
     class Meta:
         model = UserProfile
@@ -81,7 +81,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not self.instance and "user" not in data:
             raise serializers.ValidationError(
-                {"user": "Điền thông tin tài khoản người dùng"}
+                {"user": "Hãy điền thông tin tài khoản đúng cú pháp"}
             )
 
         return data
@@ -118,7 +118,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user_profile
 
     def update(self, instance, validated_data):
-        instance.fullname = validated_data.get("fullname", instance.tutorname)
+        instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.city = validated_data.get("city", instance.city)
         instance.birthdate = validated_data.get("birthdate", instance.birthdate)
         instance.phone_number = validated_data.get(

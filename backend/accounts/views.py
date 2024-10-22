@@ -50,95 +50,37 @@ class BaseView(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "message": "Cập nhật thông tin người dùng thành công",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Cập nhật thông tin người dùng thất bại",
+                "error": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     def delete(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
         user.delete()
 
         return Response(
-            {"message": "Xóa thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
-
-
-# class RegisterView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request):
-#         user_data = request.data.get("user")
-
-#         if not user_data:
-#             return Response(
-#                 {
-#                     "message": "Hãy nhập thông tin tài khoản",
-#                 },
-#                 status=status.HTTP_400_BAD_REQUEST,
-#             )
-
-#         role = user_data.get("role")
-#         if role not in ["user", "admin"]:
-#             return Response(
-#                 {"message": "Vai trò không hợp lệ"}, status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         if role == "user":
-#             serializer = UserProfileSerializer(data=request.data)
-#             # serializer = UserProfileSerializer(data=user_data)
-#         elif role == "admin":
-#             serializer = UserSerializer(data=request.data)
-#             # serializer = UserSerializer(data=user_data)
-#         else:
-#             return Response(
-#                 {"message": "Vai trò không hợp lệ"}, status=status.HTTP_400_BAD_REQUEST
-#             )
-
-#         if serializer.is_valid():
-#             user = serializer.save()
-
-#             if role != "admin":
-#                 try:
-#                     user = user.user
-#                     send_email_verification(user, request)
-
-#                 except Exception as e:
-#                     User.objects.get(user_id=user.user_id).delete()
-#                     print(str(e))
-
-#                     return Response(
-#                         {
-#                             "message": "Gửi email xác thực thất bại",
-#                             "error": f"Đã xảy ra lỗi: {str(e)}",
-#                         },
-#                         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-#                     )
-
-#                 return Response(
-#                     {
-#                         "message": "Đã tạo tài khoản. Bạn cần xác thực email để sử dụng tài khoản",
-#                         "data": serializer.data,
-#                     },
-#                     status=status.HTTP_201_CREATED,
-#                 )
-
-#             user.is_verified = True
-#             user.save()
-
-#             return Response(
-#                 {"message": "Đã tạo tài khoản thành công", "data": serializer.data},
-#                 status=status.HTTP_201_CREATED,
-#             )
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # Lấy thông tin người dùng trực tiếp từ request.data thay vì từ "user"
-        user_data = request.data
+        # Lấy thông tin người dùng trực tiếp từ từ key "user"
+        user_data = request.data.get("user")
 
         if not user_data:
             return Response(
@@ -155,9 +97,13 @@ class RegisterView(APIView):
 
         # Lựa chọn serializer dựa trên vai trò
         if role == "user":
-            serializer = UserProfileSerializer(data=user_data)  # Sử dụng user_data
+            serializer = UserProfileSerializer(
+                data=request.data
+            )  # Sử dụng request.data vì được bọc trong key "user" để tạo profile
         elif role == "admin":
-            serializer = UserSerializer(data=user_data)  # Sử dụng user_data
+            serializer = UserSerializer(
+                data=user_data
+            )  # Sử dụng user_data như bình thường
 
         # Kiểm tra dữ liệu hợp lệ
         if serializer.is_valid():
@@ -166,10 +112,11 @@ class RegisterView(APIView):
             if role == "user":
                 # Gửi email xác thực cho người dùng
                 try:
+                    user = user.user
                     send_email_verification(user, request)
                 except Exception as e:
                     # Xoá người dùng nếu gửi email thất bại
-                    user.delete()
+                    User.objects.get(user_id=user.user_id).delete()
                     return Response(
                         {"message": "Gửi email xác thực thất bại", "error": str(e)},
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -202,23 +149,37 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        email = request.data.get("email", None)
-        username = request.data.get("username", None)
+        # Lấy thông tin email, username và password từ request
+        email_or_username = request.data.get("username", None)
         password = request.data.get("password", None)
 
-        try:
-            if email:
-                user = User.objects.filter(Q(email=email)).first()
-            elif username:
-                user = User.objects.filter(Q(username=username)).first()
-            else:
-                return Response(
-                    {"message": "Nhập email hoặc username"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        if not email_or_username and not password:
+            return Response(
+                {"message": "Hãy nhập email hoặc username và mật khẩu để đăng nhập"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        if not email_or_username:
+            return Response(
+                {"message": "Hãy nhập email hoặc username"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not password:
+            return Response(
+                {"message": "Hãy nhập mật khẩu"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            # Tìm người dùng theo email hoặc username
+            user = User.objects.filter(
+                Q(email=email_or_username) | Q(username=email_or_username)
+            ).first()
+
+            # Kiểm tra nếu tìm thấy người dùng và mật khẩu đúng
             if user and user.check_password(password):
-                if user.is_verified == False:
+                if not user.is_verified:
                     return Response(
                         {"message": "Email chưa được xác thực"},
                         status=status.HTTP_400_BAD_REQUEST,
@@ -227,23 +188,25 @@ class LoginView(APIView):
                 token = get_tokens_for_user(user)
                 role = user.role
 
-                # Check nếu người dùng có role 'user'
+                # Check role của người dùng
                 if role == "user":
-                    user = UserProfile.objects.get(user=user)
-                    serializer = UserProfileSerializer(user)
+                    user_profile = UserProfile.objects.get(user=user)
+                    serializer = UserProfileSerializer(user_profile)
                 elif role == "admin":
                     serializer = UserSerializer(user)
 
+                # Trả về thông tin đăng nhập thành công cùng với token
                 return Response(
                     {
                         "message": "Đăng nhập thành công",
                         "data": serializer.data,
-                        "tokens": token,
                         "role": role,
+                        "tokens": token,
                     },
                     status=status.HTTP_200_OK,
                 )
 
+            # Nếu thông tin không chính xác
             return Response(
                 {"message": "Thông tin đăng nhập không chính xác"},
                 status=status.HTTP_400_BAD_REQUEST,
