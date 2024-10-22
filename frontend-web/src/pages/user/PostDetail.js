@@ -20,6 +20,10 @@ const DetailPost = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleClick = () => {
     setTimeout(() => {
       setIsClicked(!isClicked);

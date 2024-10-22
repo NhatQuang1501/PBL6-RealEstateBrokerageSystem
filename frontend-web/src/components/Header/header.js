@@ -18,7 +18,7 @@ function Header() {
       });
 
       if (response.ok) {
-        setSessionToken("");
+        setSessionToken(null);
         setRole("");
         localStorage.removeItem("refreshToken");
         navigate("/");
@@ -42,12 +42,12 @@ function Header() {
             <nav className="flex items-center w-[60%] px-6 ">
               <ul className="flex space-x-6 gap-10">
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Nhà đất
-                  </a>
+                    Trang chủ
+                  </Link>
                 </li>
                 <li>
                   <a
@@ -103,12 +103,12 @@ function Header() {
             <nav className="flex items-center w-[60%] px-6 ">
               <ul className="flex space-x-6 gap-10">
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/user/main-page-user"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Nhà đất
-                  </a>
+                    Trang chủ
+                  </Link>
                 </li>
                 <li>
                   <a

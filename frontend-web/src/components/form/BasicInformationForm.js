@@ -1,14 +1,64 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faDollarSign,
+  faRoad,
+  faMapMarkerAlt,
+  faCity,
+  faRulerCombined,
+  faFileAlt,
+  faCompass,
+  faBuilding,
+  faBed,
+  faRulerHorizontal,
+  faBath,
+  faHeading,
+  faStickyNote,
+} from "@fortawesome/free-solid-svg-icons";
 import AddressInput from "../map_api/AddressInputWithPopup";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../../AppProvider";
 
 const BasicInformation = () => {
+  let navigate = useNavigate();
+
+  const { sessionToken } = useAppContext();
+
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showForm, setShowForm] = useState(false);
 
+  //Logic form
+
+  const [estate_type, setEstate_type] = useState("");
+  const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("");
+  const [city, setCity] = useState("Đà Nẵng");
+  const [price, setPrice] = useState("");
+  const [area, setArea] = useState("");
+  const [legal_status, setLegal_status] = useState("");
+  const [orientation, setOrientation] = useState("");
+  const [floor, setFloor] = useState(null);
+  const [bedroom, setBedroom] = useState(null);
+  const [bathroom, setBathroom] = useState(null);
+  const [description, setDescription] = useState("");
+  const [frontage, setFrontage] = useState(null);
+  const [title, setTitle] = useState("");
+  const [sale_status, setSale_status] = useState("");
+  
+
+  useEffect(() => {
+    if (selectedProperty === "house") {
+      setEstate_type("Nhà");
+    } else if (selectedProperty === "land") {
+      setEstate_type("Đất");
+    }
+    setSale_status("Đang bán");
+  }, [selectedProperty]);
+
   const handleSelectProperty = (property) => {
     setSelectedProperty(property);
+
     setTimeout(() => {
       setShowForm(true);
       window.scrollTo({
@@ -16,6 +66,86 @@ const BasicInformation = () => {
         behavior: "smooth",
       });
     }, 500);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+        if (
+          (!address ||
+          !district ||
+          !city ||
+          !price ||
+          !area ||
+          !legal_status ||
+          !orientation ||
+          !frontage ||
+          !title) && selectedProperty === "land"
+        ) {
+          alert("Vui lòng điền đầy đủ thông tin !");
+          return;
+        }
+        else if ( 
+          (!address ||
+          !district ||
+          !city ||
+          !price ||
+          !area ||
+          !legal_status ||
+          !orientation ||
+          !frontage ||
+          !title ||
+          !floor ||
+          !bedroom ||
+          !bathroom) && selectedProperty === "house"
+        ) {
+          alert("Vui lòng điền đầy đủ thông tin !");
+          return;
+        }
+
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/posts/`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          estate_type: estate_type,
+          address: address,
+          district: district,
+          city: city,
+          price: price,
+          area: area,
+          legal_status: legal_status,
+          orientation: orientation,
+          floor: floor,
+          bedroom: bedroom,
+          bathroom: bathroom,
+          description: description,
+          frontage: frontage,
+          title: title,
+          sale_status: sale_status,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("Đăng bài thành công!");
+        alert("Đăng bài thành công!");
+        console.log(data);
+        navigate("/user/main-page-user");
+      } else {
+        console.log("Đăng bài thất bại!");
+        alert("Đăng bài thất bại!");
+        navigate("/user/create-post");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -106,114 +236,362 @@ const BasicInformation = () => {
             <h2 className="text-xl font-bold text-[#3CA9F9] mb-10">
               Thông tin cơ bản
             </h2>
-            <form className="p-6 rounded-lg shadow-lg bg-white">
+            <form
+              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100"
+              onSubmit={handleSubmit}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
                 <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Địa chỉ:
-                  </label>
-                  <input
-                    type="text"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  {/* Tên đường */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="address"
+                    >
+                      Tên đường:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 245 Hoàng Văn Thụ"
+                        id="address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faRoad}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quận */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="district"
+                    >
+                      Quận:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: Hải Châu"
+                        id="district"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Thành phố */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="city"
+                    >
+                      Thành phố:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        readOnly
+                        required
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faCity}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Giá bán */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Giá bán:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="price"
+                  >
+                    Giá bán (VNĐ):
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5000000000"
+                      id="price"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faDollarSign}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Diện tích */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Diện tích:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="area"
+                  >
+                    Diện tích (m2):
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 100"
+                      min="0"
+                      id="area"
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerCombined}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Tình trạng pháp lý */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="legal_status"
+                  >
                     Tình trạng pháp lý:
                   </label>
-                  <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="so-hong">Sổ hồng</option>
-                    <option value="so-do">Sổ đỏ</option>
-                    <option value="chua-co">Chưa có</option>
-                    <option value="khac">Khác</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="legal_status"
+                      value={legal_status}
+                      onChange={(e) => setLegal_status(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn tình trạng pháp lý
+                      </option>
+                      <option value="Sổ hồng">Sổ hồng</option>
+                      <option value="Sổ đỏ">Sổ đỏ</option>
+                      <option value="Chưa có">Chưa có</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faFileAlt}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Hướng */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Hướng:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="orientation"
+                  >
+                    Hướng nhà:
                   </label>
-                  <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="dong">Đông</option>
-                    <option value="tay">Tây</option>
-                    <option value="nam">Nam</option>
-                    <option value="bac">Bắc</option>
-                    <option value="dong-tay">Đông-Bắc</option>
-                    <option value="dong-nam">Đông-Nam</option>
-                    <option value="tay-bac">Tây-Bắc</option>
-                    <option value="tay-nam">Tây-Nam</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="orientation"
+                      value={orientation}
+                      onChange={(e) => setOrientation(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn hướng nhà
+                      </option>
+                      <option value="Đông">Đông</option>
+                      <option value="Tây">Tây</option>
+                      <option value="Nam">Nam</option>
+                      <option value="Bắc">Bắc</option>
+                      <option value="Đông-Bắc">Đông-Bắc</option>
+                      <option value="Đông-Nam">Đông-Nam</option>
+                      <option value="Tây-Bắc">Tây-Bắc</option>
+                      <option value="Tây-Nam">Tây-Nam</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faCompass}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Số tầng */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="floor"
+                  >
                     Số tầng:
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 2"
+                      min="0"
+                      id="floor"
+                      value={floor}
+                      onChange={(e) => setFloor(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faBuilding}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Số phòng ngủ */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="bedroom"
+                  >
                     Số phòng ngủ:
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 3"
+                      min="0"
+                      id="bedroom"
+                      value={bedroom}
+                      onChange={(e) => setBedroom(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faBed}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Mặt tiền */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="frontage"
+                  >
+                    Mặt tiền (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5.5"
+                      min="0"
+                      id="frontage"
+                      value={frontage}
+                      onChange={(e) => setFrontage(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Số phòng tắm */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="bathroom"
+                  >
                     Số phòng tắm:
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 2"
+                      min="0"
+                      id="bathroom"
+                      value={bathroom}
+                      onChange={(e) => setBathroom(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faBath}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Tiêu đề bài đăng */}
+                <div className="relative mb-6 md:col-span-2">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="title"
+                  >
+                    Tiêu đề bài đăng:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      placeholder="vd: Bán nhà 3 tầng ở Đà Nẵng"
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faHeading}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Ghi chú */}
-                <div className="md:col-span-2">
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6 md:col-span-2">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="description"
+                  >
                     Ghi chú:
                   </label>
-                  <textarea className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                  <div className="relative">
+                    <textarea
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={description}
+                      placeholder="Nhập ghi chú cho bài đăng của bạn"
+                      id="description"
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                    <FontAwesomeIcon
+                      icon={faStickyNote}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
               </div>
               <div className=" w-full flex justify-center">
-                <button className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button
+                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  // onClick={handleSubmit}
+                  type="submit"
+                >
                   Đăng bài
                 </button>
               </div>
@@ -227,85 +605,289 @@ const BasicInformation = () => {
             <h2 className="text-xl font-bold text-[#3CA9F9]">
               Thông tin cơ bản
             </h2>
-            <form className="p-6 rounded-lg shadow-lg bg-white">
+            <form
+              className="p-6 rounded-lg shadow-lg bg-white"
+              onSubmit={handleSubmit}
+            >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
                 <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Địa chỉ:
-                  </label>
-                  <input
-                    type="text"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  {/* Tên đường */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="address"
+                    >
+                      Tên đường:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 261 Hoàng Thị Loan"
+                        id="address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faRoad}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Quận */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="district"
+                    >
+                      Quận:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: Liên Chiểu"
+                        id="district"
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Thành phố */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="city"
+                    >
+                      Thành phố:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        readOnly
+                        required
+                        id="city"
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faCity}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 {/* Giá bán */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Giá bán:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="price"
+                  >
+                    Giá bán (VNĐ):
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5000000000"
+                      id="price"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faDollarSign}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Diện tích */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Diện tích:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="area"
+                  >
+                    Diện tích (m2):
                   </label>
-                  <input
-                    type="number"
-                    className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 100"
+                      min="0"
+                      id="area"
+                      value={area}
+                      onChange={(e) => setArea(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerCombined}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Tình trạng pháp lý */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="legal_status"
+                  >
                     Tình trạng pháp lý:
                   </label>
-                  <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="so-hong">Sổ hồng</option>
-                    <option value="so-do">Sổ đỏ</option>
-                    <option value="chua-co">Chưa có</option>
-                    <option value="khac">Khác</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="legal_status"
+                      value={legal_status}
+                      onChange={(e) => setLegal_status(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn tình trạng pháp lý
+                      </option>
+                      <option value="Sổ hồng">Sổ hồng</option>
+                      <option value="Sổ đỏ">Sổ đỏ</option>
+                      <option value="Chưa có">Chưa có</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faFileAlt}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Hướng */}
-                <div>
-                  <label className="block mb-2 text-gray-700 font-bold">
-                    Hướng:
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="orientation"
+                  >
+                    Hướng đất:
                   </label>
-                  <select className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="dong">Đông</option>
-                    <option value="tay">Tây</option>
-                    <option value="nam">Nam</option>
-                    <option value="bac">Bắc</option>
-                    <option value="dong-tay">Đông-Tây</option>
-                    <option value="tay-nam">Tây-Nam</option>
-                    <option value="dong-nam">Đông-Nam</option>
-                    <option value="tay-bac">Tây-Bắc</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="orientation"
+                      value={orientation}
+                      onChange={(e) => setOrientation(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn hướng đất
+                      </option>
+                      <option value="Đông">Đông</option>
+                      <option value="Tây">Tây</option>
+                      <option value="Nam">Nam</option>
+                      <option value="Bắc">Bắc</option>
+                      <option value="Đông-Bắc">Đông-Bắc</option>
+                      <option value="Đông-Nam">Đông-Nam</option>
+                      <option value="Tây-Bắc">Tây-Bắc</option>
+                      <option value="Tây-Nam">Tây-Nam</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faCompass}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Mặt tiền */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="frontage"
+                  >
+                    Mặt tiền (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 10.5"
+                      min="0"
+                      id="frontage"
+                      value={frontage}
+                      onChange={(e) => setFrontage(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+                {/* Tiêu đề bài đăng */}
+                <div className="relative mb-6 md:col-span-2">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="title"
+                  >
+                    Tiêu đề bài đăng:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      required
+                      placeholder="vd: Bán đất mặt tiền 10m5 ở Đà Nẵng"
+                      id="title"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faHeading}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
 
                 {/* Ghi chú */}
-                <div className="md:col-span-2">
-                  <label className="block mb-2 text-gray-700 font-bold">
+                <div className="relative mb-6 md:col-span-2">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="description"
+                  >
                     Ghi chú:
                   </label>
-                  <textarea className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                  <div className="relative">
+                    <textarea
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={description}
+                      placeholder="Nhập ghi chú cho bài đăng của bạn"
+                      id="description"
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                    <FontAwesomeIcon
+                      icon={faStickyNote}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
                 </div>
+
               </div>
               <div className=" w-full flex justify-center">
-                <button className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button
+                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  // onClick={handleSubmit}
+                  type="submit"
+                >
                   Đăng bài
                 </button>
               </div>
             </form>
+            <AddressInput />
           </div>
         )}
       </div>

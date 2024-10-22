@@ -1,11 +1,16 @@
 import BasicInformationForm from "../../components/form/BasicInformationForm";
-
+import { useEffect } from "react";
 const CreatePost = () => {
+
+      useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, []);
+
     return (
-        <form className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center">
         <BasicInformationForm />
 
-        </form>
+        </div>
     );
 }
 
