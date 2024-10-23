@@ -51,6 +51,14 @@ class AdminPostView(APIView):
             status=status.HTTP_200_OK,
         )
 
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        post.delete()
+
+        return Response(
+            {"message": "Xóa bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
+        )
+
     # def add_notification(self, post):
     #     user_id = post.user_id.id
 
