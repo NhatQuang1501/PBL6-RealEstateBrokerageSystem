@@ -53,9 +53,9 @@ class PostView(APIView):
             if request.user.is_authenticated:
                 user_id = request.user
                 query = Q(status=Status.APPROVED)
-                posts = Post.objects.filter(query)
+                posts = Post.objects.filter(query).order_by("updated_at")
             else:
-                posts = Post.objects.all()
+                posts = Post.objects.all().order_by("updated_at")
 
             post_serializer = PostSerializer(
                 posts, many=True, context={"request_type": "list"}
