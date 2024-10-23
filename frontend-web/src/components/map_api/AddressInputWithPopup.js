@@ -32,7 +32,7 @@ const fetchSuggestions = async (query) => {
 };
 
 
-  // debounce 1s
+  // debounce 0.5s
   useEffect(() => {
     if (searchTerm.length < 3) return;
 
@@ -42,7 +42,7 @@ const fetchSuggestions = async (query) => {
 
     debounceTimeoutRef.current = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 1000);
+    }, 500);
 
     return () => {
       if (debounceTimeoutRef.current) {
@@ -123,28 +123,45 @@ const AddressInputWithPopup = () => {
     setIsPopupOpen(false);
   };
 
-  return (
-    <div>
-      <div className="mb-4">
-        <label className="block mb-2 text-gray-700">Địa chỉ:</label>
-        <input
-          type="text"
-          value={selectedAddress}
-          onClick={() => setIsPopupOpen(true)}
-          className="block w-full p-2 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Nhấp để chọn địa chỉ"
-          readOnly
-        />
-      </div>
-
-      {isPopupOpen && (
-        <AddressPopup
-          onClose={() => setIsPopupOpen(false)}
-          onAddressSelect={handleAddressSelect}
-        />
-      )}
+return (
+  <div className="mb-6">
+    <div className="relative mb-4">
+      <label className="block mb-2 text-lg text-gray-800 font-medium">
+        Địa chỉ:
+      </label>
+      <input
+        type="text"
+        value={selectedAddress}
+        onClick={() => setIsPopupOpen(true)}
+        className="block w-full p-4 border border-gray-300 rounded-lg shadow-sm bg-white transition duration-300 ease-in-out transform hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
+        placeholder="Nhấp để kiểm tra địa chỉ bất động sản"
+        readOnly
+      />
+      <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-semibold cursor-pointer transition hover:text-blue-800">
+        Chọn địa chỉ
+      </span>
     </div>
-  );
+
+    {/* Popup địa chỉ */}
+    {isPopupOpen && (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+        <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 p-6 rounded-lg shadow-lg relative">
+          <button
+            onClick={() => setIsPopupOpen(false)}
+            className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
+          >
+            ✕
+          </button>
+          <AddressPopup
+            onClose={() => setIsPopupOpen(false)}
+            onAddressSelect={handleAddressSelect}
+          />
+        </div>
+      </div>
+    )}
+  </div>
+);
+
 };
 
 export default AddressInputWithPopup;

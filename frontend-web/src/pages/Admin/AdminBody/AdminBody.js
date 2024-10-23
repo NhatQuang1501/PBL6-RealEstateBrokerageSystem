@@ -1,6 +1,7 @@
 import DashboardAdmin from "../DashboardAdmin/DashboardAdmin";
 import ManagerUserAccount from "../ManagerUserAccount/ManagerUserAccount";
 import ListPosts from "../ManagerUserPost/ListPost";
+import WaitingForApproval from "../ManagerUserPost/waitingForApproval";
 
 const AdminBody = ({ isCollapsed, activeMenu }) => {
   return (
@@ -11,8 +12,13 @@ const AdminBody = ({ isCollapsed, activeMenu }) => {
     >
       {activeMenu === "dashboard" && <DashboardAdmin />}
       {activeMenu === "accountList" && <ManagerUserAccount/>}
-      {activeMenu === "managePosts" && <ListPosts/>}
-      {activeMenu === "browsePosts" && <div>Duyệt bài đăng</div>}
+      {activeMenu === "managePosts" && (
+
+      <ListPosts />
+
+  )}
+      {activeMenu === "browsePosts" && 
+        <WaitingForApproval/>}
       {activeMenu === "creatPost" && <div>Tạo bài đăng</div>}
 
     </div>
