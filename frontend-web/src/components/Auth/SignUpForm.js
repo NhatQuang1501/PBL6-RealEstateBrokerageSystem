@@ -65,11 +65,13 @@ const SignUpForm = () => {
           >
             Đăng nhập
           </button>
+          <p className=" text-[12px]">Hoặc</p>
+          <a href="/" className="underline text-[13px]">Quay lại trang chủ</a>
         </div>
 
         {/* Thanh trái */}
         <div className="w-1/2 p-8 flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold text-black mb-6 pb-10">Đăng ký</h2>
+          <h2 className="text-2xl font-bold text-black mb-5">Đăng ký</h2>
           <form onSubmit={handleSubmit}>
             <input
               type="email"
@@ -122,7 +124,7 @@ const SignUpForm = () => {
             {error && <div className="text-red-500 mb-4">{error}</div>}
             <div className="flex flex-col items-center">
               <button
-                className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300"
+                className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300 mt-1"
                 type="submit"
               >
                 Đăng ký

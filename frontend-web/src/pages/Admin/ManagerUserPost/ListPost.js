@@ -64,15 +64,15 @@
       <div className="h-[84vh] bg-white rounded-xl p-3">
         <h3 className="text-center font-bold mb-3 text-lg">Danh sách bài đăng đã duyệt</h3>
         {currentPosts.map((post) => (
-          <div key={post.post_id} className="flex flex-col w-[80%] h-[40%] bg-white border-solid border-2 border-slate-200 rounded-xl mb-5">
+          <div key={post.post_id} className="flex flex-col w-[100%] h-[40%] bg-white border-solid border-2 border-slate-200 rounded-xl mb-5">
             <div className="flex justify-between items-center px-6 py-2">
               <h2 className="text-lg font-semibold text-[#3CA9F9]">{post.title}</h2>
               <button className="px-5 py-2 text-[#3CA9F9] border border-[#3CA9F9] rounded-lg">{post.sale_status}</button>
             </div>
             <div className="flex flex-row px-4 py-2">
-              <div className="w-[40%] h-[80%] pr-4">
+              <div className="w-[30%] h-[150px] pr-4">
                 <img
-                  className="w-full h-[60%] object-cover rounded-md"
+                  className="w-full h-full object-cover rounded-md"
                   src="https://th.bing.com/th/id/OIP.c_e6N6YtIVI2NFhW_Ugm6wHaF7?w=246&h=197&c=7&r=0&o=5&dpr=1.3&pid=1.7"
                   alt="room_image"
                 />

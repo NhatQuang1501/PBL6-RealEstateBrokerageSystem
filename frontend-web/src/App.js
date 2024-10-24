@@ -13,7 +13,8 @@ import CreatePost from "./pages/user/CreatePost";
 import VerifyEmail from "./pages/authen/VerifyEmail";
 import AppProvider from "./AppProvider";
 import Adminpage from "./pages/Admin/Adminpage/Adminpage";
-
+import HeroPage from "./components/HeroPage/heropage"
+import Error from "./components/error/error";
 function App() {
   return (
     <AppProvider>
@@ -27,12 +28,14 @@ function App() {
             <Route path="authen/forgot-password" element={<><Header /><ForgotPassword /><Footer /></>} />
             <Route path="authen/verify-email" element={<><Header /><VerifyEmail /><Footer /></>} />
 
-            <Route path="user/main-page-user" element={<><Header /><MainPageUser /><Footer /></>} />
+            <Route path="user/main-page-user" element={<><Header /><HeroPage/><MainPageUser /><Footer /></>} />
             <Route path="user/detail-post/:id" element={<><Header /><PostDetail /><Footer /></>} />
             <Route path="user/create-post" element={<><Header /><CreatePost /><Footer /></>} />
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />
+
+            <Route path="*" element={<Error />} />
           </Routes>
         </Router>
       </div>

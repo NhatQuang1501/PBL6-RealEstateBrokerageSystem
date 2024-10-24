@@ -36,16 +36,22 @@ const LoginForm = () => {
         localStorage.setItem("refreshToken", data.tokens.refresh);
         console.log("Đăng nhập thành công!");
         console.log("Role: ", role);
-  
+        console.log("Ten: ", username);
       
-        if (data.data) {
+        if (data.data && role === 'admin') {
           setName(data.data.username); 
           setId(data.data.user_id); 
         } else {
           console.error("Dữ liệu không hợp lệ:", data);
           setError("Dữ liệu người dùng không hợp lệ.");
         }
-  
+        if (data.data && role === 'user') {
+          setName(data.data.user.username); 
+          setId(data.data.user_id); 
+        } else {
+          console.error("Dữ liệu không hợp lệ:", data);
+          setError("Dữ liệu người dùng không hợp lệ.");
+        }
         if (role === 'admin') {
           navigate('/admin/dashboard'); 
         } else if (role === 'user') {
@@ -130,6 +136,8 @@ const LoginForm = () => {
           >
             Đăng ký
           </button>
+          <p className=" text-[12px]">Hoặc</p>
+          <a href="/" className="underline text-[13px]">Quay lại trang chủ</a>
         </div>
       </div>
     </div>
