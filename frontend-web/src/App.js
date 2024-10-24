@@ -13,28 +13,29 @@ import CreatePost from "./pages/user/CreatePost";
 import VerifyEmail from "./pages/authen/VerifyEmail";
 import AppProvider from "./AppProvider";
 import Adminpage from "./pages/Admin/Adminpage/Adminpage";
-import PersonalPage from "./pages/user/PersonalPage";
-
+import HeroPage from "./components/HeroPage/heropage"
+import Error from "./components/error/error";
 function App() {
   return (
     <AppProvider>
-    <div className=" id='app' className=" flex flex-col min-h-screen>
-      <Router>
-        <Header />
-        <Routes>
-          <Route path="/" element={<TestView />} />
-          <Route path="authen/login" element={<LoginPage />} />
-          <Route path="authen/register" element={<SignUpPage />} />
-          <Route path="authen/forgot-password" element={<ForgotPassword />} />
-          <Route path="authen/verify-email" element={<VerifyEmail />} />
+      <div className="flex flex-col min-h-screen">
+        <Router>
+          <Routes>
+            {/* User */}
+            <Route path="/" element={<><Header /><TestView /><Footer /></>} />
+            <Route path="authen/login" element={<LoginPage />} />
+            <Route path="authen/register" element={<SignUpPage />} />
+            <Route path="authen/forgot-password" element={<><Header /><ForgotPassword /><Footer /></>} />
+            <Route path="authen/verify-email" element={<><Header /><VerifyEmail /><Footer /></>} />
 
-            <Route path="user/main-page-user" element={<><Header /><MainPageUser /><Footer /></>} />
+            <Route path="user/main-page-user" element={<><Header /><HeroPage/><MainPageUser /><Footer /></>} />
             <Route path="user/detail-post/:id" element={<><Header /><PostDetail /><Footer /></>} />
             <Route path="user/create-post" element={<><Header /><CreatePost /><Footer /></>} />
-            <Route path="user/personal-page" element={<><Header /><PersonalPage /><Footer /></>} />
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />
+
+            <Route path="*" element={<Error />} />
           </Routes>
         </Router>
       </div>

@@ -6,7 +6,7 @@ function Header() {
   let navigate = useNavigate();
 
   const { sessionToken, setSessionToken, setRole, role, name } = useAppContext();
-
+  console.log(name);
   const handleLogout = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/auth/logout/`, {
