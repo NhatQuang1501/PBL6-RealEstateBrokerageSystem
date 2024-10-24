@@ -12,6 +12,8 @@ import ForgotPassword from "./pages/authen/ForgotPassword";
 import CreatePost from "./pages/user/CreatePost";
 import VerifyEmail from "./pages/authen/VerifyEmail";
 import AppProvider from "./AppProvider";
+import Adminpage from "./pages/Admin/Adminpage/Adminpage";
+import PersonalPage from "./pages/user/PersonalPage";
 
 function App() {
   return (
@@ -26,13 +28,16 @@ function App() {
           <Route path="authen/forgot-password" element={<ForgotPassword />} />
           <Route path="authen/verify-email" element={<VerifyEmail />} />
 
-          <Route path="user/main-page-user" element={<MainPageUser />} />
-          <Route path="user/detail-post/:id" element={<PostDetail />} />
-          <Route path="user/create-post" element={<CreatePost />} />
-        </Routes>
-        <Footer />
-      </Router>
-    </div>
+            <Route path="user/main-page-user" element={<><Header /><MainPageUser /><Footer /></>} />
+            <Route path="user/detail-post/:id" element={<><Header /><PostDetail /><Footer /></>} />
+            <Route path="user/create-post" element={<><Header /><CreatePost /><Footer /></>} />
+            <Route path="user/personal-page" element={<><Header /><PersonalPage /><Footer /></>} />
+
+            {/* Admin*/}
+            <Route path="admin/dashboard" element={<Adminpage />} />
+          </Routes>
+        </Router>
+      </div>
     </AppProvider>
   );
 }

@@ -4,8 +4,11 @@ import Pagination from "../../components/pagination/pagination";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListAlt } from "@fortawesome/free-solid-svg-icons";
+import { useAppContext } from "../../AppProvider";
 
 const MainPageUser = () => {
+  
+
   const [posts, setPost] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -20,6 +23,8 @@ const MainPageUser = () => {
     setCurrentPage(page);
   };
 
+  const { sessionToken } = useAppContext(); 
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -28,21 +33,22 @@ const MainPageUser = () => {
         const response = await fetch(url, {
           method: "GET",
           headers: {
-            // Authorization: `Bearer ${sessionToken}`,
+            Authorization: `Bearer ${sessionToken}`,
             "Content-Type": "application/json",
           },
         });
 
         const data = await response.json();
+        console.log("Post data:", data);
 
-        setPost(data);
+        setPost(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [sessionToken]);
 
   return (
     <div className="font-montserrat">
