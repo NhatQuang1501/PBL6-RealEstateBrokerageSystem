@@ -158,3 +158,33 @@ class PostSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         username = obj.user_id.username
         return username
+
+class PostCommentSerializer(serializers.ModelSerializer):
+    # user = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = PostComment
+        fields = [
+            "comment_id",
+            "post_id",
+            "user_id",
+            "comment",
+            "created_at",
+        ]
+        extra_kwargs = {
+            "comment_id": {"read_only": True},
+            "created_at": {"read_only": True},
+            "comment": {"required": True},
+        }
+    
+    def create(self, validated_data):
+        post_comment = PostComment.objects.create(**validated_data)
+        return post_comment
+    
+    # def get_user(self, obj):
+    #     user_profile = UserProfile.objects.get(user=obj.user_id)
+    #     return {
+    #         "user_id": obj.user_id.user_id,
+    #         "username": obj.user_id.username,
+    #         "fullname": user_profile.fullname,
+    #     }

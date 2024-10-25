@@ -79,4 +79,15 @@ class Post(models.Model):
 #         return self.reaction_id
 
 
-# class Comment(models.Model):
+class PostComment(models.Model):
+    comment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    comment = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.comment_id)

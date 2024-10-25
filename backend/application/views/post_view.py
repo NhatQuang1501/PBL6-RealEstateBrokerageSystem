@@ -164,3 +164,50 @@ class SearchView(APIView):
         return SearchView.remove_accents(text) in SearchView.remove_accents(
             user.fullname
         )
+
+class PostCommentView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        comments = PostComment.objects.filter(post_id=post)
+        comment_serializer = PostCommentSerializer(comments, many=True)
+
+        # bỏ bớt trường post_id
+        for comment in comment_serializer.data:
+            comment.pop("post_id")
+
+        return Response(comment_serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        comment_data = request.data.copy()
+        comment_data["user_id"] = request.user.user_id
+        comment_data["post_id"] = pk
+        comment_serializer = PostCommentSerializer(data=comment_data)
+
+        if comment_serializer.is_valid():
+            comment_serializer.save()
+
+            return Response(
+                {
+                    "message": "Tạo bình luận thành công",
+                    "data": comment_serializer.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+
+        return Response(
+            {
+                "message": "Tạo bình luận thất bại",
+                "error": comment_serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
