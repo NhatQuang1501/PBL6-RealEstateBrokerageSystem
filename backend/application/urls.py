@@ -9,6 +9,6 @@ urlpatterns = [
     path("posts/<str:pk>/", PostView.as_view(), name="posts-detail"),
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
-    path("enum/", EnumView.as_view(), name="enum"),
+    path("app/enum/", EnumView.as_view(), name="enum"),
     path("search/", SearchView.as_view(), name="search"),
 ]
