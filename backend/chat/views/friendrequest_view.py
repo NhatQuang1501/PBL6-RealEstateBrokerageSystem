@@ -3,12 +3,12 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from backend.accounts.enums import *
-from backend.accounts.models import *
-from backend.accounts.serializers import *
-from backend.accounts.permission import *
-from backend.application.models import *
-from backend.application.serializers import *
+from accounts.enums import *
+from accounts.models import *
+from accounts.serializers import *
+from accounts.permission import *
+from application.models import *
+from application.serializers import *
 from chat.models import *
 from chat.serializers import *
 from django.shortcuts import get_object_or_404
