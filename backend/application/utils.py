@@ -36,7 +36,8 @@ class PostGetter:
         elif status == "đã đóng":
             status = Status.CLOSED
 
-        posts = Post.objects.filter(status=status).order_by("-created_at")
+        # posts = Post.objects.filter(status=status).order_by("-created_at")
+        posts = Post.objects.filter(status=status)
 
         return posts
 

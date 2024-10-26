@@ -50,4 +50,4 @@ class UserProfile(models.Model):
         return self.user_id
 
     def __str__(self):
-        return self.fullname if self.fullname else self.user.username
+        return f"{self.user.username} - {self.fullname}"

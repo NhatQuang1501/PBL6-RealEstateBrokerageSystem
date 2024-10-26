@@ -22,38 +22,8 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=68, min_length=6, write_only=True)
-    role = serializers.CharField(write_only=True, required=False)
-
-    default_error_messages = {
-        "username": "Username phải chứa ít nhất một ký tự chữ cái",
-    }
-
-    class Meta:
-        model = User
-        fields = ["email", "username", "password", "role"]
-
-    def validate(self, attrs):
-        email = attrs.get("email", "")
-        username = attrs.get("username", "")
-        if not any(char.isalpha() for char in username):
-            raise serializers.ValidationError(self.default_error_messages["username"])
-        return attrs
-
-    def create(self, validated_data):
-        role_name = validated_data.pop("role", "user")
-        user = User.objects.create_user(
-            username=validated_data["username"],
-            email=validated_data["email"],
-            password=validated_data["password"],
-        )
-        User.objects.assign_role(user, role_name)
-        return user
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
-    user = RegisterSerializer(required=False)
+    user = UserSerializer(required=False)
     user_id = serializers.UUIDField(source="user.user_id", read_only=True)
 
     class Meta:
