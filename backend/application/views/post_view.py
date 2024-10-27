@@ -42,6 +42,8 @@ class PostView(APIView):
 
             else:
                 post = get_object_or_404(Post, post_id=pk)
+                post.view_count += 1
+                post.save()
                 post_serializer = PostSerializer(
                     post, context={"request_type": "detail"}
                 )
@@ -211,3 +213,38 @@ class PostCommentView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
+    
+class PostReactionView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+    
+    def post(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        # kiểm tra xem user đó đã reaction post hiện tại chưa, nếu chưa thì tạo query mới, nếu rồi thì xoá query cũ
+        reaction, created = PostReaction.objects.get_or_create(
+            post_id=post, user_id=request.user,
+            defaults={'reaction_type': 1}
+        )
+
+        if not created:  # Đã tồn tại, nên hủy like
+            reaction.delete()
+            return Response({"detail": "Unliked"}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({"detail": "Liked"}, status=status.HTTP_201_CREATED)
+
+
+class UserPostReactionView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get(self, request):
+        user = request.user.user_id
+        reactions = PostReaction.objects.filter(user_id=user)
+        reaction_serializer = PostReactionSerializer(reactions, many=True)
+
+        return Response(reaction_serializer.data, status=status.HTTP_200_OK)

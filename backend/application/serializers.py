@@ -6,6 +6,7 @@ from accounts.enums import *
 
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
+    reactions_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -32,6 +33,8 @@ class PostSerializer(serializers.ModelSerializer):
             "description",
             "created_at",
             "updated_at",
+            "reactions_count",
+            "view_count",
         ]
         extra_kwargs = {
             "post_id": {"read_only": True},
@@ -55,6 +58,7 @@ class PostSerializer(serializers.ModelSerializer):
             "sale_status": {"required": True},
             "images": {"required": False},
             "description": {"required": False},
+            "view_count": {"read_only": True},
         }
 
     def to_representation(self, instance):
@@ -139,6 +143,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.images = validated_data.get("images", instance.images)
         instance.description = validated_data.get("description", instance.description)
         instance.status = Status.PENDING_APPROVAL
+        instance.view_count = validated_data.get("view_count", instance.view_count)
         instance.save()
 
         return instance
@@ -158,10 +163,12 @@ class PostSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         username = obj.user_id.username
         return username
+    
+    def get_reactions_count(self, obj):
+        return PostReaction.objects.filter(post_id=obj).count()
+    
 
 class PostCommentSerializer(serializers.ModelSerializer):
-    # user = serializers.SerializerMethodField(read_only=True)
-
     class Meta:
         model = PostComment
         fields = [
@@ -181,10 +188,21 @@ class PostCommentSerializer(serializers.ModelSerializer):
         post_comment = PostComment.objects.create(**validated_data)
         return post_comment
     
-    # def get_user(self, obj):
-    #     user_profile = UserProfile.objects.get(user=obj.user_id)
-    #     return {
-    #         "user_id": obj.user_id.user_id,
-    #         "username": obj.user_id.username,
-    #         "fullname": user_profile.fullname,
-    #     }
+
+class PostReactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostReaction
+        fields = [
+            "reaction_id",
+            "post_id",
+            "user_id",
+            "reaction_type",
+            "created_at",
+        ]
+        extra_kwargs = {
+            "reaction_id": {"read_only": True},
+            "created_at": {"read_only": True},
+        }
+    
+    def create(self, validated_data):
+        return super().create(validated_data)

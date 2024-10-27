@@ -12,4 +12,5 @@ urlpatterns = [
     path("users/", UserView.as_view(), name="users"),
     path("users/<str:pk>/", UserView.as_view(), name="users-profile"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("users-avatar/", AvatarView.as_view(), name="users-avatar"),
 ]

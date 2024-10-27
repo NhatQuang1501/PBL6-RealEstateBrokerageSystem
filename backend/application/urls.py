@@ -1,6 +1,6 @@
 from django.urls import path
 from application.views.admin_post_view import AdminPostView
-from application.views.post_view import PostView, SearchView, PostCommentView
+from application.views.post_view import PostView, SearchView, PostCommentView, PostReactionView, UserPostReactionView
 from application.views.enum_view import EnumView
 
 
@@ -12,4 +12,6 @@ urlpatterns = [
     path("enum/", EnumView.as_view(), name="enum"),
     path("search/", SearchView.as_view(), name="search"),
     path("posts/<str:pk>/comments/", PostCommentView.as_view(), name="post-comments"),
+    path("posts/<str:pk>/like/", PostReactionView.as_view(), name="post-like"),
+    path("user-posts-like/", UserPostReactionView.as_view(), name="user-posts-like"),
 ]
