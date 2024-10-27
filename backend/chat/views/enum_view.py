@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-from backend.accounts.enums import *
+from accounts.enums import *
 from rest_framework.response import Response
 
 
