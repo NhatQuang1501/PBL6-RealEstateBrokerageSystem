@@ -11,7 +11,7 @@ urlpatterns = [
         ChatMessageView.as_view(),
         name="my-messages",
     ),
-    # path("chat/messages/", ChatMessageView.as_view(), name="send-message"),
+    path("chat/messages/", ChatMessageView.as_view(), name="message"),
     # path("search-user/<str:username>/", SearchUserView.as_view(), name="search-user"),
     path("friend-requests/", FriendRequestView.as_view(), name="friend-requests"),
     path(

@@ -1,7 +1,7 @@
 from django.db import models
-from backend.accounts.models import *
-from backend.application.models import *
-from backend.accounts.enums import *
+from accounts.models import *
+from application.models import *
+from accounts.enums import *
 import uuid
 
 
