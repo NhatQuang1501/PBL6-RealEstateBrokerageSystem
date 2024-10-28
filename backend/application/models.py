@@ -46,38 +46,3 @@ class Post(models.Model):
     def __str__(self):
         # return str(self.post_id)
         return f"{self.post_id} - {self.title}"
-
-
-# class Negotiation(models.Model):
-#     negotiation_id = models.UUIDField(
-#         primary_key=True, default=uuid.uuid4, editable=False
-#     )
-
-#     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-#     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-#     price = models.FloatField()
-
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return self.negotiation_id
-
-
-# class Reaction(models.Model):
-#     reaction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-#     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-#     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-#     reaction = models.CharField(choices=Reaction.choices, max_length=50)
-
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-
-#     def __str__(self):
-#         return self.reaction_id
-
-
-# class Comment(models.Model):
