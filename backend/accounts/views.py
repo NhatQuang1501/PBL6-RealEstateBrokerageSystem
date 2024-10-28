@@ -297,3 +297,21 @@ class UserView(BaseView):
     model = UserProfile
     serializer = UserProfileSerializer
     permission_classes = [IsAuthenticated, IsUser]
+
+
+class AvatarView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+    # http_method_names = ['post']
+
+    def post(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        
+        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
+            return Response(
+                {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
+                status=status.HTTP_200_OK,
+            )
