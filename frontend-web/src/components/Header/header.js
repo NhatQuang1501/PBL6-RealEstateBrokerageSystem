@@ -2,10 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
 function Header() {
-
   let navigate = useNavigate();
 
-  const { sessionToken, setSessionToken, setRole, role, name } = useAppContext();
+  const { sessionToken, setSessionToken, setRole, role, name } =
+    useAppContext();
   console.log(name);
   const handleLogout = async () => {
     try {
@@ -151,7 +151,9 @@ function Header() {
                   alt="avatar"
                   className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9] object-cover"
                 />
-                <p className="text-[#3CA9F9] font-semibold">{name}</p>
+                <Link to="/user/personal-page">
+                  <p className="text-[#3CA9F9] font-semibold">{name}</p>
+                </Link>
               </div>
               <button
                 className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white"
