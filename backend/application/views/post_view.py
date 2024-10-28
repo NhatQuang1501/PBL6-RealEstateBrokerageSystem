@@ -248,3 +248,58 @@ class UserPostReactionView(APIView):
         reaction_serializer = PostReactionSerializer(reactions, many=True)
 
         return Response(reaction_serializer.data, status=status.HTTP_200_OK)
+    
+class PostImageView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        images = PostImage.objects.filter(post_id=post)
+        image_serializer = PostImageSerializer(images, many=True)
+
+        return Response(image_serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, pk):
+        list_images = request.data.getlist("image")
+        for image in list_images:
+            image_data = {"post_id": pk, "image": image}
+            image_serializer = PostImageSerializer(data=image_data)
+
+            if image_serializer.is_valid():
+                image_serializer.save()
+        return Response(
+            {"message": "Tạo ảnh thành công"}, status=status.HTTP_201_CREATED
+        )
+    
+    def put(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        images = PostImage.objects.filter(post_id=post)
+        images.delete()
+        
+        list_images = request.data.getlist("image")
+        for image in list_images:
+            image_data = {"post_id": pk, "image": image}
+            image_serializer = PostImageSerializer(data=image_data)
+
+            if image_serializer.is_valid():
+                image_serializer.save()
+        return Response(
+            {"message": "Cập nhật ảnh thành công"}, status=status.HTTP_200_OK
+        )
+            
+    
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        images = PostImage.objects.filter(post_id=post)
+        images.delete()
+        
+        return Response(
+            {"message": "Xoá ảnh thành công"}, status=status.HTTP_204_NO_CONTENT
+        )

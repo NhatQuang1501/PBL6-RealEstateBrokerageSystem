@@ -99,3 +99,11 @@ class PostComment(models.Model):
 
     def __str__(self):
         return str(self.comment_id)
+    
+class PostImage(models.Model):
+    image_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="post_images", blank=True, null=True)
+
+    def __str__(self):
+        return str(self.image_id)
