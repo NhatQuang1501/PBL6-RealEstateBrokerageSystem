@@ -10,7 +10,7 @@ const ChatPage = () => {
   const { role, sessionToken, name } = useAppContext();
   const [receiverUsernames, setReceiverUsernames] = useState([]);
   const [latestMessageC] = useState(null);
-  if(role!=='user'){
+  if(role!=='user' || role == null){
     <Error/>
   }
   const handleUserClick = (username) => {
