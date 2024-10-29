@@ -15,7 +15,11 @@ import AppProvider from "./AppProvider";
 import Adminpage from "./pages/Admin/Adminpage/Adminpage";
 import HeroPage from "./components/HeroPage/heropage"
 import Error from "./components/error/error";
+
 import PersonalProfile from "./pages/user/PersonalProfile";
+
+import ChatPage from "./components/ChatBox/ChatPage";
+
 function App() {
   return (
     <AppProvider>
@@ -32,7 +36,10 @@ function App() {
             <Route path="user/main-page-user" element={<><Header /><HeroPage/><MainPageUser /><Footer /></>} />
             <Route path="user/detail-post/:id" element={<><Header /><PostDetail /><Footer /></>} />
             <Route path="user/create-post" element={<><Header /><CreatePost /><Footer /></>} />
+
             <Route path="user/personal-page" element={<><Header /><PersonalProfile /><Footer /></>} />
+
+            <Route path="user/chat-box" element={<><ChatPage /></>} />
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />
