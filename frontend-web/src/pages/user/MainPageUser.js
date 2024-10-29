@@ -5,10 +5,11 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 
+
 const MainPageUser = () => {
   const [posts, setPost] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 3;
   const totalPages = Math.ceil(posts.length / itemsPerPage);
 
   const currentPosts = posts.slice(
@@ -46,13 +47,16 @@ const MainPageUser = () => {
 
   return (
     <div className="font-montserrat main-content">
-      <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem] shadow-lg shadow-[#E4FFFC] rounded-[3rem] mb-3">
+      <div className="flex items-center justify-between w-[72%]">
+      <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem]  rounded-[3rem] mb-3">
         <FontAwesomeIcon
           icon={faListAlt}
           className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
         />
         Danh sách bài đăng
       </h3>
+      <a className="underline text-blue-700" href="#!">Nhiều hơn thế</a>
+      </div>
 
       <Panel className="flex flex-col max-h-full">
         <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
