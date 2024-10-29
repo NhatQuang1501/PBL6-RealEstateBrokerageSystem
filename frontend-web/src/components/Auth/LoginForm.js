@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 
 const LoginForm = () => {
@@ -14,7 +14,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch(`http://127.0.0.1:8000/auth/login/`, {
         method: "POST",
@@ -26,9 +26,9 @@ const LoginForm = () => {
           password: password,
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         setSessionToken(data.tokens.access);
         setRole(data.role);
@@ -36,11 +36,28 @@ const LoginForm = () => {
         localStorage.setItem("refreshToken", data.tokens.refresh);
         console.log("Đăng nhập thành công!");
         console.log("Role: ", role);
-
-        setName(data.data.user.username);
-
-        setId(data.data.user_id);
-        navigate("/");
+        console.log("Ten: ", username);
+      
+        if (data.data && role === 'admin') {
+          setName(data.data.username); 
+          setId(data.data.user_id); 
+        } else {
+          console.error("Dữ liệu không hợp lệ:", data);
+          setError("Dữ liệu người dùng không hợp lệ.");
+        }
+        if (data.data && role === 'user') {
+          setName(data.data.user.username); 
+          setId(data.data.user_id); 
+        } else {
+          console.error("Dữ liệu không hợp lệ:", data);
+          setError("Dữ liệu người dùng không hợp lệ.");
+        }
+        if (role === 'admin') {
+          navigate('/admin/dashboard'); 
+        } else if (role === 'user') {
+          navigate('/user/main-page-user'); 
+        }
+  
       } else {
         setError(data.message || "Đăng nhập thất bại");
       }
@@ -51,11 +68,11 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[50rem] bg-gray-200 font-montserrat">
-      <div className="flex w-3/4 max-w-[50%] min-h-[43rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden">
+    <div className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto">
+      <div className="flex w-3/4 max-w-[50%] min-h-[30rem] m-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-36">
         {/* Thanh trái */}
         <div className="w-1/2 p-8 flex flex-col items-center justify-center">
-          <h2 className="text-4xl font-bold text-black mb-6 pb-10">
+          <h2 className="text-2xl font-bold text-black mb-6 pb-10">
             Đăng nhập
           </h2>
           <form onSubmit={handleSubmit}>
@@ -75,6 +92,7 @@ const LoginForm = () => {
               type="password"
               id="password"
               placeholder="Nhập mật khẩu"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -108,7 +126,7 @@ const LoginForm = () => {
         </div>
 
         <div className="w-1/2 bg-[#3CA9F9] text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
-          <h2 className="text-4xl font-bold mb-4">Chào mừng trở lại</h2>
+          <h2 className="text-2xl font-bold mb-4">Chào mừng trở lại</h2>
           <p className="mb-6 text-[14px]">
             Hãy đăng nhập để tiếp tục Hoặc đăng ký nếu bạn chưa có tài khoản
           </p>
@@ -118,6 +136,8 @@ const LoginForm = () => {
           >
             Đăng ký
           </button>
+          <p className=" text-[12px]">Hoặc</p>
+          <a href="/" className="underline text-[13px]">Quay lại trang chủ</a>
         </div>
       </div>
     </div>
@@ -125,3 +145,4 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
+

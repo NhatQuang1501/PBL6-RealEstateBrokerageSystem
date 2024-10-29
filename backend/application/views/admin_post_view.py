@@ -33,14 +33,14 @@ class AdminPostView(APIView):
         return self.getter.paginate_posts(posts, request)
 
     def post(self, request):
-        post_id = request.data.get("id")
+        post_id = request.data.get("post_id")
         post_status = request.data.get("status")
         post_status = Status.map_display_to_value(post_status)
-        post = Post.objects.get(id=post_id)
+        post = Post.objects.get(post_id=post_id)
         post.status = post_status
         post.save()
 
-        self.add_notification(post)
+        # self.add_notification(post)
         return Response(
             {
                 "message": "Cập nhật trạng thái bài đăng thành công",

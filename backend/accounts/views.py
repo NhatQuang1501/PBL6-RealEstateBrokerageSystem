@@ -50,16 +50,28 @@ class BaseView(APIView):
         if serializer.is_valid():
             serializer.save()
 
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {
+                    "message": "Cập nhật thông tin người dùng thành công",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "message": "Cập nhật thông tin người dùng thất bại",
+                "error": serializer.errors,
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     def delete(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
         user.delete()
 
         return Response(
-            {"message": "Xóa thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
 
 
@@ -188,8 +200,8 @@ class LoginView(APIView):
                     {
                         "message": "Đăng nhập thành công",
                         "data": serializer.data,
-                        "tokens": token,
                         "role": role,
+                        "tokens": token,
                     },
                     status=status.HTTP_200_OK,
                 )

@@ -131,7 +131,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.frontage = validated_data.get("frontage", instance.frontage)
         instance.bedroom = validated_data.get("bedroom", instance.bedroom)
         instance.bathroom = validated_data.get("bathroom", instance.bathroom)
-        instance.floors = validated_data.get("floor", instance.floors)
+        instance.floor = validated_data.get("floor", instance.floor)
         instance.legal_status = validated_data.get(
             "legal_status", instance.legal_status
         )

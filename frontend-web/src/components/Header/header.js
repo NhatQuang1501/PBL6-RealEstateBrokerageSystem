@@ -2,11 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
 function Header() {
-
   let navigate = useNavigate();
 
-  const { sessionToken, setSessionToken, setRole, role, name } = useAppContext();
-
+  const { sessionToken, setSessionToken, setRole, role, name } =
+    useAppContext();
+  console.log(name);
   const handleLogout = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/auth/logout/`, {
@@ -18,7 +18,7 @@ function Header() {
       });
 
       if (response.ok) {
-        setSessionToken("");
+        setSessionToken(null);
         setRole("");
         localStorage.removeItem("refreshToken");
         navigate("/");
@@ -33,7 +33,7 @@ function Header() {
   return (
     <>
       {!sessionToken && role !== "user" ? (
-        <div className=" sticky top-0 h-[13vh] bg-white z-20 font-montserrat">
+        <div className=" sticky top-0 h-[13vh] bg-white font-montserrat z-50">
           <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px] " src={Logo} alt=""></img>
@@ -42,12 +42,12 @@ function Header() {
             <nav className="flex items-center w-[60%] px-6 ">
               <ul className="flex space-x-6 gap-10">
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Nhà đất
-                  </a>
+                    Trang chủ
+                  </Link>
                 </li>
                 <li>
                   <a
@@ -94,7 +94,7 @@ function Header() {
           </div>
         </div>
       ) : (
-        <div className=" sticky top-0 h-[13vh] bg-white z-20 font-montserrat">
+        <div className=" sticky top-0 h-[13vh] bg-white  font-montserrat z-50">
           <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px] " src={Logo} alt=""></img>
@@ -103,12 +103,12 @@ function Header() {
             <nav className="flex items-center w-[60%] px-6 ">
               <ul className="flex space-x-6 gap-10">
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/user/main-page-user"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Nhà đất
-                  </a>
+                    Trang chủ
+                  </Link>
                 </li>
                 <li>
                   <a
@@ -151,7 +151,9 @@ function Header() {
                   alt="avatar"
                   className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9] object-cover"
                 />
-                <p className="text-[#3CA9F9] font-semibold">{name}</p>
+                <Link to="/user/personal-page">
+                  <p className="text-[#3CA9F9] font-semibold">{name}</p>
+                </Link>
               </div>
               <button
                 className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white"
