@@ -16,6 +16,8 @@ import Adminpage from "./pages/Admin/Adminpage/Adminpage";
 import HeroPage from "./components/HeroPage/heropage"
 import Error from "./components/error/error";
 import PersonalProfile from "./pages/user/PersonalProfile";
+import UpdatePost from "./pages/user/UpdatePost";
+import UpdateProfile from "./pages/user/UpdateProfile";
 function App() {
   return (
     <AppProvider>
@@ -30,9 +32,11 @@ function App() {
             <Route path="authen/verify-email" element={<><Header /><VerifyEmail /><Footer /></>} />
 
             <Route path="user/main-page-user" element={<><Header /><HeroPage/><MainPageUser /><Footer /></>} />
-            <Route path="user/detail-post/:id" element={<><Header /><PostDetail /><Footer /></>} />
+            <Route path="user/detail-post/:postId" element={<><Header /><PostDetail /><Footer /></>} />
             <Route path="user/create-post" element={<><Header /><CreatePost /><Footer /></>} />
+            <Route path="user/update-post/:postId" element={<><Header /><UpdatePost /><Footer /></>} />
             <Route path="user/personal-page" element={<><Header /><PersonalProfile /><Footer /></>} />
+            <Route path="user/update-profile" element={<><Header /><UpdateProfile /><Footer /></>} />
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />

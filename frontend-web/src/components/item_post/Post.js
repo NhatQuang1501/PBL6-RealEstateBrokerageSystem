@@ -16,9 +16,11 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import ProfileInformation from "../profile_information/ProfileInformation";
+import { useAppContext } from "../../AppProvider";
 // import DetailDescription from "../detail_description/DetailDescription";
 
-function Post({ post }) {
+function Post({ post, type }) {
+  const { id, sessionToken, posts, setPost } = useAppContext();
   const navigate = useNavigate();
 
   const [isClicked, setIsClicked] = useState(false);
@@ -53,6 +55,39 @@ function Post({ post }) {
   };
   const handleDetailClick = () => {
     navigate(`/user/detail-post/${post.post_id}`);
+  };
+
+  const handleDelete = async (postId) => {
+    const userConfirmed = window.confirm(
+      "Bạn có chắc chắn muốn xóa bài đăng này không?"
+    );
+    if (!userConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        setPost(posts.filter((post) => post.id !== postId));
+      } else {
+        console.error("Failed to delete the post");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUpdate = (postId) => {
+    navigate(`/user/update-post/${postId}`);
   };
 
   return (
@@ -192,63 +227,88 @@ function Post({ post }) {
               <span>124</span>
             </div>
             {/* Save */}
-            <div className="flex items-center text-gray-500 space-x-1 gap-2">
-              <button onClick={handleSaveClick} className="focus:outline-none">
-                <FontAwesomeIcon
-                  icon={faBookmark}
-                  className={`w-6 h-6 transition duration-100 ${
-                    isSaved ? "text-yellow-400" : "text-gray-500"
-                  }`}
-                />
-              </button>
-
-              <span>2</span>
-            </div>
+            {type !== "personal-page" && (
+              <div className="flex items-center text-gray-500 space-x-1 gap-2">
+                <button
+                  onClick={handleSaveClick}
+                  className="focus:outline-none"
+                >
+                  <FontAwesomeIcon
+                    icon={faBookmark}
+                    className={`w-6 h-6 transition duration-100 ${
+                      isSaved ? "text-yellow-400" : "text-gray-500"
+                    }`}
+                  />
+                </button>
+                <span>22</span>
+              </div>
+            )}
           </div>
 
           {/* Neo_btn */}
-          <div className="mt-2 flex justify-center items-center">
-            <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
-              Thương lượng
-            </button>
-          </div>
+          {id !== post.user.user_id && (
+            <div className="mt-2 flex justify-center items-center">
+              <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
+                Thương lượng
+              </button>
+            </div>
+          )}
+          {id === post.user.user_id && (
+            <div className="mt-4 flex justify-center items-center gap-4">
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                onClick={() => {
+                  handleUpdate(post.post_id);
+                }}
+              >
+                Cập nhật
+              </button>
 
-         
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                onClick={() => {
+                  handleDelete(post.post_id);
+                }}
+              >
+                Xóa
+              </button>
+            </div>
+          )}
         </div>
-        
       </div>
       <div className="flex justify-between">
-            {/* Profile Info */}
-            <ProfileInformation
-              name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
-              date={post.created_at} // Truy cập vào ngày tạo bài viết
-            />
-            <div className="flex justify-end items-center">
-              <div className=" pr-3">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-                  />
-                </svg>
-              </div>
-
-              <span className="text-gray-500 w-[8rem]">1239 lượt xem</span>
-            </div>
+        {/* Profile Info */}
+        <ProfileInformation
+          type="personal-page"
+          name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
+          date={post.created_at} // Truy cập vào ngày tạo bài viết
+        />
+        <div className="flex justify-end items-center">
+          <div className=" pr-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="size-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+              />
+            </svg>
           </div>
+
+          <span className="text-gray-500 w-[8rem]">1239 lượt xem</span>
+        </div>
+      </div>
     </div>
   );
 }

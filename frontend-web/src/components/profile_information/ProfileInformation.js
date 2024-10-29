@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const ProfileInformation = ({ name, date }) => {
+const ProfileInformation = ({ name, date, type }) => {
   
 const postDate = new Date(date);
 const currentDate = new Date();
@@ -56,6 +56,7 @@ const handleReportClick = () => {
             </p>
 
             {/* Func */}
+            {type !== "personal-page" && (
             <div className="flex space-x-8 justify-center items-center pl-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -92,6 +93,9 @@ const handleReportClick = () => {
                 />
               </svg>
             </div>
+          )}
+
+
           </div>
           <p className="text-gray-600 text-sm mt-2">
             <span className="font-semibold">Đã đăng:</span> {timeDisplay}
