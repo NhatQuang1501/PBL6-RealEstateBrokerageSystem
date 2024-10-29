@@ -28,10 +28,13 @@ class AdminPostView(APIView):
                 return Response(post_serializer.data, status="200")
         else:
             status = request.query_params.get("status", "đang chờ duyệt")
-            posts = self.getter.get_posts_by_status(request, status)
+            posts = self.getter.get_posts_by_status(request, status).order_by(
+                "-created_at"
+            )
 
         return self.getter.paginate_posts(posts, request)
 
+    # Chức năng duyệt của Admin
     def post(self, request):
         post_id = request.data.get("post_id")
         post_status = request.data.get("status")
@@ -43,9 +46,17 @@ class AdminPostView(APIView):
         # self.add_notification(post)
         return Response(
             {
-                "message": "Cập nhật trạng thái bài đăng thành công",
+                "message": "Duyệt bài đăng thành công",
             },
             status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        post.delete()
+
+        return Response(
+            {"message": "Xóa bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
 
     # def add_notification(self, post):
