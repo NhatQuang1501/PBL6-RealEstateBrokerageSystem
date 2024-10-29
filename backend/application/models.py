@@ -40,6 +40,8 @@ class Post(models.Model):
     images = models.ImageField(upload_to="post_images", blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
+    view_count = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -64,19 +66,44 @@ class Post(models.Model):
 #         return self.negotiation_id
 
 
-# class Reaction(models.Model):
-#     reaction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class PostReaction(models.Model):
+    REACTION_CHOICES = (
+        (1, "Like"),
+        (0, "Unlike"),
+    )
+    reaction_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-#     post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
-#     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
 
-#     reaction = models.CharField(choices=Reaction.choices, max_length=50)
+    reaction_type = models.IntegerField(choices=REACTION_CHOICES)
 
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-#     def __str__(self):
-#         return self.reaction_id
+    class Meta:
+        unique_together = ('post_id', 'user_id')  # User chỉ được like 1 lần vào mỗi bài đăng
+
+    def __str__(self):
+        return f"{self.user_id} - {self.post_id} - {self.reaction_type}"
 
 
-# class Comment(models.Model):
+class PostComment(models.Model):
+    comment_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    comment = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.comment_id)
+    
+class PostImage(models.Model):
+    image_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    post_id = models.ForeignKey(Post, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="post_images", blank=True, null=True)
+
+    def __str__(self):
+        return str(self.image_id)

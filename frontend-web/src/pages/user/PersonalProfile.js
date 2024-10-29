@@ -4,22 +4,25 @@ import SideProjects from "../../components/personal_profile/SideProjects";
 
 const PersonalProfile = () => {
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-10 font-montserrat">
-      <div className="grid grid-cols-4 gap-6">
+    <div className="min-h-screen bg-[#3CA9F9] text-white p-10 font-montserrat">
+      <div className="grid grid-cols-8 gap-5">
         {/* Profile Card */}
-        <div className="col-span-1">
+        <div className="col-span-2 sticky top-[8.5rem] self-start">
           <ProfileCard />
         </div>
 
         {/* Main Content */}
-        <div className="col-span-3 grid grid-cols-2 gap-6">
+        <div className="col-span-6 flex gap-6">
           {/* Portfolio */}
-          <div>
+          <div className="flex-1" style={{ flex: "0 0 70%" }}>
             <Portfolio />
           </div>
 
           {/* Side Projects */}
-          <div>
+          <div
+            className="flex-1 sticky top-[8.5rem] self-start"
+            style={{ flex: "0 0 20%" }}
+          >
             <SideProjects />
           </div>
         </div>
