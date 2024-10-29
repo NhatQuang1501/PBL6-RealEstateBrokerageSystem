@@ -26,6 +26,7 @@ const UpdateProfile = () => {
         `http://127.0.0.1:8000/auth/users/${id}/`
       );
       setProfileData(response.data);
+      console.log("dữ liệu thu được",response.data);
       setLoading(false);
     } catch (err) {
       setError("Có lỗi xảy ra khi tải dữ liệu.");

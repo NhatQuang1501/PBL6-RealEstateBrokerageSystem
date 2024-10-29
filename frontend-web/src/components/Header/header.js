@@ -96,10 +96,10 @@ function Header() {
       ) : (
         <div className=" sticky top-0 h-[13vh] bg-white  font-montserrat z-50">
           <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
-            <div id="logo-header" className="flex items-center gap-1">
+            <Link to="/" id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px] " src={Logo} alt=""></img>
               <strong className="font-bold text-base">SweetHome</strong>
-            </div>
+            </Link>
             <nav className="flex items-center w-[60%] px-6 ">
               <ul className="flex space-x-6 gap-10">
                 <li>
@@ -107,7 +107,7 @@ function Header() {
                     to="/user/main-page-user"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Trang chủ
+                    Bài đăng
                   </Link>
                 </li>
                 <li>
@@ -127,12 +127,12 @@ function Header() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/user/chat-box"
                     className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
                   >
-                    Liên hệ
-                  </a>
+                    Nhắn tin
+                  </Link>
                 </li>
                 <li>
                   <Link

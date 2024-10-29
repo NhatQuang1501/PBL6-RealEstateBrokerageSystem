@@ -30,17 +30,40 @@ class BaseView(APIView):
     def get(self, request, pk=None):
         if pk:
             user = get_object_or_404(User, user_id=pk)
-            instance = get_object_or_404(self.model, user=user)
-            serializer = self.serializer(instance)
+
+            if user.role == "admin":
+                instance = get_object_or_404(self.model, user=user)
+                serializer = self.admin_serializer(instance)
+                admin_data = serializer.data
+                admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
+
+                return Response(admin_data, status=status.HTTP_200_OK)
+
+            else:
+                instance = get_object_or_404(self.model, user=user)
+                serializer = self.serializer(instance)
+
+                return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
-            instances = self.model.objects.all()
-            serializer = self.serializer(instances, many=True)
+            # Lấy tất cả người dùng từ hệ thống
+            users = User.objects.all()
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
+            # Tạo danh sách kết quả chứa từng người dùng với serializer tương ứng
+            results = []
+            for user in users:
+                if user.role == "admin":
+                    serializer = self.admin_serializer(user)
+                    admin_data = serializer.data
+                    admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
+                    results.append(admin_data)
+
+                else:
+                    instance = get_object_or_404(self.model, user=user)
+                    serializer = self.serializer(instance)
+                    results.append(serializer.data)
+
+            return Response(results, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
@@ -77,6 +100,10 @@ class BaseView(APIView):
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    default_error_message = {
+        "username": "Username phải chứa ít nhất một ký tự chữ cái",
+        "password": "Password phải chứa ít nhất một ký tự chữ cái",
+    }
 
     def post(self, request):
         # Lấy thông tin người dùng trực tiếp từ từ key "user"
@@ -87,6 +114,12 @@ class RegisterView(APIView):
                 {"message": "Nhập thông tin tài khoản người dùng"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        if not any(char.isalpha() for char in user_data.get("username", "")):
+            raise serializers.ValidationError(self.default_error_message["username"])
+
+        if not any(char.isalpha() for char in user_data.get("password", "")):
+            raise serializers.ValidationError(self.default_error_message["password"])
 
         # Kiểm tra vai trò hợp lệ
         role = user_data.get("role")
@@ -296,6 +329,7 @@ class ReverifyEmailView(APIView):
 class UserView(BaseView):
     model = UserProfile
     serializer = UserProfileSerializer
+    admin_serializer = UserSerializer
     permission_classes = [IsAuthenticated, IsUser]
 
 

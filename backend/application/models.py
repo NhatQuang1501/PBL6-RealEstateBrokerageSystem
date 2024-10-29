@@ -46,7 +46,7 @@ class Post(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.post_id)
+        return f"{self.post_id} - {self.title}"
 
 
 # class Negotiation(models.Model):
@@ -107,3 +107,6 @@ class PostImage(models.Model):
 
     def __str__(self):
         return str(self.image_id)
+
+        
+

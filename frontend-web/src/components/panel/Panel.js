@@ -20,7 +20,6 @@ const Panel = ({ children, type }) => {
       )}
     </>
   );
-  
 };
 
 Panel.propTypes = {

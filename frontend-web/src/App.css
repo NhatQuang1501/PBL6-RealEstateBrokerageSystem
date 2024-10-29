@@ -6,6 +6,23 @@
   background-color: #f6f6f6;
 
 }
+::-webkit-scrollbar {
+  width: 3px; /* Độ rộng của thanh cuộn */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của track thanh cuộn */
+  border-radius: 10px; /* Bo góc cho track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3CA9F9; /* Màu của thanh cuộn */
+  border-radius: 10px; /* Bo góc cho thanh cuộn */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Màu của thanh cuộn khi hover */
+}
 .App {
   text-align: center;
 }
