@@ -4,7 +4,7 @@ import { useAppContext } from "../../AppProvider";
 
 const UpdateProfile = () => {
 
-  const { id, sessionToken } = useAppContext();
+  const { id } = useAppContext();
   const [profileData, setProfileData] = useState({
     email: "",
     username: "",
@@ -82,20 +82,6 @@ const UpdateProfile = () => {
             type="text"
             name="fullname"
             value={profileData.fullname}
-            onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-bold mb-2">
-            Email
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={profileData.email}
             onChange={handleChange}
             className="border border-gray-300 p-2 rounded w-full"
             required
@@ -185,23 +171,6 @@ const UpdateProfile = () => {
             <option value="Nữ">Nữ</option>
             <option value="Khác">Khác</option>
           </select>
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="avatar"
-            className="block text-gray-700 font-bold mb-2"
-          >
-            Ảnh đại diện
-          </label>
-          <input
-            type="text"
-            name="avatar"
-            value={profileData.avatar}
-            onChange={handleChange}
-            className="border border-gray-300 p-2 rounded w-full"
-            placeholder="Chưa có thông tin"
-          />
         </div>
 
         <button

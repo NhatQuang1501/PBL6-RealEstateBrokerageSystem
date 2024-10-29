@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import { useState } from "react";
+import axios from "axios";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,8 +16,9 @@ import {
 
 const ProfileCard = () => {
   const navigate = useNavigate();
-  const { id } = useAppContext();
+  const { id, sessionToken } = useAppContext();
   const [user, setUser] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -62,15 +64,70 @@ const ProfileCard = () => {
     );
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      updateAvatar(file);
+    }
+  };
+
+    const updateAvatar = async (file) => {
+      const formData = new FormData();
+      formData.append("avatar", file);
+
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/users/avatar/`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          }
+        );
+
+        console.log("Avatar updated successfully:", response.data);
+        alert("Avatar updated successfully!");
+      } catch (error) {
+        console.error("Error updating avatar:", error);
+        alert("Failed to update avatar.");
+      }
+    };
+
   return (
     <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
-      <div className="mb-4 flex justify-center">
-        <img
-          src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b514e3cf-d394-43fb-be65-1711518576b6/dfn0ve3-906de5ab-99c9-4b44-bea6-93871c92b44c.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2I1MTRlM2NmLWQzOTQtNDNmYi1iZTY1LTE3MTE1MTg1NzZiNlwvZGZuMHZlMy05MDZkZTVhYi05OWM5LTRiNDQtYmVhNi05Mzg3MWM5MmI0NGMucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.cg82kq5m0-7VH5b2LoFAUEdWLsLTcdczzsB_nFBjH44"
-          alt="profile"
-          className="rounded-full w-[12rem] h-[12rem] object-cover"
-        />
+      <div className="mb-4 flex flex-col justify-center">
+        <div className="grid justify-center">
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt="profile"
+              className="rounded-full w-[12rem] h-[12rem] object-cover"
+            />
+          ) : (
+            <img
+              src="https://th.bing.com/th/id/OIP.PVzhiWdGqLXudD0PNtsMtwHaHa?w=980&h=980&rs=1&pid=ImgDetMain"
+              alt="profile"
+              className="rounded-full w-[12rem] h-[12rem] object-cover"
+            />
+          )}
+          <button
+            className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+            onClick={() => {
+              console.log("Change Avatar");
+              handleImageUpload();
+            }}
+          >
+            Thay đổi ảnh đại diện
+          </button>
+        </div>
       </div>
 
       {/* Contact Button */}

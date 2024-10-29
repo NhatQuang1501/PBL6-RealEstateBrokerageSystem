@@ -72,7 +72,7 @@ const Comment = ({ id, sessionToken }) => {
                   alt=""
                   className="w-16 h-16 rounded-full mr-3"
                 />
-                <span className="font-semibold">{comment.user_id}</span>
+                <span className="font-semibold">{comment.username}</span>
               </div>
               {/* Phần nội dung bình luận */}
               <p className="ml-20 text-gray-700 bg-blue-300 p-3 rounded-md max-w-[20rem]">
