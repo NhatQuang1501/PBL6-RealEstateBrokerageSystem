@@ -169,12 +169,17 @@ class PostSerializer(serializers.ModelSerializer):
     
 
 class PostCommentSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    fullname = serializers.SerializerMethodField()
+
     class Meta:
         model = PostComment
         fields = [
             "comment_id",
             "post_id",
             "user_id",
+            "username",
+            "fullname",
             "comment",
             "created_at",
         ]
@@ -187,6 +192,13 @@ class PostCommentSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         post_comment = PostComment.objects.create(**validated_data)
         return post_comment
+    
+    def get_username(self, obj):
+        return obj.user_id.username
+    
+    def get_fullname(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user_id)
+        return user_profile.fullname
     
 
 class PostReactionSerializer(serializers.ModelSerializer):
@@ -206,3 +218,22 @@ class PostReactionSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         return super().create(validated_data)
+    
+
+class PostImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PostImage
+        fields = [
+            "image_id",
+            "post_id",
+            "image",
+        ]
+        extra_kwargs = {
+            "image_id": {"read_only": True},
+            "post_id": {"required": True},
+            "image": {"required": True},
+        }
+    
+    def create(self, validated_data):
+        post_image = PostImage.objects.create(**validated_data)
+        return post_image
