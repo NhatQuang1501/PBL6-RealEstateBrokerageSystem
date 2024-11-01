@@ -349,3 +349,12 @@ class AvatarView(APIView):
                 {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
                 status=status.HTTP_200_OK,
             )
+    
+    def get(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        avatar_url = request.build_absolute_uri(user_profile.avatar.url)
+        return Response(
+            {"avatar_url": avatar_url},
+            status=status.HTTP_200_OK,
+        )
