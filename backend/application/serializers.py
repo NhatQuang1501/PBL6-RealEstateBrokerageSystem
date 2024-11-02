@@ -7,6 +7,7 @@ from accounts.enums import *
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     reactions_count = serializers.SerializerMethodField()
+    comments_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -35,6 +36,7 @@ class PostSerializer(serializers.ModelSerializer):
             "updated_at",
             "reactions_count",
             "view_count",
+            "comments_count",
         ]
         extra_kwargs = {
             "post_id": {"read_only": True},
@@ -166,6 +168,9 @@ class PostSerializer(serializers.ModelSerializer):
     
     def get_reactions_count(self, obj):
         return PostReaction.objects.filter(post_id=obj).count()
+    
+    def get_comments_count(self, obj):
+        return PostComment.objects.filter(post_id=obj).count()
     
 
 class PostCommentSerializer(serializers.ModelSerializer):
