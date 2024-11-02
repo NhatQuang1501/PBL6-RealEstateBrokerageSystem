@@ -31,7 +31,7 @@ urlpatterns = [
     ),
     path(
         "friendlist/",
-        FriendshipView.as_view(),
+        FriendListView.as_view(),
         name="accept_friend_requests",
     ),
 ]

@@ -43,7 +43,6 @@ class AdminPostView(APIView):
         post.status = post_status
         post.save()
 
-        # self.add_notification(post)
         return Response(
             {
                 "message": "Duyệt bài đăng thành công",
@@ -58,26 +57,3 @@ class AdminPostView(APIView):
         return Response(
             {"message": "Xóa bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
-
-    # def add_notification(self, post):
-    #     user_id = post.user_id.id
-
-    #     notification = Notification()
-    #     notification.user_id = post.user_id
-    #     notification.description = "Bài đăng của bạn đã {}".format(post.status)
-    #     notification.read = False
-    #     notification.save()
-
-    #     active_connections = cache.get("active_connections", {})
-
-    #     message = json.dumps(
-    #         {
-    #             "message": "Bài đăng của bạn đã {}".format(post.status),
-    #             "time": notification.created_at.strftime("%d/%m/%Y , %H:%M:%S"),
-    #         }
-    #     )
-
-    #     if str(user_id) in active_connections:
-    #         active_connections[str(user_id)].append(message)
-
-    #     cache.set("active_connections", active_connections)
