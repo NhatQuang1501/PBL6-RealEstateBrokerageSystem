@@ -358,3 +358,28 @@ class AvatarView(APIView):
             {"avatar_url": avatar_url},
             status=status.HTTP_200_OK,
         )
+    
+    def put(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
+            return Response(
+                {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"message": "Cập nhật avatar thất bại", "error": serializers.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    def delete(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        user_profile.avatar.delete(save=True)
+        return Response(
+            {"message": "Avatar đã được xóa"},
+            status=status.HTTP_204_NO_CONTENT,
+        )
