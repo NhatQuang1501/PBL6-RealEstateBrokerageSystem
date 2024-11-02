@@ -1,5 +1,5 @@
 // components/ProfileCard.js
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import { useState } from "react";
@@ -18,7 +18,19 @@ const ProfileCard = () => {
   const navigate = useNavigate();
   const { id, sessionToken } = useAppContext();
   const [user, setUser] = useState(null);
+  const fileInputRef = useRef(null);
   const [profileImage, setProfileImage] = useState(null);
+  const [fileName, setFileName] = useState("Choose a file");
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    fullname: "",
+    city: "",
+    birthdate: "",
+    phone_number: "",
+    gender: "",
+    avatar: null,
+  });
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -76,32 +88,32 @@ const ProfileCard = () => {
     }
   };
 
-    const updateAvatar = async (file) => {
-      const formData = new FormData();
-      formData.append("avatar", file);
+  const updateAvatar = async (file) => {
+    const formData = new FormData();
+    formData.append("avatar", file);
 
-      try {
-        const response = await axios.post(
-          `http://127.0.0.1:8000/users/avatar/`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${sessionToken}`,
-            },
-          }
-        );
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/users/avatar/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
 
-        console.log("Avatar updated successfully:", response.data);
-        alert("Avatar updated successfully!");
-      } catch (error) {
-        console.error("Error updating avatar:", error);
-        alert("Failed to update avatar.");
-      }
-    };
+      console.log("Avatar updated successfully:", response.data);
+      alert("Avatar updated successfully!");
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      alert("Failed to update avatar.");
+    }
+  };
 
   return (
-    <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg">
+    <div className="bg-[#FBBF24] text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
@@ -120,13 +132,17 @@ const ProfileCard = () => {
           )}
           <button
             className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
-            onClick={() => {
-              console.log("Change Avatar");
-              handleImageUpload();
-            }}
+            onClick={() => fileInputRef.current.click()} // Kích hoạt input
           >
             Thay đổi ảnh đại diện
           </button>
+          {/* Hidden file input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleImageUpload} // Gọi handleImageUpload khi người dùng chọn file
+          />
         </div>
       </div>
 

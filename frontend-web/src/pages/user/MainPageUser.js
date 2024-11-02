@@ -12,7 +12,7 @@ const MainPageUser = () => {
 
   const [posts, setPost] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 10;
   const totalPages = Math.ceil(posts.length / itemsPerPage);
 
   const currentPosts = posts.slice(
