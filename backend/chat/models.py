@@ -63,6 +63,15 @@ class FriendRequest(models.Model):
     def __str__(self):
         return f"{self.sender.username} - {self.receiver.username} ({self.friendrequest_status})"
 
+    @property
+    def sender_profile(self):
+        sender_profile = UserProfile.objects.get(user=self.sender)
+        return sender_profile
+
+    def receiver_profile(self):
+        receiver_profile = UserProfile.objects.get(user=self.receiver)
+        return receiver_profile
+
 
 class Friendship(models.Model):
     friendship_id = models.UUIDField(

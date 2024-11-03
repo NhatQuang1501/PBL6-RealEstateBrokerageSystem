@@ -167,6 +167,7 @@ class SearchView(APIView):
             user.fullname
         )
 
+
 class PostCommentView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -213,7 +214,8 @@ class PostCommentView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+
+
 class PostReactionView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -223,13 +225,12 @@ class PostReactionView(APIView):
             return [AllowAny()]
 
         return [permission() for permission in self.permission_classes]
-    
+
     def post(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         # kiểm tra xem user đó đã reaction post hiện tại chưa, nếu chưa thì tạo query mới, nếu rồi thì xoá query cũ
         reaction, created = PostReaction.objects.get_or_create(
-            post_id=post, user_id=request.user,
-            defaults={'reaction_type': 1}
+            post_id=post, user_id=request.user, defaults={"reaction_type": 1}
         )
 
         if not created:  # Đã tồn tại, nên hủy like
@@ -248,7 +249,8 @@ class UserPostReactionView(APIView):
         reaction_serializer = PostReactionSerializer(reactions, many=True)
 
         return Response(reaction_serializer.data, status=status.HTTP_200_OK)
-    
+
+
 class PostImageView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -277,12 +279,12 @@ class PostImageView(APIView):
         return Response(
             {"message": "Tạo ảnh thành công"}, status=status.HTTP_201_CREATED
         )
-    
+
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         images = PostImage.objects.filter(post_id=post)
         images.delete()
-        
+
         list_images = request.data.getlist("image")
         for image in list_images:
             image_data = {"post_id": pk, "image": image}
@@ -293,13 +295,12 @@ class PostImageView(APIView):
         return Response(
             {"message": "Cập nhật ảnh thành công"}, status=status.HTTP_200_OK
         )
-            
-    
+
     def delete(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         images = PostImage.objects.filter(post_id=post)
         images.delete()
-        
+
         return Response(
             {"message": "Xoá ảnh thành công"}, status=status.HTTP_204_NO_CONTENT
         )

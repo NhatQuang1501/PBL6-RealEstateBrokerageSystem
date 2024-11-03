@@ -62,7 +62,7 @@ class Orientation(Enum):
 
 class Sale_status(Enum):
     SELLING = "đang bán", "Đang bán"
-    NEGOTATING = "đang thương lượng", "Đang thương lượng"
+    NEGOTIATING = "đang thương lượng", "Đang thương lượng"
     DEPOSITED = "đã cọc", "Đã cọc"
     SOLD = "đã bán", "Đã bán"
 
