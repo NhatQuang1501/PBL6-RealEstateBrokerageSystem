@@ -138,6 +138,7 @@ class SearchView(APIView):
         for post in posts_serializer.data:
             if any(
                 (
+                    matches_text(post["title"]),
                     matches_text(post["estate_type"]),
                     matches_text(post["price"]),
                     matches_text(post["city"]),
@@ -145,7 +146,13 @@ class SearchView(APIView):
                     matches_text(post["street"]),
                     matches_text(post["address"]),
                     matches_text(post["orientation"]),
+                    matches_text(post["area"]),
+                    matches_text(post["frontage"]),
+                    matches_text(post["bedroom"]),
+                    matches_text(post["bathroom"]),
+                    matches_text(post["floor"]),
                     matches_text(post["legal_status"]),
+                    matches_text(post["sale_status"]),
                     matches_text(post["description"]),
                     self.search_in_profile(text, post),
                 )
@@ -161,12 +168,14 @@ class SearchView(APIView):
         text = str(text)
         text = unicodedata.normalize("NFD", text)
         text = re.sub(r"[\u0300-\u036f]", "", text)
+
         return text.lower()
 
     @staticmethod
     def search_in_profile(text, post):
         user = post["user_id"]
         user = UserProfile.objects.get(user=user)
+
         return SearchView.remove_accents(text) in SearchView.remove_accents(
             user.fullname
         )
