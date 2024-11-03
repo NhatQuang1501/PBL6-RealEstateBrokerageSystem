@@ -173,12 +173,10 @@ class SearchView(APIView):
 
     @staticmethod
     def search_in_profile(text, post):
-        user = post["user_id"]
-        user = UserProfile.objects.get(user=user)
+        user_info = post.get("user", {})
+        fullname = user_info.get("fullname", "")
 
-        return SearchView.remove_accents(text) in SearchView.remove_accents(
-            user.fullname
-        )
+        return SearchView.remove_accents(text) in SearchView.remove_accents(fullname)
 
 
 class PostCommentView(APIView):
