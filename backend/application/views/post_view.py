@@ -52,12 +52,16 @@ class PostView(APIView):
                 return Response(data, status=status.HTTP_200_OK)
 
         else:
-            if request.user.is_authenticated:
-                user_id = request.user
-                query = Q(status=Status.APPROVED)
-                posts = Post.objects.filter(query).order_by("updated_at")
-            else:
-                posts = Post.objects.all().order_by("updated_at")
+            # if request.user.is_authenticated:
+            #     user_id = request.user
+            #     query = Q(status=Status.APPROVED)
+            #     posts = Post.objects.filter(query).order_by("updated_at")
+            # else:
+            # posts = Post.objects.all().order_by("updated_at") # tất cả bài đăng CHỜ DUYỆT và ĐÃ DUYỆT
+            query = Q(status=Status.APPROVED)
+            posts = Post.objects.filter(query).order_by(
+                "updated_at"
+            )  # chỉ lấy bài đăng ĐÃ DUYỆT
 
             post_serializer = PostSerializer(
                 posts, many=True, context={"request_type": "list"}
