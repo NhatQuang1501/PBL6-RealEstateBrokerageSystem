@@ -2,6 +2,80 @@ from rest_framework import serializers
 from accounts.models import *
 from application.models import *
 from accounts.enums import *
+from accounts.serializers import *
+
+
+class NegotiationSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    highest_offer_price = serializers.DecimalField(
+        max_digits=20, decimal_places=2, read_only=True
+    )
+    highest_offer_user = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Negotiation
+        fields = [
+            "negotiation_id",
+            "post",
+            "user",
+            "offer_price",
+            "created_at",
+            "highest_offer_price",
+            "highest_offer_user",
+            "is_accepted",
+        ]
+        extra_kwargs = {"negotiation_id": {"read_only": True}}
+
+    def to_internal_value(self, data):
+        user = data.get("user")
+        if user:
+            user = User.objects.get(user_id=user)
+            data["user"] = user
+
+        return data
+
+    def to_representation(self, instance):
+        # rep = super().to_representation(instance)
+        # # Lấy thương lượng cao nhất từ bài đăng
+        # rep["highest_offer_price"] = instance.post.highest_offer_price
+        # rep["highest_offer_user"] = instance.post.highest_offer_user
+        # return rep
+        rep = super().to_representation(instance)
+        # Lấy thương lượng cao nhất từ bài đăng
+        rep["highest_offer_price"] = instance.post.highest_offer_price
+        # Serialize thông tin người dùng cao nhất
+        highest_user = instance.post.highest_offer_user
+        if highest_user:
+            rep["highest_offer_user"] = {
+                "user_id": highest_user.user_id,
+                "username": highest_user.username,
+                "fullname": UserProfile.objects.get(user=highest_user).fullname,
+            }
+        else:
+            rep["highest_offer_user"] = None
+        return rep
+
+    def get_user(self, obj):
+        user_profile = UserProfile.objects.get(user=obj.user)
+
+        return {
+            "user_id": obj.user.user_id,
+            "username": obj.user.username,
+            "fullname": user_profile.fullname,
+        }
+
+    def get_highest_offer_user(self, obj):
+        highest_negotiation = obj.post.negotiations.order_by("-offer_price").first()
+
+        if highest_negotiation:
+            user_profile = UserProfile.objects.get(user=highest_negotiation.user)
+            return {
+                "user_id": highest_negotiation.user.user_id,
+                "username": highest_negotiation.user.username,
+                "fullname": user_profile.fullname,
+            }
+
+        return None
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -115,6 +189,7 @@ class PostSerializer(serializers.ModelSerializer):
         if user_id:
             user = User.objects.get(user_id=user_id)
             data["user_id"] = user
+            # data["user"] = user
 
         return data
 
@@ -144,8 +219,8 @@ class PostSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get("description", instance.description)
         instance.status = Status.PENDING_APPROVAL
         instance.view_count = validated_data.get("view_count", instance.view_count)
-        instance.save()
 
+        instance.save()
         return instance
 
     def get_user(self, obj):
@@ -163,10 +238,10 @@ class PostSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         username = obj.user_id.username
         return username
-    
+
     def get_reactions_count(self, obj):
         return PostReaction.objects.filter(post_id=obj).count()
-    
+
 
 class PostCommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
@@ -188,18 +263,18 @@ class PostCommentSerializer(serializers.ModelSerializer):
             "created_at": {"read_only": True},
             "comment": {"required": True},
         }
-    
+
     def create(self, validated_data):
         post_comment = PostComment.objects.create(**validated_data)
         return post_comment
-    
+
     def get_username(self, obj):
         return obj.user_id.username
-    
+
     def get_fullname(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user_id)
         return user_profile.fullname
-    
+
 
 class PostReactionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -215,10 +290,10 @@ class PostReactionSerializer(serializers.ModelSerializer):
             "reaction_id": {"read_only": True},
             "created_at": {"read_only": True},
         }
-    
+
     def create(self, validated_data):
         return super().create(validated_data)
-    
+
 
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -233,7 +308,7 @@ class PostImageSerializer(serializers.ModelSerializer):
             "post_id": {"required": True},
             "image": {"required": True},
         }
-    
+
     def create(self, validated_data):
         post_image = PostImage.objects.create(**validated_data)
         return post_image
