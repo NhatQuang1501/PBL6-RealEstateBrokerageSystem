@@ -335,7 +335,12 @@ class UserView(BaseView):
 
 class AvatarView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
-    # http_method_names = ['post']
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
 
     def post(self, request):
         user = request.user
@@ -350,8 +355,10 @@ class AvatarView(APIView):
                 status=status.HTTP_200_OK,
             )
     
-    def get(self, request):
+    def get(self, request, pk=None):
         user = request.user
+        if pk:
+            user = get_object_or_404(User, user_id=pk)
         user_profile = UserProfile.objects.get(user=user)
         avatar_url = request.build_absolute_uri(user_profile.avatar.url)
         return Response(
