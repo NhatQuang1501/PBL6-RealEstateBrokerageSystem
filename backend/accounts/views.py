@@ -30,17 +30,44 @@ class BaseView(APIView):
     def get(self, request, pk=None):
         if pk:
             user = get_object_or_404(User, user_id=pk)
-            instance = get_object_or_404(self.model, user=user)
-            serializer = self.serializer(instance)
+
+            if user.role == "admin":
+                instance = get_object_or_404(self.model, user=user)
+                serializer = self.admin_serializer(instance)
+                admin_data = serializer.data
+                admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
+
+                return Response(admin_data, status=status.HTTP_200_OK)
+
+            else:
+                instance = get_object_or_404(self.model, user=user)
+                serializer = self.serializer(instance)
+
+                return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
-            instances = self.model.objects.all()
-            serializer = self.serializer(instances, many=True)
+            # Lấy tất cả người dùng từ hệ thống
+            users = User.objects.all().order_by("-created_at")
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
+            # Tạo danh sách kết quả chứa từng người dùng với serializer tương ứng
+            results = []
+            for user in users:
+                if user.role == "admin":
+                    serializer = self.admin_serializer(user)
+                    admin_data = serializer.data
+                    admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
+                    results.append(admin_data)
+
+                else:
+                    instance = get_object_or_404(self.model, user=user)
+                    serializer = self.serializer(instance)
+                    results.append(serializer.data)
+
+            return Response(
+                # {"count": len(results), "data": results},
+                results,
+                status=status.HTTP_200_OK,
+            )
 
     def put(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
@@ -77,6 +104,10 @@ class BaseView(APIView):
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    default_error_message = {
+        "username": "Username phải chứa ít nhất một ký tự chữ cái",
+        "password": "Password phải chứa ít nhất một ký tự chữ cái",
+    }
 
     def post(self, request):
         # Lấy thông tin người dùng trực tiếp từ từ key "user"
@@ -87,6 +118,12 @@ class RegisterView(APIView):
                 {"message": "Nhập thông tin tài khoản người dùng"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        if not any(char.isalpha() for char in user_data.get("username", "")):
+            raise serializers.ValidationError(self.default_error_message["username"])
+
+        if not any(char.isalpha() for char in user_data.get("password", "")):
+            raise serializers.ValidationError(self.default_error_message["password"])
 
         # Kiểm tra vai trò hợp lệ
         role = user_data.get("role")
@@ -296,4 +333,66 @@ class ReverifyEmailView(APIView):
 class UserView(BaseView):
     model = UserProfile
     serializer = UserProfileSerializer
+    admin_serializer = UserSerializer
     permission_classes = [IsAuthenticated, IsUser]
+
+
+class AvatarView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def post(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+
+        serializers = UserProfileSerializer(
+            user_profile, data=request.data, partial=True
+        )
+        if serializers.is_valid():
+            serializers.save()
+            avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
+            return Response(
+                {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
+                status=status.HTTP_200_OK,
+            )
+    
+    def get(self, request, pk=None):
+        user = request.user
+        if pk:
+            user = get_object_or_404(User, user_id=pk)
+        user_profile = UserProfile.objects.get(user=user)
+        avatar_url = request.build_absolute_uri(user_profile.avatar.url)
+        return Response(
+            {"avatar_url": avatar_url},
+            status=status.HTTP_200_OK,
+        )
+    
+    def put(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        if serializers.is_valid():
+            serializers.save()
+            avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
+            return Response(
+                {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
+                status=status.HTTP_200_OK,
+            )
+        return Response(
+            {"message": "Cập nhật avatar thất bại", "error": serializers.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    
+    def delete(self, request):
+        user = request.user
+        user_profile = UserProfile.objects.get(user=user)
+        user_profile.avatar.delete(save=True)
+        return Response(
+            {"message": "Avatar đã được xóa"},
+            status=status.HTTP_204_NO_CONTENT,
+        )

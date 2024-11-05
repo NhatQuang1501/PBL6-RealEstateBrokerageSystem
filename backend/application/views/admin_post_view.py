@@ -28,10 +28,13 @@ class AdminPostView(APIView):
                 return Response(post_serializer.data, status="200")
         else:
             status = request.query_params.get("status", "đang chờ duyệt")
-            posts = self.getter.get_posts_by_status(request, status)
+            posts = self.getter.get_posts_by_status(request, status).order_by(
+                "-created_at"
+            )
 
         return self.getter.paginate_posts(posts, request)
 
+    # Chức năng duyệt của Admin
     def post(self, request):
         post_id = request.data.get("post_id")
         post_status = request.data.get("status")
@@ -40,33 +43,17 @@ class AdminPostView(APIView):
         post.status = post_status
         post.save()
 
-        # self.add_notification(post)
         return Response(
             {
-                "message": "Cập nhật trạng thái bài đăng thành công",
+                "message": "Duyệt bài đăng thành công",
             },
             status=status.HTTP_200_OK,
         )
 
-    # def add_notification(self, post):
-    #     user_id = post.user_id.id
+    def delete(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
+        post.delete()
 
-    #     notification = Notification()
-    #     notification.user_id = post.user_id
-    #     notification.description = "Bài đăng của bạn đã {}".format(post.status)
-    #     notification.read = False
-    #     notification.save()
-
-    #     active_connections = cache.get("active_connections", {})
-
-    #     message = json.dumps(
-    #         {
-    #             "message": "Bài đăng của bạn đã {}".format(post.status),
-    #             "time": notification.created_at.strftime("%d/%m/%Y , %H:%M:%S"),
-    #         }
-    #     )
-
-    #     if str(user_id) in active_connections:
-    #         active_connections[str(user_id)].append(message)
-
-    #     cache.set("active_connections", active_connections)
+        return Response(
+            {"message": "Xóa bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
+        )

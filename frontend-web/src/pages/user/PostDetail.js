@@ -13,12 +13,17 @@ import {
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Comment from "../../components/comment/Comment";
+import { useAppContext } from "../../AppProvider";
+import { useNavigate } from "react-router-dom";
 
 const DetailPost = () => {
-  const { id } = useParams();
-  const [post, setPost] = useState(); // Lưu dữ liệu bài đăng
+  const { id } = useAppContext();
+  const { postId } = useParams();
+  const { sessionToken } = useAppContext();
+  const [post, setPost] = useState();
   const [isClicked, setIsClicked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,11 +41,45 @@ const DetailPost = () => {
     }, 80);
   };
 
+  const handleUpdate = (postId) => {
+    navigate(`/user/update-post/${postId}`);
+  };
+
+  const handleDelete = async (postId) => {
+    const userConfirmed = window.confirm(
+      "Bạn có chắc chắn muốn xóa bài đăng này không?"
+    );
+    if (!userConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        console.log("Post deleted successfully");
+        navigate("/user/personal-page");
+      } else {
+        console.error("Failed to delete the post");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    console.log("Post ID:", id);
+    console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${id}/`;
+        let url = `http://127.0.0.1:8000/api/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -61,7 +100,7 @@ const DetailPost = () => {
     };
 
     fetchPostById();
-  }, [id]);
+  }, [postId]);
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 font-montserrat">
@@ -87,11 +126,35 @@ const DetailPost = () => {
                 </div>
               </div>
 
-              <div className="mt-4 flex justify-center items-end">
-                <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
-                  Thương lượng
-                </button>
-              </div>
+              {id !== post.user.user_id && (
+                <div className="mt-4 flex justify-end items-end">
+                  <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
+                    Thương lượng
+                  </button>
+                </div>
+              )}
+
+              {id === post.user.user_id && (
+                <div className="mt-4 flex justify-end items-center gap-4">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    onClick={() => {
+                      handleUpdate(post.post_id);
+                    }}
+                  >
+                    Cập nhật
+                  </button>
+
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    onClick={() => {
+                      handleDelete(post.post_id);
+                    }}
+                  >
+                    Xóa
+                  </button>
+                </div>
+              )}
 
               {/* Profile + reaction */}
               <div className="flex flex-row justify-between">
@@ -177,7 +240,7 @@ const DetailPost = () => {
         </div>
 
         {/* Comment */}
-        <Comment />
+        <Comment id={postId} sessionToken={sessionToken} />
       </div>
     </div>
   );

@@ -62,7 +62,7 @@ class Orientation(Enum):
 
 class Sale_status(Enum):
     SELLING = "đang bán", "Đang bán"
-    NEGOTATING = "đang thương lượng", "Đang thương lượng"
+    NEGOTIATING = "đang thương lượng", "Đang thương lượng"
     DEPOSITED = "đã cọc", "Đã cọc"
     SOLD = "đã bán", "Đã bán"
 
@@ -74,7 +74,7 @@ class Legal_status(Enum):
     OTHER = "khác", "Khác"
 
 
-class Reaction(Enum):
-    LIKE = "like", "Like"
-    DISLIKE = "dislike", "Dislike"
-    CARE = "care", "Care"
+class FriendRequest_status(Enum):
+    PENDING = "đang chờ", "Đang chờ"
+    ACCEPTED = "đã kết bạn", "Đã kết bạn"
+    DECLINED = "đã từ chối", "Đã từ chối"

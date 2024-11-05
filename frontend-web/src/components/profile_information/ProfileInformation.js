@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-
+import React, { useState,useEffect, useRef } from "react";
+import { faEllipsisV, faUser, faComment, faFlag } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const ProfileInformation = ({ name, date }) => {
   
 const postDate = new Date(date);
@@ -35,69 +36,83 @@ if (days < 3) {
 }
 
 const [color, setColor] = useState("#3CA9F9");
+const [isOpen, setIsOpen] = useState(false);
+
 
 const handleReportClick = () => {
   setColor((prevColor) => (prevColor === "#3CA9F9" ? "red" : "#3CA9F9"));
 }
+
+
+  const menuRef = useRef(null);
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  // Đóng menu khi nhấn ra ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div>
       {/* Profile Info */}
-      <div className="flex items-center">
+      
+      <div className="flex items-center mt-1">
         <img
-          className="w-12 h-12 rounded-full mr-3 object-cover"
+          className="w-10 h-10 rounded-full mr-3 object-cover"
           src="https://i.ytimg.com/vi/EgkK6HfSOLY/hqdefault.jpg"
           alt="avatar"
         />
-
-        <div className="text-sm">
-          <div className="flex items-center mt-4">
-            <p className="font-extrabold text-[#3CA9F9] text-[1.5rem]">
+        <div className="flex flex-col ">
+        <p className="font-extrabold text-[#3CA9F9] text-[1.1rem]">
               {name}
             </p>
-
-            {/* Func */}
-            <div className="flex space-x-8 justify-center items-center pl-10">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#3CA9F9"
-                className="size-7"
-              >
-                <path d="M5.25 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM2.25 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM18.75 7.5a.75.75 0 0 0-1.5 0v2.25H15a.75.75 0 0 0 0 1.5h2.25v2.25a.75.75 0 0 0 1.5 0v-2.25H21a.75.75 0 0 0 0-1.5h-2.25V7.5Z" />
-              </svg>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#3CA9F9"
-                className="size-7"
-              >
-                <path d="M4.913 2.658c2.075-.27 4.19-.408 6.337-.408 2.147 0 4.262.139 6.337.408 1.922.25 3.291 1.861 3.405 3.727a4.403 4.403 0 0 0-1.032-.211 50.89 50.89 0 0 0-8.42 0c-2.358.196-4.04 2.19-4.04 4.434v4.286a4.47 4.47 0 0 0 2.433 3.984L7.28 21.53A.75.75 0 0 1 6 21v-4.03a48.527 48.527 0 0 1-1.087-.128C2.905 16.58 1.5 14.833 1.5 12.862V6.638c0-1.97 1.405-3.718 3.413-3.979Z" />
-                <path d="M15.75 7.5c-1.376 0-2.739.057-4.086.169C10.124 7.797 9 9.103 9 10.609v4.285c0 1.507 1.128 2.814 2.67 2.94 1.243.102 2.5.157 3.768.165l2.782 2.781a.75.75 0 0 0 1.28-.53v-2.39l.33-.026c1.542-.125 2.67-1.433 2.67-2.94v-4.286c0-1.505-1.125-2.811-2.664-2.94A49.392 49.392 0 0 0 15.75 7.5Z" />
-              </svg>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill={color}
-                className="size-7 cursor-pointer"
-                onClick={() => {
-                  handleReportClick();
-                }}
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M3 2.25a.75.75 0 0 1 .75.75v.54l1.838-.46a9.75 9.75 0 0 1 6.725.738l.108.054A8.25 8.25 0 0 0 18 4.524l3.11-.732a.75.75 0 0 1 .917.81 47.784 47.784 0 0 0 .005 10.337.75.75 0 0 1-.574.812l-3.114.733a9.75 9.75 0 0 1-6.594-.77l-.108-.054a8.25 8.25 0 0 0-5.69-.625l-2.202.55V21a.75.75 0 0 1-1.5 0V3A.75.75 0 0 1 3 2.25Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-          </div>
-          <p className="text-gray-600 text-sm mt-2">
+            <p className="text-gray-600 text-sm mt-2 opacity-60 text-[12px]">
             <span className="font-semibold">Đã đăng:</span> {timeDisplay}
           </p>
         </div>
-      </div>
+       
+        <div className="relative flex items-center  ml-9">
+      {/* Icon dấu ba chấm dọc */}
+      <button onClick={toggleMenu} className="focus:outline-none p-3">
+        <FontAwesomeIcon icon={faEllipsisV} className="text-gray-600 text-xl cursor-pointer opacity-50" />
+      </button>
+
+      {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
+      {isOpen && (
+        <div
+          ref={menuRef}
+          className="absolute left-5 bottom-3 mt-2 w-56 p-2 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+        >
+          <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+            <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+            <span className="text-gray-700">Thông tin cá nhân</span>
+          </button>
+          <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+            <FontAwesomeIcon icon={faComment} className="text-green-500" />
+            <span className="text-gray-700">Nhắn tin với người này</span>
+          </button>
+          <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+            <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+            <span className="text-gray-700">Báo cáo</span>
+          </button>
+        </div>
+      )}
+    </div>
+         
+        </div>
+      
     </div>
   );
 };
