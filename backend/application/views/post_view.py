@@ -35,7 +35,7 @@ class PostView(APIView):
         if pk:
             if User.objects.filter(user_id=pk).exists():
                 user = get_object_or_404(User, user_id=pk)
-                posts = Post.objects.filter(user_id=user)
+                posts = Post.objects.filter(user_id=user).order_by("-created_at")
                 post_serializer = PostSerializer(
                     posts, many=True, context={"request_type": "detail"}
                 )
@@ -46,7 +46,7 @@ class PostView(APIView):
                     status=status.HTTP_200_OK,
                 )
 
-            else:
+            elif Post.objects.filter(post_id=pk).exists():
                 post = get_object_or_404(Post, post_id=pk)
                 post.view_count += 1
                 post.save()
@@ -56,6 +56,13 @@ class PostView(APIView):
 
                 return Response(post_serializer.data, status=status.HTTP_200_OK)
 
+            # Trường hợp không tìm thấy user_id và post_id
+            else:
+                return Response(
+                    {"message": f"Không có bài đăng với user_id hay post_id là {pk}"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
         else:
             # if request.user.is_authenticated:
             #     user_id = request.user
@@ -63,10 +70,9 @@ class PostView(APIView):
             #     posts = Post.objects.filter(query).order_by("updated_at")
             # else:
             # posts = Post.objects.all().order_by("updated_at") # tất cả bài đăng CHỜ DUYỆT và ĐÃ DUYỆT
-            query = Q(status=Status.APPROVED)
-            posts = Post.objects.filter(query).order_by(
-                "-created_at"
-            )  # chỉ lấy bài đăng ĐÃ DUYỆT
+
+            query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
+            posts = Post.objects.filter(query).order_by("-created_at")
 
             post_serializer = PostSerializer(
                 posts, many=True, context={"request_type": "list"}
@@ -124,6 +130,61 @@ class PostView(APIView):
         return Response(
             {"message": "Xoá bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
+
+
+class PendingPostView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def get(self, request, pk=None):
+        if pk:
+            # Kiểm tra nếu `pk` là `user_id` của user
+            if User.objects.filter(user_id=pk).exists():
+                user = get_object_or_404(User, user_id=pk)
+                posts = Post.objects.filter(
+                    user_id=user, status=Status.PENDING_APPROVAL
+                ).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "detail"}
+                )
+
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            # Kiểm tra nếu `pk` là `post_id` của bài đăng
+            elif Post.objects.filter(
+                post_id=pk, status=Status.PENDING_APPROVAL
+            ).exists():
+                post = get_object_or_404(Post, post_id=pk)
+                post.view_count += 1
+                post.save()
+                post_serializer = PostSerializer(
+                    post, context={"request_type": "detail"}
+                )
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            else:
+                return Response(
+                    {
+                        "message": f"Không có bài đăng đang chờ duyệt với user_id hay post_id là {pk}"
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        else:
+            # Lấy tất cả bài đăng đang chờ duyệt
+            posts = Post.objects.filter(status=Status.PENDING_APPROVAL).order_by(
+                "-created_at"
+            )
+            post_serializer = PostSerializer(
+                posts, many=True, context={"request_type": "list"}
+            )
+            return Response(post_serializer.data, status=status.HTTP_200_OK)
 
 
 class SearchView(APIView):
