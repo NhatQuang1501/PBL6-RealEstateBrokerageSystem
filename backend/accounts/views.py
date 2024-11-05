@@ -47,7 +47,7 @@ class BaseView(APIView):
 
         else:
             # Lấy tất cả người dùng từ hệ thống
-            users = User.objects.all()
+            users = User.objects.all().order_by("-created_at")
 
             # Tạo danh sách kết quả chứa từng người dùng với serializer tương ứng
             results = []
@@ -63,7 +63,11 @@ class BaseView(APIView):
                     serializer = self.serializer(instance)
                     results.append(serializer.data)
 
-            return Response(results, status=status.HTTP_200_OK)
+            return Response(
+                # {"count": len(results), "data": results},
+                results,
+                status=status.HTTP_200_OK,
+            )
 
     def put(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
@@ -345,8 +349,10 @@ class AvatarView(APIView):
     def post(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
-        
-        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+
+        serializers = UserProfileSerializer(
+            user_profile, data=request.data, partial=True
+        )
         if serializers.is_valid():
             serializers.save()
             avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)

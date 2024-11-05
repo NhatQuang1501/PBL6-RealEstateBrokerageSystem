@@ -35,35 +35,54 @@ class PostView(APIView):
         if pk:
             if User.objects.filter(user_id=pk).exists():
                 user = get_object_or_404(User, user_id=pk)
-                posts = Post.objects.filter(user_id=user)
+                posts = Post.objects.filter(user_id=user).order_by("-created_at")
                 post_serializer = PostSerializer(
                     posts, many=True, context={"request_type": "detail"}
                 )
 
-            else:
+                return Response(
+                    # {"count": posts.count(), "data": post_serializer.data},
+                    post_serializer.data,
+                    status=status.HTTP_200_OK,
+                )
+
+            elif Post.objects.filter(post_id=pk).exists():
                 post = get_object_or_404(Post, post_id=pk)
                 post.view_count += 1
                 post.save()
                 post_serializer = PostSerializer(
                     post, context={"request_type": "detail"}
                 )
-                data = post_serializer.data
 
-                return Response(data, status=status.HTTP_200_OK)
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            # Trường hợp không tìm thấy user_id và post_id
+            else:
+                return Response(
+                    {"message": f"Không có bài đăng với user_id hay post_id là {pk}"},
+                    status=status.HTTP_404_NOT_FOUND,
+                )
 
         else:
-            if request.user.is_authenticated:
-                user_id = request.user
-                query = Q(status=Status.APPROVED)
-                posts = Post.objects.filter(query).order_by("updated_at")
-            else:
-                posts = Post.objects.all().order_by("updated_at")
+            # if request.user.is_authenticated:
+            #     user_id = request.user
+            #     query = Q(status=Status.APPROVED)
+            #     posts = Post.objects.filter(query).order_by("updated_at")
+            # else:
+            # posts = Post.objects.all().order_by("updated_at") # tất cả bài đăng CHỜ DUYỆT và ĐÃ DUYỆT
+
+            query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
+            posts = Post.objects.filter(query).order_by("-created_at")
 
             post_serializer = PostSerializer(
                 posts, many=True, context={"request_type": "list"}
             )
 
-        return Response(post_serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                # {"count": posts.count(), "data": post_serializer.data},
+                post_serializer.data,
+                status=status.HTTP_200_OK,
+            )
 
     def post(self, request):
         post_data = request.data.copy()
@@ -113,6 +132,61 @@ class PostView(APIView):
         )
 
 
+class PendingPostView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get_permissions(self):
+        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def get(self, request, pk=None):
+        if pk:
+            # Kiểm tra nếu `pk` là `user_id` của user
+            if User.objects.filter(user_id=pk).exists():
+                user = get_object_or_404(User, user_id=pk)
+                posts = Post.objects.filter(
+                    user_id=user, status=Status.PENDING_APPROVAL
+                ).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "detail"}
+                )
+
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            # Kiểm tra nếu `pk` là `post_id` của bài đăng
+            elif Post.objects.filter(
+                post_id=pk, status=Status.PENDING_APPROVAL
+            ).exists():
+                post = get_object_or_404(Post, post_id=pk)
+                post.view_count += 1
+                post.save()
+                post_serializer = PostSerializer(
+                    post, context={"request_type": "detail"}
+                )
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            else:
+                return Response(
+                    {
+                        "message": f"Không có bài đăng đang chờ duyệt với user_id hay post_id là {pk}"
+                    },
+                    status=status.HTTP_404_NOT_FOUND,
+                )
+
+        else:
+            # Lấy tất cả bài đăng đang chờ duyệt
+            posts = Post.objects.filter(status=Status.PENDING_APPROVAL).order_by(
+                "-created_at"
+            )
+            post_serializer = PostSerializer(
+                posts, many=True, context={"request_type": "list"}
+            )
+            return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+
 class SearchView(APIView):
     permission_classes = [AllowAny]
 
@@ -120,11 +194,12 @@ class SearchView(APIView):
         start_time = time.time()
         params = {key.strip(): value for key, value in request.query_params.items()}
         text = params.get("text").strip()
+
         if not text:
             text = request.data.get("text")
             print("Text trong request data:", text)
 
-        posts = Post.objects.all()
+        posts = Post.objects.all().order_by("-created_at")
         posts_serializer = PostSerializer(posts, many=True)
         result = []
 
@@ -134,6 +209,7 @@ class SearchView(APIView):
         for post in posts_serializer.data:
             if any(
                 (
+                    matches_text(post["title"]),
                     matches_text(post["estate_type"]),
                     matches_text(post["price"]),
                     matches_text(post["city"]),
@@ -141,7 +217,13 @@ class SearchView(APIView):
                     matches_text(post["street"]),
                     matches_text(post["address"]),
                     matches_text(post["orientation"]),
+                    matches_text(post["area"]),
+                    matches_text(post["frontage"]),
+                    matches_text(post["bedroom"]),
+                    matches_text(post["bathroom"]),
+                    matches_text(post["floor"]),
                     matches_text(post["legal_status"]),
+                    matches_text(post["sale_status"]),
                     matches_text(post["description"]),
                     self.search_in_profile(text, post),
                 )
@@ -157,15 +239,16 @@ class SearchView(APIView):
         text = str(text)
         text = unicodedata.normalize("NFD", text)
         text = re.sub(r"[\u0300-\u036f]", "", text)
+
         return text.lower()
 
     @staticmethod
     def search_in_profile(text, post):
-        user = post["user_id"]
-        user = UserProfile.objects.get(user=user)
-        return SearchView.remove_accents(text) in SearchView.remove_accents(
-            user.fullname
-        )
+        user_info = post.get("user", {})
+        fullname = user_info.get("fullname", "")
+
+        return SearchView.remove_accents(text) in SearchView.remove_accents(fullname)
+
 
 class PostCommentView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
@@ -213,7 +296,8 @@ class PostCommentView(APIView):
             },
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+
+
 class PostReactionView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -223,13 +307,12 @@ class PostReactionView(APIView):
             return [AllowAny()]
 
         return [permission() for permission in self.permission_classes]
-    
+
     def post(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         # kiểm tra xem user đó đã reaction post hiện tại chưa, nếu chưa thì tạo query mới, nếu rồi thì xoá query cũ
         reaction, created = PostReaction.objects.get_or_create(
-            post_id=post, user_id=request.user,
-            defaults={'reaction_type': 1}
+            post_id=post, user_id=request.user, defaults={"reaction_type": 1}
         )
 
         if not created:  # Đã tồn tại, nên hủy like
@@ -248,7 +331,8 @@ class UserPostReactionView(APIView):
         reaction_serializer = PostReactionSerializer(reactions, many=True)
 
         return Response(reaction_serializer.data, status=status.HTTP_200_OK)
-    
+
+
 class PostImageView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -277,12 +361,12 @@ class PostImageView(APIView):
         return Response(
             {"message": "Tạo ảnh thành công"}, status=status.HTTP_201_CREATED
         )
-    
+
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         images = PostImage.objects.filter(post_id=post)
         images.delete()
-        
+
         list_images = request.data.getlist("image")
         for image in list_images:
             image_data = {"post_id": pk, "image": image}
@@ -293,13 +377,84 @@ class PostImageView(APIView):
         return Response(
             {"message": "Cập nhật ảnh thành công"}, status=status.HTTP_200_OK
         )
-            
-    
+
     def delete(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
         images = PostImage.objects.filter(post_id=post)
         images.delete()
-        
+
         return Response(
             {"message": "Xoá ảnh thành công"}, status=status.HTTP_204_NO_CONTENT
         )
+
+
+class MarkPostAsSoldView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+
+        return [permission() for permission in self.permission_classes]
+
+    def get(self, request):
+        sold_posts = Post.objects.filter(status=Sale_status.SOLD).order_by(
+            "-created_at"
+        )
+        sold_post_serializer = PostSerializer(sold_posts, many=True)
+
+        return Response(
+            # {"count": sold_posts.count(), "data": sold_post_serializer.data},
+            sold_post_serializer.data,
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request, post_id):
+        sale_status = request.data.get("sale_status")
+        Sale_status = Sale_status.map_display_to_value(sale_status)
+
+        post = get_object_or_404(Post, post_id=post_id)
+
+        # Kiểm tra xem người dùng có phải là người đăng bài không
+        if str(post.user_id_id) != str(request.user.user_id):
+            return Response(
+                {"message": "Bạn không có quyền sửa bài đăng này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if post.sale_status != Sale_status.DEPOSITED:
+            return Response(
+                {
+                    "message": "Bài đăng phải ở trạng thái 'đã cọc' mới có thể chuyển sang 'đã bán'."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        post.sale_status = sale_status
+
+        if sale_status == "đã bán":
+            # post.status = Status.CLOSED
+            post.save()
+            serializer = PostSerializer(post)
+
+            return Response(
+                {
+                    "message": "Bài đăng đã bán thành công",
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        else:
+            return Response(
+                {"error": "Hành động không hợp lệ"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+    # def put(self, request, pk):
+    #     post = get_object_or_404(Post, post_id=pk)
+    #     post.status = Status.APPROVED
+    #     post.save()
+
+    #     return Response(
+    #         {"message": "Mở bài đăng thành công"}, status=status.HTTP_200_OK
+    #     )

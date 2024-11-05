@@ -51,8 +51,8 @@ class ChatMessageView(APIView):
 
         return Response(
             {
-                "message_count": chat_messages.count(),  # Thêm số lượng tin nhắn vào phản hồi
-                "messages": serializer.data,  # Dữ liệu tin nhắn
+                "message_count": chat_messages.count(),
+                "messages": serializer.data,
             },
             status=status.HTTP_200_OK,
         )

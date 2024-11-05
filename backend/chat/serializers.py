@@ -36,6 +36,9 @@ class ChatMessageSerializer(serializers.ModelSerializer):
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):
+    sender_profile = UserProfileSerializer(read_only=True)
+    receiver_profile = UserProfileSerializer(read_only=True)
+
     sender_username = serializers.CharField(source="sender.username", read_only=True)
     receiver_username = serializers.CharField(
         source="receiver.username", read_only=True
@@ -45,7 +48,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
         source="get_friendrequest_status_display", read_only=True
     )
 
-    # Nhận receiver là username từ yêu cầu đầu vào thay vì UUID
+    # Nhận receiver là username từ request
     receiver = serializers.CharField(write_only=True)
 
     class Meta:
@@ -56,35 +59,42 @@ class FriendRequestSerializer(serializers.ModelSerializer):
             "sender_username",
             "receiver",  # Nhận username thay vì UUID
             "receiver_username",  # Thêm receiver_username vào phản hồi
+            "sender_profile",
+            "receiver_profile",
             "friendrequest_status",
             "status_display",
             "created_at",
         ]
-        read_only_fields = [
-            "friendrequest_id",
-            "sender",
-            "receiver_username",
-            "created_at",
-        ]
+        extra_kwargs = {
+            "friendrequest_id": {"read_only": True},
+            "created_at": {"read_only": True},
+            "sender": {"read_only": True},
+            "receiver": {"required": True},
+        }
 
     def create(self, validated_data):
         # Khi tạo request, sender là người dùng hiện tại
         request = self.context.get("request")
         sender = request.user
-
         # Tìm receiver dựa trên username
-        receiver_username = validated_data.pop(
-            "receiver"
-        )  # Lấy giá trị username từ trường 'receiver'
+        receiver_username = validated_data.pop("receiver")
+
         try:
             receiver = User.objects.get(username=receiver_username)
+
         except User.DoesNotExist:
             raise serializers.ValidationError({"receiver": "Người dùng không tồn tại"})
+
+        if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
+            raise serializers.ValidationError(
+                {"error": "Đã gửi lời mời kết bạn cho người dùng này."}
+            )
 
         # Tạo FriendRequest với sender và receiver
         friend_request = FriendRequest.objects.create(
             sender=sender, receiver=receiver, **validated_data
         )
+
         return friend_request
 
 
