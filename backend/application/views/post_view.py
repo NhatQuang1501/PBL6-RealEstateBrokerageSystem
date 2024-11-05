@@ -41,12 +41,13 @@ class PostView(APIView):
                 )
 
                 return Response(
-                    {"count": posts.count(), "data": post_serializer.data},
+                    # {"count": posts.count(), "data": post_serializer.data},
+                    post_serializer.data,
                     status=status.HTTP_200_OK,
                 )
 
             else:
-                post = get_object_or_404(Post, post_id=pk).order_by("-created_at")
+                post = get_object_or_404(Post, post_id=pk)
                 post.view_count += 1
                 post.save()
                 post_serializer = PostSerializer(
@@ -72,7 +73,8 @@ class PostView(APIView):
             )
 
             return Response(
-                {"count": posts.count(), "data": post_serializer.data},
+                # {"count": posts.count(), "data": post_serializer.data},
+                post_serializer.data,
                 status=status.HTTP_200_OK,
             )
 
@@ -341,7 +343,8 @@ class MarkPostAsSoldView(APIView):
         sold_post_serializer = PostSerializer(sold_posts, many=True)
 
         return Response(
-            {"count": sold_posts.count(), "data": sold_post_serializer.data},
+            # {"count": sold_posts.count(), "data": sold_post_serializer.data},
+            sold_post_serializer.data,
             status=status.HTTP_200_OK,
         )
 
