@@ -349,8 +349,10 @@ class AvatarView(APIView):
     def post(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
-        
-        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+
+        serializers = UserProfileSerializer(
+            user_profile, data=request.data, partial=True
+        )
         if serializers.is_valid():
             serializers.save()
             avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)

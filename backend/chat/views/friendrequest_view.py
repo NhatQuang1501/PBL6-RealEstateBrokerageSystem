@@ -39,12 +39,14 @@ class FriendRequestView(APIView):
             )
 
     def post(self, request):
-        if request.data.get("receiver") == request.user.user_id:
+        receiver_username = request.data.get("receiver")
+        if receiver_username == request.user.user_id:
 
             return Response(
                 {"error": "Bạn không thể tự gửi yêu cầu kết bạn đến chính mình"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         # Tạo yêu cầu kết bạn mới
         serializer = FriendRequestSerializer(
             data=request.data, context={"request": request}
@@ -52,7 +54,6 @@ class FriendRequestView(APIView):
 
         if serializer.is_valid():
             serializer.save()
-
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

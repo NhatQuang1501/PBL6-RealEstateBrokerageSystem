@@ -9,7 +9,9 @@ urlpatterns = [
     # Post Management Endpoints
     path("posts/", PostView.as_view(), name="posts"),
     path("pending-posts/", PendingPostView.as_view(), name="pending-posts"),
-    path("pending-posts/<str:pk>/", PendingPostView.as_view(), name="user-pending-posts"),
+    path(
+        "pending-posts/<str:pk>/", PendingPostView.as_view(), name="user-pending-posts"
+    ),
     path("posts/<str:pk>/", PostView.as_view(), name="posts-detail"),
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
