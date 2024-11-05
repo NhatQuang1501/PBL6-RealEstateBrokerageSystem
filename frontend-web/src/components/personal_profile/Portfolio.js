@@ -7,17 +7,16 @@ import { useEffect, useState } from "react";
 export default function Portfolio() {
   const { sessionToken, id } = useAppContext();
 
-  const [posts, setPost] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filterStatus, setFilterStatus] = useState("Đã duyệt"); // State để lưu trạng thái lọc
+  const [filterStatus, setFilterStatus] = useState(
+    localStorage.getItem("filterStatus") || "Đã duyệt"
+  );
   const itemsPerPage = 10;
 
-  // Lọc bài đăng dựa trên trạng thái
-  const filteredPosts = posts.filter((post) => post.status === filterStatus);
+  const totalPages = Math.ceil(posts.length / itemsPerPage);
 
-  const totalPages = Math.ceil(filteredPosts.length / itemsPerPage);
-
-  const currentPosts = filteredPosts.slice(
+  const currentPosts = posts.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -28,14 +27,19 @@ export default function Portfolio() {
 
   const handleFilterChange = (status) => {
     setFilterStatus(status);
+    localStorage.setItem("filterStatus", status); // Lưu trạng thái vào localStorage
     setCurrentPage(1);
+    window.location.reload();
   };
-
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${id}/`;
+        // Chọn API dựa trên filterStatus
+        const url =
+          filterStatus === "Đã duyệt"
+            ? `http://127.0.0.1:8000/api/posts/`
+            : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
 
         const response = await fetch(url, {
           method: "GET",
@@ -48,14 +52,14 @@ export default function Portfolio() {
         const data = await response.json();
         console.log("Post data:", data);
 
-        setPost(Array.isArray(data) ? data : []);
+        setPosts(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error(error);
       }
     };
 
     fetchPosts();
-  }, [sessionToken, id]);
+  }, [sessionToken, id, filterStatus]);
 
   return (
     <div className="bg-[#3CA9F9] text-white p-6 rounded-lg">
@@ -105,7 +109,6 @@ export default function Portfolio() {
         ) : (
           <div className="text-center font-bold">Không có bài đăng nào</div>
         )}
-        
       </Panel>
     </div>
   );

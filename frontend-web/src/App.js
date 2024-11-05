@@ -23,8 +23,12 @@ import ChatPage from "./components/ChatBox/ChatPage";
 import UpdatePost from "./pages/user/UpdatePost";
 import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
+import { useState } from "react";
+import ViewPersonProfile from "./pages/user/ViewPersonProfile";
 
 function App() {
+  const [searchValue, setSearchValue] = useState("");
+
   return (
     <AppProvider>
       <div className="flex flex-col min-h-screen">
@@ -36,8 +40,8 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage />
-                  <MainPageUser />
+                  <HeroPage setSearchValue={setSearchValue} />
+                  <MainPageUser searchValue={searchValue} />
                   <Footer />
                 </>
               }
@@ -70,8 +74,8 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage />
-                  <MainPageUser />
+                  <HeroPage setSearchValue={setSearchValue} />
+                  <MainPageUser searchValue={searchValue} />
                   <Footer />
                 </>
               }
@@ -144,6 +148,17 @@ function App() {
               element={
                 <>
                   <ChatPage />
+                </>
+              }
+            />
+
+            <Route
+              path="user/profile/:userId"
+              element={
+                <>
+                  <Header />
+                  <ViewPersonProfile />
+                  <Footer />
                 </>
               }
             />

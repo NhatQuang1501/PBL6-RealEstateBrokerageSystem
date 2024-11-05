@@ -27,7 +27,7 @@ const DetailPost = () => {
   const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();
   const [reactionsCount, setReactionsCount] = useState();
-  const [images, setImages] = useState([]);
+  const [commentCount, setCommentCount] = useState();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -94,6 +94,7 @@ const DetailPost = () => {
         const data = await response.json();
         console.log("Post data:", data);
         setReactionsCount(data.reactions_count);
+        setCommentCount(data.comments_count);
         setPost(data);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -126,7 +127,6 @@ const DetailPost = () => {
     checkLiked();
 
     // fetch images
-
   }, [postId, sessionToken]);
 
   // check liked
@@ -139,21 +139,26 @@ const DetailPost = () => {
     //   );
     //   return !prevClicked;
     // });
-    try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/posts/${postId}/like/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error liking the post:", error);
+    if (!sessionToken) {
+      alert("Bạn cần đăng nhập để thực hiện hành động này.");
+      return;
+    } else {
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/posts/${postId}/like/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error liking the post:", error);
+      }
+      window.location.reload();
     }
-    window.location.reload();
   }, [sessionToken, postId]);
 
   //test upload image
@@ -176,7 +181,7 @@ const DetailPost = () => {
         onClick={handleUploadImage}
       >
         <FontAwesomeIcon icon={faUpload} className="mr-2" />
-        Upload Image
+        Tải ảnh lên
       </button>
 
       <h3 className="mt-5 p-2 text-2xl font-bold text-white flex items-center gap-2 pl-5 w-[22rem] shadow-2xl shadow-[#E4FFFC] rounded-[3rem]">
@@ -235,8 +240,9 @@ const DetailPost = () => {
               <div className="flex flex-row justify-between">
                 <div className="">
                   <ProfileInformation
-                    name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
-                    date={post.created_at} // Truy cập vào ngày tạo bài viết
+                    name={post.user.username}
+                    user_id={post.user.user_id}
+                    date={post.created_at}
                   />
                 </div>
 
@@ -257,9 +263,9 @@ const DetailPost = () => {
                     <span>{reactionsCount}</span>
                   </div>
                   {/* Chat */}
-                  <div className="flex items-end text-gray-500 space-x-1">
+                  <div className="flex items-end text-[#3CA9F9] space-x-1">
                     <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
-                    <span>124</span>
+                    <span>{commentCount}</span>
                   </div>
                   {/* Share */}
                   <div className="flex items-end text-gray-500 space-x-1">
@@ -300,7 +306,8 @@ const DetailPost = () => {
               />
               {/* Image */}
               {/* http://127.0.0.1:8000/api/posts/cc129313-2e8c-44a5-84d8-f55a85529f49/images/ */}
-              <ImageCard 
+              <ImageCard
+                type="detail"
                 postId={postId}
                 // images={images}
               />

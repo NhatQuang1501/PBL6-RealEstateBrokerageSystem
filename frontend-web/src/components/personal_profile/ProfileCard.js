@@ -1,6 +1,6 @@
 // components/ProfileCard.js
 import React, { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import { useState } from "react";
 import axios from "axios";
@@ -22,15 +22,8 @@ const ProfileCard = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [fileName, setFileName] = useState("Choose a file");
   const [loading, setLoading] = useState(false);
-
-  const [formData, setFormData] = useState({
-    fullname: "",
-    city: "",
-    birthdate: "",
-    phone_number: "",
-    gender: "",
-    avatar: null,
-  });
+  const [avatar, setAvatar] = useState(null);
+  const { userId } = useParams();
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -38,10 +31,17 @@ const ProfileCard = () => {
   };
 
   useEffect(() => {
-    console.log("User ID:", id);
+    console.log("My ID:", id);
+    console.log("User ID:", userId);
     const fetchUserById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/auth/users/${id}/`;
+        let url;
+        if (userId) {
+          url = `http://127.0.0.1:8000/auth/users/${userId}/`;
+        } else {
+          url = `http://127.0.0.1:8000/auth/users/${id}/`;
+        }
+
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -62,6 +62,32 @@ const ProfileCard = () => {
     };
 
     fetchUserById();
+
+    // ava
+    const fetchAvatar = async () => {
+      try {
+        let url;
+        if (userId) {
+          url = `http://127.0.0.1:8000/auth/users-avatar/${userId}/`;
+        } else {
+          url = `http://127.0.0.1:8000/auth/users-avatar/${id}/`;
+        }
+        const response = await axios.get(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(response);
+        if (response.data.avatar_url === null) {
+          response.data.avatar_url =
+            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
+        }
+        setAvatar(response.data.avatar_url);
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+      }
+    };
+    fetchAvatar();
   }, [id]);
 
   if (!user) {
@@ -79,6 +105,23 @@ const ProfileCard = () => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const fileType = file.type;
+      if (fileType !== "image/png" && fileType !== "image/jpeg") {
+        alert("Please upload a .png or .jpg image.");
+        fileInputRef.current.value = ""; // Reset file input
+        setFileName("Choose a file"); // Reset file name display
+        return;
+      }
+
+      const fileSizeLimit = 25 * 1024 * 1024;
+      if (file.size > fileSizeLimit) {
+        alert("File size should not exceed 25 MB.");
+        fileInputRef.current.value = "";
+        setFileName("Choose a file");
+        return;
+      }
+
+      setFileName(file.name);
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -94,7 +137,7 @@ const ProfileCard = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/users/avatar/`,
+        `http://127.0.0.1:8000/auth/users-avatar/`,
         formData,
         {
           headers: {
@@ -105,10 +148,12 @@ const ProfileCard = () => {
       );
 
       console.log("Avatar updated successfully:", response.data);
-      alert("Avatar updated successfully!");
+      alert("Ảnh đại diện được tải lên thành công !");
+      setAvatar(response.data.avatar_url);
+      window.location.reload();
     } catch (error) {
       console.error("Error updating avatar:", error);
-      alert("Failed to update avatar.");
+      alert("Tải ảnh đại diện thất bại !");
     }
   };
 
@@ -117,42 +162,71 @@ const ProfileCard = () => {
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
-          {profileImage ? (
+          {avatar ? (
             <img
-              src={profileImage}
+              src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-cover"
+              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-500"
             />
           ) : (
             <img
+              //Ảnh thay thế
               src="https://th.bing.com/th/id/OIP.PVzhiWdGqLXudD0PNtsMtwHaHa?w=980&h=980&rs=1&pid=ImgDetMain"
               alt="profile"
               className="rounded-full w-[12rem] h-[12rem] object-cover"
             />
           )}
-          <button
-            className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
-            onClick={() => fileInputRef.current.click()} // Kích hoạt input
-          >
-            Thay đổi ảnh đại diện
-          </button>
-          {/* Hidden file input */}
-          <input
-            type="file"
-            ref={fileInputRef}
-            style={{ display: "none" }}
-            onChange={handleImageUpload} // Gọi handleImageUpload khi người dùng chọn file
-          />
+
+          {!userId || userId === id ? (
+            <>
+              <button
+                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                onClick={() => fileInputRef.current.click()}
+              >
+                Thay đổi ảnh đại diện
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleImageUpload} // Gọi handleImageUpload khi người dùng chọn file
+              />
+            </>
+          ) : (
+            <>
+              <button
+                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                // onClick={() => fileInputRef.current.click()}
+              >
+                Bạn bè
+              </button>
+
+            </>
+          )}
         </div>
       </div>
-
-      {/* Contact Button */}
-      <button
-        className="bg-teal-500 px-4 py-2 rounded-lg w-full mb-4"
-        onClick={() => handleUpdateProfile()}
-      >
-        Cập nhật trang cá nhân
-      </button>
+      {!userId || userId === id ? (
+        <>
+          {/* Contact Button */}
+          <button
+            className="bg-teal-500 px-4 py-2 rounded-lg w-full mb-4"
+            onClick={() => handleUpdateProfile()}
+          >
+            Cập nhật trang cá nhân
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Contact Button */}
+          <button
+            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            // onClick={() => handleUpdateProfile()}
+          >
+            Nhắn tin
+          </button>
+        </>
+      )}
 
       {/* Face Customizer Options */}
       <div className="p-6 bg-white rounded-lg shadow-md">

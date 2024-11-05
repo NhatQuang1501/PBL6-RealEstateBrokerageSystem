@@ -30,7 +30,7 @@ class FriendRequestView(APIView):
             # Lấy tất cả yêu cầu kết bạn cho người dùng hiện tại
             friend_requests = FriendRequest.objects.filter(
                 Q(receiver=request.user) | Q(sender=request.user)
-            )
+            ).order_by("-created_at")
             serializer = FriendRequestSerializer(friend_requests, many=True)
 
             return Response(
@@ -116,7 +116,9 @@ class SentFriendRequestView(APIView):
 
     def get(self, request):
         # Lấy tất cả yêu cầu kết bạn mà người dùng là sender
-        friend_requests = FriendRequest.objects.filter(sender=request.user)
+        friend_requests = FriendRequest.objects.filter(sender=request.user).order_by(
+            "-created_at"
+        )
         serializer = FriendRequestSerializer(friend_requests, many=True)
 
         return Response(
@@ -130,7 +132,9 @@ class ReceivedFriendRequestView(APIView):
 
     def get(self, request):
         # Lấy tất cả yêu cầu kết bạn mà người dùng là receiver
-        friend_requests = FriendRequest.objects.filter(receiver=request.user)
+        friend_requests = FriendRequest.objects.filter(receiver=request.user).order_by(
+            "-created_at"
+        )
         serializer = FriendRequestSerializer(friend_requests, many=True)
 
         return Response(
@@ -156,22 +160,33 @@ class FriendListView(APIView):
         accepted_requests = FriendRequest.objects.filter(
             (models.Q(sender=user) | models.Q(receiver=user)),
             friendrequest_status="đã kết bạn",
-        )
+        ).order_by("-created_at")
 
         # Tạo danh sách bạn bè
         friend_list = []
         for request in accepted_requests:
-            # Thêm vào danh sách nếu chưa tồn tại
-            if request.sender == user:
-                friend_list.append(request.receiver)
-            else:
-                friend_list.append(request.sender)
+            friend_user = request.receiver if request.sender == user else request.sender
 
-        # Trả về danh sách bạn bè
+            friend_data = {
+                "user_id": str(friend_user.user_id),
+                "user": {
+                    "email": friend_user.email,
+                    "username": friend_user.username,
+                    "role": friend_user.role,
+                    "avatar": (
+                        friend_user.profile.avatar.url
+                        if friend_user.profile.avatar
+                        else None
+                    ),
+                },
+            }
+
+            friend_list.append(friend_data)
+
         return Response(
             {
                 "count": len(friend_list),
-                "friends": [friend.username for friend in friend_list],
+                "friends": friend_list,
             },
             status=status.HTTP_200_OK,
         )

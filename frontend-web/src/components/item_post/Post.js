@@ -19,6 +19,7 @@ import ProfileInformation from "../profile_information/ProfileInformation";
 import { useAppContext } from "../../AppProvider";
 // import DetailDescription from "../detail_description/DetailDescription";
 import axios from "axios";
+import ImageCard from "../image_card/ImageCard";
 
 function Post({ post, type }) {
   const { id, sessionToken, posts, setPost } = useAppContext();
@@ -50,28 +51,34 @@ function Post({ post, type }) {
       }
     };
     checkLiked();
+
   }, [post.post_id, sessionToken]);
 
   const handleClick = useCallback(async () => {
-    setIsClicked((prevClicked) => {
-      setReactionsCount((prevCount) =>
-        prevClicked ? prevCount - 1 : prevCount + 1
-      );
-      return !prevClicked;
-    });
-    try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/posts/${post.post_id}/like/`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Error liking the post:", error);
+    if (!sessionToken) {
+      alert("Bạn cần đăng nhập để thực hiện hành động này.");
+      return;
+    } else {
+      setIsClicked((prevClicked) => {
+        setReactionsCount((prevCount) =>
+          prevClicked ? prevCount - 1 : prevCount + 1
+        );
+        return !prevClicked;
+      });
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/posts/${post.post_id}/like/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error liking the post:", error);
+      }
     }
   }, [sessionToken, post.post_id]);
 
@@ -149,11 +156,7 @@ function Post({ post, type }) {
         {/* Left (45%) */}
         <div className="w-[45%] pr-4">
           {/* Img */}
-          <img
-            className="w-full h-[60%] object-cover rounded-md"
-            src={`http://127.0.0.1:8000/api/posts/${post.post_id}/images/`}
-            alt={post.title}
-          />
+          <ImageCard postId={post.post_id} />
         </div>
 
         {/* Right column (55%) */}
@@ -235,15 +238,6 @@ function Post({ post, type }) {
             </div>
           )}
 
-          {/* Post */}
-          {/* <DetailDescription
-            className="min-h-[30rem]"
-            description={post.description}
-            maxLength={110}
-            enableToggle={false}
-            moreLink="/user/detail-post"
-          /> */}
-
           <div className="flex space-x-8 mt-4 justify-between ">
             {/* Heart */}
             <div className="flex items-center text-gray-500 space-x-1 gap-2">
@@ -258,9 +252,12 @@ function Post({ post, type }) {
               <span>{reactionsCount}</span>
             </div>
             {/* Chat */}
-            <div className="flex items-center text-gray-500 space-x-1 gap-2">
+            <div
+              className="flex items-center text-gray-500 space-x-1 gap-2 cursor-pointer"
+              onClick={handleDetailClick}
+            >
               <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
-              <span>124</span>
+              <span>{post.comments_count}</span>
             </div>
             {/* Share */}
             <div className="flex items-center text-gray-500 space-x-1 gap-2">
@@ -321,8 +318,9 @@ function Post({ post, type }) {
         {/* Profile Info */}
         <ProfileInformation
           type="personal-page"
-          name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
-          date={post.created_at} // Truy cập vào ngày tạo bài viết
+          name={post.user.username}
+          user_id={post.user.user_id}
+          date={post.created_at}
         />
         <div className="flex justify-end items-center">
           <div className=" pr-3">

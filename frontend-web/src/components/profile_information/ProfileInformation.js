@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import {
   faEllipsisV,
   faUser,
@@ -6,7 +7,10 @@ import {
   faFlag,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-const ProfileInformation = ({ name, date }) => {
+import { useNavigate } from "react-router-dom";
+const ProfileInformation = ({ name, date, user_id }) => {
+  let navigate = useNavigate();
+  const [ava, setAva] = useState("");
   const postDate = new Date(date);
   const currentDate = new Date();
   const timeDifference = currentDate - postDate; // Thời gian chênh lệch tính bằng milliseconds
@@ -44,13 +48,7 @@ const ProfileInformation = ({ name, date }) => {
       minute: "2-digit",
     })}`;
   }
-
-  const [color, setColor] = useState("#3CA9F9");
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleReportClick = () => {
-    setColor((prevColor) => (prevColor === "#3CA9F9" ? "red" : "#3CA9F9"));
-  };
 
   const menuRef = useRef(null);
 
@@ -72,14 +70,42 @@ const ProfileInformation = ({ name, date }) => {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/auth/users-avatar/${user_id}/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
+        if (response.data.avatar_url === null) {
+          response.data.avatar_url =
+            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
+        }
+        setAva(response.data.avatar_url);
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+      }
+    };
+    fetchAvatar();
+  }, [user_id]);
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
+  };
+
   return (
     <div>
       {/* Profile Info */}
 
       <div className="flex items-center mt-1">
         <img
-          className="w-10 h-10 rounded-full mr-3 object-cover"
-          src="https://i.ytimg.com/vi/EgkK6HfSOLY/hqdefault.jpg"
+          className="w-10 h-10 rounded-full mr-3 object-contain bg-gray-500"
+          src={ava}
           alt="avatar"
         />
         <div className="flex flex-col ">
@@ -104,7 +130,12 @@ const ProfileInformation = ({ name, date }) => {
               ref={menuRef}
               className="absolute left-5 bottom-3 mt-2 w-56 p-2 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
             >
-              <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+              <button
+                className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                onClick={() => {
+                  handlePersonalProfileClick(user_id);
+                }}
+              >
                 <FontAwesomeIcon icon={faUser} className="text-blue-500" />
                 <span className="text-gray-700">Thông tin cá nhân</span>
               </button>

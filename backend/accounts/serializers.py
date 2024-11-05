@@ -61,7 +61,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         for field in rep:
             if rep[field] is None:
-                rep[field] = "Chưa có thông tin"
+                if field == "avatar":
+                    rep[field] = None
+                else:
+                    rep[field] = "Chưa có thông tin"
 
             elif field == "gender":
                 rep[field] = Gender.map_value_to_display(rep[field])
@@ -88,6 +91,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user_profile
 
     def update(self, instance, validated_data):
+        if "avatar" in validated_data:
+            validated_data.pop("avatar")
+
         instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.city = validated_data.get("city", instance.city)
         instance.birthdate = validated_data.get("birthdate", instance.birthdate)
@@ -95,12 +101,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "phone_number", instance.phone_number
         )
         instance.gender = validated_data.get("gender", instance.gender)
-        avatar = validated_data.get("avatar", None)
 
-        if avatar:
-            if isinstance(avatar, list):
-                avatar = avatar[0]
-            instance.avatar = avatar
+        # avatar = validated_data.get("avatar", None)
+        # if avatar:
+        #     if isinstance(avatar, list):
+        #         avatar = avatar[0]
+        #     instance.avatar = avatar
 
         instance.save()
 

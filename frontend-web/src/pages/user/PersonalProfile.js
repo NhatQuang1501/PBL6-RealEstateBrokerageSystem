@@ -7,7 +7,7 @@ const PersonalProfile = () => {
     <div className="min-h-screen bg-white text-white p-10 font-montserrat">
       <div className="grid grid-cols-8 gap-5">
         {/* Profile Card */}
-        <div className="col-span-2 sticky top-[8.5rem] self-start">
+        <div className="col-span-2 sticky top-[6rem] self-start">
           <ProfileCard />
         </div>
 
@@ -20,7 +20,7 @@ const PersonalProfile = () => {
 
           {/* Side Projects */}
           <div
-            className="flex-1 sticky top-[8.5rem] self-start"
+            className="flex-1 sticky top-[6rem] self-start"
             style={{ flex: "0 0 20%" }}
           >
             <SideProjects />

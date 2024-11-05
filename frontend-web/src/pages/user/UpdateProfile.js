@@ -20,7 +20,6 @@ const UpdateProfile = () => {
     birthdate: "",
     phone_number: "",
     gender: "Nam",
-    avatar: "Chưa có thông tin",
   });
 
   const [loading, setLoading] = useState(true);

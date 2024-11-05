@@ -1,8 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
+import { useState, useEffect } from "react";
+import axios from "axios";
+
 function Header() {
   let navigate = useNavigate();
+  const [ava, setAva] = useState("");
 
   const { sessionToken, setSessionToken, setRole, role, name } =
     useAppContext();
@@ -29,6 +33,32 @@ function Header() {
       console.error("Có lỗi xảy ra khi đăng xuất:", error);
     }
   };
+
+  const { id } = useAppContext();
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/auth/users-avatar/${id}/`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response);
+        if (response.data.avatar_url === null) {
+          response.data.avatar_url =
+            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
+        }
+        setAva(response.data.avatar_url);
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+      }
+    };
+    fetchAvatar();
+  }, [id]);
 
   return (
     <>
@@ -147,9 +177,13 @@ function Header() {
             <div className="flex flex-row gap-5">
               <div className="flex items-center gap-4">
                 <img
-                  src="https://th.bing.com/th/id/OIP.kWtj5f6Egn513Uoc8chstgHaHa?w=185&h=185&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+                  src={
+                    ava
+                      ? ava
+                      : `https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain`
+                  }
                   alt="avatar"
-                  className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9] object-cover"
+                  className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9]  object-contain bg-gray-500"
                 />
                 <Link to="/user/personal-page">
                   <p className="text-[#3CA9F9] font-semibold">{name}</p>

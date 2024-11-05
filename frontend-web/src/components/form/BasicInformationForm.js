@@ -19,14 +19,17 @@ import {
 import AddressInput from "../map_api/AddressInputWithPopup";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
+import AddImage from "./AddImage";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
 
   const { sessionToken } = useAppContext();
 
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [post_id, setPost_id] = useState(null);
 
   //Logic form
 
@@ -45,7 +48,6 @@ const BasicInformation = () => {
   const [frontage, setFrontage] = useState(null);
   const [title, setTitle] = useState("");
   const [sale_status, setSale_status] = useState("");
-  
 
   useEffect(() => {
     if (selectedProperty === "house") {
@@ -71,38 +73,45 @@ const BasicInformation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-        if (
-          (!address ||
-          !district ||
-          !city ||
-          !price ||
-          !area ||
-          !legal_status ||
-          !orientation ||
-          !frontage ||
-          !title) && selectedProperty === "land"
-        ) {
-          alert("Vui lòng điền đầy đủ thông tin !");
-          return;
-        }
-        else if ( 
-          (!address ||
-          !district ||
-          !city ||
-          !price ||
-          !area ||
-          !legal_status ||
-          !orientation ||
-          !frontage ||
-          !title ||
-          !floor ||
-          !bedroom ||
-          !bathroom) && selectedProperty === "house"
-        ) {
-          alert("Vui lòng điền đầy đủ thông tin !");
-          return;
-        }
+    if (
+      (!address ||
+        !district ||
+        !city ||
+        !price ||
+        !area ||
+        !legal_status ||
+        !orientation ||
+        !frontage ||
+        !title) &&
+      selectedProperty === "land"
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin !");
+      return;
+    } else if (
+      (!address ||
+        !district ||
+        !city ||
+        !price ||
+        !area ||
+        !legal_status ||
+        !orientation ||
+        !frontage ||
+        !title ||
+        !floor ||
+        !bedroom ||
+        !bathroom) &&
+      selectedProperty === "house"
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin !");
+      return;
+    }
 
+    const isConfirmed = window.confirm(
+      "Bạn có chắc chắn muốn đăng bài này không?"
+    );
+    if (!isConfirmed) {
+      return;
+    }
 
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/posts/`, {
@@ -137,7 +146,21 @@ const BasicInformation = () => {
         console.log("Đăng bài thành công!");
         alert("Đăng bài thành công!");
         console.log(data);
-        navigate("/user/main-page-user");
+        // Ensure that `data.post_id` exists and is correctly accessed
+        const postId = data.post_id || data.data?.post_id || data.post?.id;
+        if (postId) {
+          setPost_id(postId); // This will update `post_id` state correctly
+          console.log("postid ==> ", postId); // Double-check post_id value
+          setShowModal(true);
+        } else {
+          console.error("post_id is missing in the response data");
+        }
+
+        // if (addMoreImages) {
+        //   handleUploadImage();
+        // } else {
+        //   navigate("/user/main-page-user");
+        // }
       } else {
         console.log("Đăng bài thất bại!");
         alert("Đăng bài thất bại!");
@@ -146,6 +169,16 @@ const BasicInformation = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    navigate(`/user/detail-post/${post_id}`);
+  };
+
+  const handleConfirmModal = () => {
+    setShowModal(false);
+    navigate(`/upload-image/${post_id}`);
   };
 
   return (
@@ -875,7 +908,6 @@ const BasicInformation = () => {
                     />
                   </div>
                 </div>
-
               </div>
               <div className=" w-full flex justify-center">
                 <button
@@ -891,6 +923,9 @@ const BasicInformation = () => {
           </div>
         )}
       </div>
+      {showModal && (
+        <AddImage onClose={handleCloseModal} onConfirm={handleConfirmModal} />
+      )}
     </div>
   );
 };
