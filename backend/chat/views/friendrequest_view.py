@@ -154,8 +154,8 @@ class FriendListView(APIView):
 
         return [permission() for permission in self.permission_classes]
 
-    def get(self, request):
-        user = request.user
+    def get(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
 
         # Lấy danh sách friend requests mà người dùng đã chấp nhận
         accepted_requests = FriendRequest.objects.filter(
