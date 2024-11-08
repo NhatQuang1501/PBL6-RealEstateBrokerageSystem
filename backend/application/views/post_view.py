@@ -35,7 +35,9 @@ class PostView(APIView):
         if pk:
             if User.objects.filter(user_id=pk).exists():
                 user = get_object_or_404(User, user_id=pk)
-                posts = Post.objects.filter(user_id=user).order_by("-created_at")
+                posts = Post.objects.filter(
+                    user_id=user, status=Status.APPROVED
+                ).order_by("-created_at")
                 post_serializer = PostSerializer(
                     posts, many=True, context={"request_type": "detail"}
                 )
