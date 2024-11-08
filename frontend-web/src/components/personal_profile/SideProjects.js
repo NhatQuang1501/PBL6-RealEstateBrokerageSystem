@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useAppContext } from "../../AppProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function SideProjects() {
-  const { sessionToken } = useAppContext();
+  const { id, sessionToken } = useAppContext();
   const [friends, setFriends] = useState([]);
   const [numFriends, setNumFriends] = useState(0);
-  const [avatar, setAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { userId } = useParams();
 
   const handleCreatePostClick = () => {
     navigate("/user/create-post");
@@ -21,8 +21,12 @@ export default function SideProjects() {
   useEffect(() => {
     const fetchFriends = async () => {
       try {
+        let author = userId;
+        if (userId === undefined) {
+          author = id;
+        }
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/friendlist/",
+          `http://127.0.0.1:8000/api/friendlist/${author}/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,

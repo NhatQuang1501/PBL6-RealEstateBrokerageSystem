@@ -1,3 +1,4 @@
+import { useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Post from "../../components/item_post/Post";
 import Pagination from "../../components/pagination/pagination";
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function Portfolio() {
   const { sessionToken, id } = useAppContext();
+  const { userId } = useParams();
 
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,7 +29,7 @@ export default function Portfolio() {
 
   const handleFilterChange = (status) => {
     setFilterStatus(status);
-    localStorage.setItem("filterStatus", status); // Lưu trạng thái vào localStorage
+    localStorage.setItem("filterStatus", status);
     setCurrentPage(1);
     window.location.reload();
   };
@@ -35,11 +37,23 @@ export default function Portfolio() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // Chọn API dựa trên filterStatus
-        const url =
-          filterStatus === "Đã duyệt"
-            ? `http://127.0.0.1:8000/api/posts/`
-            : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
+        let author = userId;
+        if (userId === undefined) {
+          author = id;
+        }
+
+        // const url =
+        //   filterStatus === "Đã duyệt"
+        //     ? `http://127.0.0.1:8000/api/posts/${author}/`
+        //     : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
+        let url;
+        if(filterStatus === "Đã duyệt"){
+          url = `http://127.0.0.1:8000/api/posts/${author}/`;
+        }
+        if(filterStatus === "Đang chờ duyệt" && id === author){
+          url = `http://127.0.0.1:8000/api/pending-posts/${id}/`;
+        }
+        
 
         const response = await fetch(url, {
           method: "GET",

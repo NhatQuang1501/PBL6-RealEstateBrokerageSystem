@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
 import { useState, useEffect } from "react";
@@ -6,11 +6,15 @@ import axios from "axios";
 
 function Header() {
   let navigate = useNavigate();
+  const location = useLocation(); // Lấy đường dẫn hiện tại
   const [ava, setAva] = useState("");
 
   const { sessionToken, setSessionToken, setRole, role, name } =
     useAppContext();
-  console.log(name);
+  const { id } = useAppContext();
+
+  const [activeLink, setActiveLink] = useState(location.pathname);
+
   const handleLogout = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/auth/logout/`, {
@@ -34,8 +38,6 @@ function Header() {
     }
   };
 
-  const { id } = useAppContext();
-
   useEffect(() => {
     const fetchAvatar = async () => {
       try {
@@ -47,7 +49,6 @@ function Header() {
             },
           }
         );
-        console.log(response);
         if (response.data.avatar_url === null) {
           response.data.avatar_url =
             "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
@@ -60,21 +61,31 @@ function Header() {
     fetchAvatar();
   }, [id]);
 
+  useEffect(() => {
+    setActiveLink(location.pathname); // Cập nhật activeLink khi đường dẫn thay đổi
+  }, [location]);
+
+  const linkStyle =
+    "text-oxford-blue font-semibold hover:text-[#3CA9F9] transition duration-300"; // Hiệu ứng transition
+
   return (
     <>
       {!sessionToken && role !== "user" ? (
-        <div className=" sticky top-0 h-[13vh] bg-white font-montserrat z-50">
-          <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
+        <div className="sticky top-0 h-[12vh] bg-white font-montserrat z-50 shadow-md shadow-blue-100 mb-5 rounded-b-[10rem]">
+          <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between">
             <div id="logo-header" className="flex items-center gap-1">
-              <img className="w-[33px] " src={Logo} alt=""></img>
+              <img className="w-[33px]" src={Logo} alt=""></img>
               <strong className="font-bold text-base">SweetHome</strong>
             </div>
-            <nav className="flex items-center w-[60%] px-6 ">
+            <nav className="flex items-center w-[60%] px-6">
               <ul className="flex space-x-6 gap-10">
                 <li>
                   <Link
                     to="/"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/")}
                   >
                     Trang chủ
                   </Link>
@@ -82,7 +93,10 @@ function Header() {
                 <li>
                   <a
                     href="#!"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/news" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/news")}
                   >
                     Tin tức
                   </a>
@@ -90,7 +104,10 @@ function Header() {
                 <li>
                   <a
                     href="#!"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/guide")}
                   >
                     Hướng dẫn
                   </a>
@@ -98,7 +115,10 @@ function Header() {
                 <li>
                   <a
                     href="#!"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/contact" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/contact")}
                   >
                     Liên hệ
                   </a>
@@ -106,7 +126,10 @@ function Header() {
                 <li>
                   <Link
                     to="/authen/login"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/authen/login" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/authen/login")}
                   >
                     Đăng tin
                   </Link>
@@ -124,18 +147,23 @@ function Header() {
           </div>
         </div>
       ) : (
-        <div className=" sticky top-0 h-[13vh] bg-white  font-montserrat z-50">
-          <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between ">
+        <div className="sticky top-0 h-[12vh] bg-white font-montserrat z-50 shadow-md shadow-blue-100 mb-5 rounded-b-[10rem]">
+          <div className="main-content h-[13vh] w-screen px-3 flex items-center justify-between">
             <Link to="/" id="logo-header" className="flex items-center gap-1">
-              <img className="w-[33px] " src={Logo} alt=""></img>
+              <img className="w-[33px]" src={Logo} alt=""></img>
               <strong className="font-bold text-base">SweetHome</strong>
             </Link>
-            <nav className="flex items-center w-[60%] px-6 ">
+            <nav className="flex items-center w-[60%] px-6">
               <ul className="flex space-x-6 gap-10">
                 <li>
                   <Link
                     to="/user/main-page-user"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/main-page-user"
+                        ? "text-[#3CA9F9]"
+                        : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/main-page-user")}
                   >
                     Bài đăng
                   </Link>
@@ -143,7 +171,10 @@ function Header() {
                 <li>
                   <a
                     href="#!"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/news" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/news")}
                   >
                     Tin tức
                   </a>
@@ -151,7 +182,10 @@ function Header() {
                 <li>
                   <a
                     href="#!"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/guide")}
                   >
                     Hướng dẫn
                   </a>
@@ -159,7 +193,10 @@ function Header() {
                 <li>
                   <Link
                     to="/user/chat-box"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/chat-box" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/chat-box")}
                   >
                     Nhắn tin
                   </Link>
@@ -167,7 +204,10 @@ function Header() {
                 <li>
                   <Link
                     to="/user/create-post"
-                    className="text-oxford-blue font-semibold hover:text-[#3CA9F9]"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/create-post" ? "text-[#3CA9F9]" : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/create-post")}
                   >
                     Đăng tin
                   </Link>
@@ -204,3 +244,4 @@ function Header() {
 }
 
 export default Header;
+

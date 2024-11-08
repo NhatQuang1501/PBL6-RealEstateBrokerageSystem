@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import img1 from "../../assets/image/hero-bg4.jpg";
 import img2 from "../../assets/image/hero-bg13.jpg";
 import img3 from "../../assets/image/hero-bg8.jpg";
@@ -70,10 +70,10 @@ const HeroSection = ({ setSearchValue }) => {
           </div>
 
           <div className="main-content h-[400px] flex justify-center flex-col absolute top-0 left-0 right-0 z-10">
-            <h1 className="text-4xl font-bold text-white drop-shadow-2xl">
+            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#29519f] via-[#b3cdd0] to-[#3CA9F9] drop-shadow-2xl">
               <span>Chào mừng đến với</span>
             </h1>
-            <p className="text-2xl font-semibold mt-4 text-white drop-shadow-2xl">
+            <p className="text-2xl font-semibold mt-4 text-transparent bg-clip-text bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] drop-shadow-2xl">
               Hệ thống môi giới nhà đất, bất động sản
             </p>
           </div>
@@ -81,7 +81,7 @@ const HeroSection = ({ setSearchValue }) => {
 
         <div className="w-full absolute inset-x-0 bottom-[7rem]">
           <div className="rounded-lg mt-10 p-6 w-[70%] m-auto">
-            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10">
+            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-[#3CA9F9] border-double">
               <button className="tab-btn bg-[#3CA9F9] text-white font-semibold px-4 py-2 rounded-xl z-10">
                 Nhà
               </button>
@@ -93,12 +93,12 @@ const HeroSection = ({ setSearchValue }) => {
               </button>
             </div>
 
-            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl">
+            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-[#3CA9F9] border-double">
               <div className="grid grid-cols-4 gap-6">
                 <div>
                   <label
                     htmlFor="search"
-                    className="block text-base font-medium text-black"
+                    className="block text-base font-bold text-black"
                   >
                     Tìm kiếm:
                   </label>
@@ -161,7 +161,7 @@ const HeroSection = ({ setSearchValue }) => {
                 <div>
                   <label
                     htmlFor="category"
-                    className="block text-base font-medium text-gray-700"
+                    className="block text-base font-bold text-gray-700"
                   >
                     Tình trạng:
                   </label>
@@ -170,32 +170,38 @@ const HeroSection = ({ setSearchValue }) => {
                     name="category"
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
+                    <option value="">Đang bán</option>
+                    <option value="">Đang thương lượng</option>
+                    <option value="">Đã cọc</option>
                     <option value="">Đã bán</option>
-                    <option value="">Chưa bán</option>
                   </select>
                 </div>
                 <div>
                   <label
                     htmlFor="min-price"
-                    className="block text-base font-medium text-gray-700"
+                    className="block text-base font-bold text-gray-700"
                   >
-                    Giá:
+                    Giá (VNĐ):
                   </label>
                   <select
                     id="min-price"
                     name="min-price"
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
-                    <option value="">Dưới 500tr</option>
-                    <option value="">Từ 500tr đến 1ty</option>
-                    <option value="">Từ 1ty đến 3 tỷ</option>
-                    <option value="">3 tỷ trở lên</option>
+                    <option value="">Dưới 500 triệu</option>
+                    <option value="">Từ 500 triệu đến 1 tỷ</option>
+                    <option value="">Từ 1 tỷ đến 3 tỷ</option>
+                    <option value="">Từ 3 tỷ đến 5 tỷ</option>
+                    <option value="">Từ 5 tỷ đến 7 tỷ</option>
+                    <option value="">Từ 7 tỷ đến 9 tỷ</option>
+                    <option value="">Từ 9 tỷ đến 10 tỷ</option>
+                    <option value="">Trên 10 tỷ</option>
                   </select>
                 </div>
                 <div>
                   <label
                     htmlFor="max-price"
-                    className="block text-base font-medium text-gray-700"
+                    className="block text-base font-bold text-gray-700"
                   >
                     Diện tích:
                   </label>
@@ -204,9 +210,14 @@ const HeroSection = ({ setSearchValue }) => {
                     name="max-price"
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
-                    <option value="">Dưới 100m2</option>
-                    <option value="">Từ 100m2 đến 500m2</option>
-                    <option value="">500m2 trở lên</option>
+                    <option value="">Dưới 50m2</option>
+                    <option value="">Từ 50m2 đến 100m2</option>
+                    <option value="">Từ 100m2 đến 200m2</option>
+                    <option value="">Từ 200m2 đến 300m2</option>
+                    <option value="">Từ 300m2 đến 500m2</option>
+                    <option value="">Từ 500m2 đến 700m2</option>
+                    <option value="">Từ 700m2 đến 1000m2</option>
+                    <option value="">Trên 1000m2</option>
                   </select>
                 </div>
               </div>

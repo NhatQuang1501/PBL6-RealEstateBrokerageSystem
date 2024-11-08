@@ -67,27 +67,29 @@ const MainPageUser = ({ searchValue }) => {
 
   return (
     <div className="font-montserrat main-content">
-      <div className="flex items-center justify-between w-[72%]">
-        {!searchValue && (
-          <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem]  rounded-[3rem] mb-3">
+      <div className="flex items-center justify-between w-[72%] ml-10 mt-6 mb-4 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
+        {!searchValue ? (
+          <h3 className="text-2xl font-bold text-white flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
+              className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
             />
             Danh sách bài đăng
           </h3>
-        )}{" "}
-        {searchValue && (
-          <h3 className="text-2xl font-bold text-[#3CA9F9] flex items-center gap-2 pl-5 w-[30rem]  rounded-[3rem] mb-3">
+        ) : (
+          <h3 className="text-2xl font-bold text-white flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
+              className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
             />
-            Đã tìm kiếm theo "{searchValue}"
+            Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
           </h3>
         )}
-        <a className="underline text-blue-700" href="#!">
-          Nhiều hơn thế
+        <a
+          className="text-white font-semibold underline hover:text-blue-300 transition-colors duration-200"
+          href="#!"
+        >
+          Sắp xếp theo
         </a>
       </div>
 

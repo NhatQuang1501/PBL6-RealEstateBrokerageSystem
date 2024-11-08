@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 function UploadImage() {
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [uploadStatus, setUploadStatus] = useState("");
   const [canBack, setCanBack] = useState(false);
   const { postId } = useParams();
@@ -15,32 +15,34 @@ function UploadImage() {
 
   // Handle image selection
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    setImages(Array.from(e.target.files));
   };
 
   // Handle image upload
   const handleUpload = async () => {
-    if (!image) {
-      alert("Vui lòng chọn ảnh trước khi tải lên.");
+    if (images.length === 0) {
+      alert("Vui lòng chọn ít nhất một ảnh trước khi tải lên.");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", image);
-
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/posts/${postId}/images/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      for (const image of images) {
+        const formData = new FormData();
+        formData.append("image", image);
+
+        await axios.post(
+          `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+      }
       setUploadStatus(
-        "Tải lên thành công! Bạn có thể tải thêm ảnh khác hoặc trở lại xem chi tiết bài đăng."
+        "Tất cả ảnh đã được tải lên thành công! Bạn có thể tải thêm ảnh khác hoặc trở lại xem chi tiết bài đăng."
       );
       setCanBack(true);
     } catch (error) {
@@ -76,6 +78,7 @@ function UploadImage() {
           <input
             type="file"
             accept="image/*"
+            multiple
             onChange={handleImageChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
@@ -101,7 +104,7 @@ function UploadImage() {
         {uploadStatus && (
           <p
             className={`mt-4 text-center font-semibold ${
-              uploadStatus === "Tải lên thành công!"
+              uploadStatus.includes("thành công")
                 ? "text-green-600"
                 : "text-red-600"
             }`}

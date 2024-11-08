@@ -198,7 +198,7 @@ const BasicInformation = () => {
           className="block text-left"
           onClick={() => (window.location.href = "/user/create-post")}
         >
-          <h2 className="text-[#3CA9F9] font-extrabold p-3">
+          <h2 className="text-black font-extrabold p-3">
             Chọn loại hình bất động sản:
           </h2>
         </button>
@@ -266,7 +266,7 @@ const BasicInformation = () => {
         {/* Handle select */}
         {showForm && selectedProperty === "house" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-[#3CA9F9] mb-10">
+            <h2 className="text-xl font-bold text-black mb-10">
               Thông tin cơ bản
             </h2>
             <form
@@ -533,6 +533,7 @@ const BasicInformation = () => {
                       required
                       placeholder="vd: 5.5"
                       min="0"
+                      step="any"
                       id="frontage"
                       value={frontage}
                       onChange={(e) => setFrontage(e.target.value)}
@@ -850,6 +851,7 @@ const BasicInformation = () => {
                       required
                       placeholder="vd: 10.5"
                       min="0"
+                      step="any"
                       id="frontage"
                       value={frontage}
                       onChange={(e) => setFrontage(e.target.value)}

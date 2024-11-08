@@ -31,7 +31,7 @@ function App() {
 
   return (
     <AppProvider>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]">
         <Router>
           <Routes>
             {/* User */}

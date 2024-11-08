@@ -19,11 +19,11 @@ const ProfileCard = () => {
   const { id, sessionToken } = useAppContext();
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
-  const [profileImage, setProfileImage] = useState(null);
-  const [fileName, setFileName] = useState("Choose a file");
-  const [loading, setLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(null); // Updated here
+  const [fileName, setFileName] = useState("Hãy chọn file ảnh");
   const [avatar, setAvatar] = useState(null);
   const { userId } = useParams();
+  const [isFriend, setIsFriend] = useState(false);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -88,7 +88,30 @@ const ProfileCard = () => {
       }
     };
     fetchAvatar();
-  }, [id]);
+
+    // Check if the user is a friend
+    const fetchFriends = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/friendlist/${id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          }
+        );
+
+        const friends = response.data.friends;
+        console.log("Friends data-----:", friends);
+        const friendIds = friends.map((friend) => friend.user_id);
+        console.log("Friend IDs------:", friendIds);
+        setIsFriend(friendIds.includes(userId));
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+      }
+    };
+    fetchFriends();
+  }, [id, userId, sessionToken]);
 
   if (!user) {
     return <div>Loading...</div>;
@@ -107,17 +130,17 @@ const ProfileCard = () => {
     if (file) {
       const fileType = file.type;
       if (fileType !== "image/png" && fileType !== "image/jpeg") {
-        alert("Please upload a .png or .jpg image.");
+        alert("Hãy tải ảnh với định dạng `.png` hoặc `.jpg`.");
         fileInputRef.current.value = ""; // Reset file input
-        setFileName("Choose a file"); // Reset file name display
+        setFileName("Hãy chọn file ảnh"); // Reset file name display
         return;
       }
 
       const fileSizeLimit = 25 * 1024 * 1024;
       if (file.size > fileSizeLimit) {
-        alert("File size should not exceed 25 MB.");
+        alert("File ảnh không được quá 25 MB.");
         fileInputRef.current.value = "";
-        setFileName("Choose a file");
+        setFileName("Hãy chọn file ảnh");
         return;
       }
 
@@ -190,18 +213,22 @@ const ProfileCard = () => {
                 type="file"
                 ref={fileInputRef}
                 style={{ display: "none" }}
-                onChange={handleImageUpload} // Gọi handleImageUpload khi người dùng chọn file
+                onChange={handleImageUpload}
               />
             </>
-          ) : (
+          ) : isFriend ? (
+            // Trường hợp bạn bè
             <>
-              <button
-                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
-                // onClick={() => fileInputRef.current.click()}
-              >
+              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
                 Bạn bè
               </button>
-
+            </>
+          ) : (
+            // Trường hợp người lạ
+            <>
+              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
+                Kết bạn{isFriend ? "👍" : "👎"}
+              </button>
             </>
           )}
         </div>
@@ -216,7 +243,8 @@ const ProfileCard = () => {
             Cập nhật trang cá nhân
           </button>
         </>
-      ) : (
+      ) : isFriend ? (
+        // Trường hợp bạn bè
         <>
           {/* Contact Button */}
           <button
@@ -225,6 +253,16 @@ const ProfileCard = () => {
           >
             Nhắn tin
           </button>
+        </>
+      ) : (
+        <>
+          {/* Contact Button */}
+          {/* <button
+            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            // onClick={() => handleUpdateProfile()}
+          >
+            Nhắn tin
+          </button> */}
         </>
       )}
 
