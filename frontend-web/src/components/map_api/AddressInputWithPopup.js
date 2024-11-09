@@ -42,7 +42,7 @@ const fetchSuggestions = async (query) => {
 
     debounceTimeoutRef.current = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 500);
+    }, 200);
 
     return () => {
       if (debounceTimeoutRef.current) {
@@ -137,9 +137,7 @@ return (
         placeholder="Nhấp để kiểm tra địa chỉ bất động sản"
         readOnly
       />
-      <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 font-semibold cursor-pointer transition hover:text-blue-800">
-        Chọn địa chỉ
-      </span>
+
     </div>
 
     {/* Popup địa chỉ */}

@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import { FaQuoteLeft } from "react-icons/fa";
 
 const DetailDescription = ({
   description,
@@ -14,8 +15,9 @@ const DetailDescription = ({
       : safeDescription;
 
   return (
-    <div className="border-[1px] border-double border-[#3CA9F9] rounded-lg p-4 space-y-2 shadow-md">
-      <h2 className="text-[#3CA9F9] text-lg mb-2 font-extrabold">
+    <div className="border-[1px] border-double border-gray-200 rounded-lg p-4 space-y-2 shadow-md">
+      <FaQuoteLeft className="text-2xl text-blue-500" />
+      <h2 className="text-gray-600 underline text-lg mb-2 font-extrabold">
         Thông tin chi tiết :
       </h2>
       <p className="leading-relaxed">{truncatedText}</p>

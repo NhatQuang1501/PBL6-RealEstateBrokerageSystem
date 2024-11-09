@@ -50,8 +50,17 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex items-center justify-center bg-gray-200 font-montserrat">
-      <div className="flex w-3/4 max-w-[50%] min-h-[30rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-36">
+    <div
+      className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto relative"
+      style={{
+        backgroundImage: `url('https://static.chotot.com/storage/chotot-kinhnghiem/nha/2021/12/b039cc56-ban-dat-1-e1638373452143.webp')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        // filter: "blur(8px)",
+      }}
+    >
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative flex w-3/4 max-w-[50%] min-h-[30rem] bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-30">
         {/* Thanh phải */}
         <div className="w-1/2 bg-[#4F91F5] text-white p-8 flex flex-col items-center text-center justify-center rounded-tr-[6rem] rounded-br-[6rem] gap-[22px]">
           <h2 className="text-2xl font-bold mb-4">Chào mừng người mới</h2>
@@ -60,13 +69,16 @@ const SignUpForm = () => {
             Hãy đăng ký tài khoản Hoặc đăng nhập nếu bạn đã có tài khoản
           </p>
 
-          <button className="border-2 text-white border-solid border-white font-bold  w-[110px] h-[35px] rounded-lg hover:bg-blue-600 transition duration-300"
-          onClick={() => navigate("/authen/login")}
+          <button
+            className="border-2 text-white border-solid border-white font-bold  w-[110px] h-[35px] rounded-lg hover:bg-blue-600 transition duration-300"
+            onClick={() => navigate("/authen/login")}
           >
             Đăng nhập
           </button>
           <p className=" text-[12px]">Hoặc</p>
-          <a href="/" className="underline text-[13px]">Quay lại trang chủ</a>
+          <a href="/" className="underline text-[13px]">
+            Quay lại trang chủ
+          </a>
         </div>
 
         {/* Thanh trái */}

@@ -50,6 +50,7 @@ class PostView(APIView):
 
             elif Post.objects.filter(post_id=pk).exists():
                 post = get_object_or_404(Post, post_id=pk)
+                # .order_by("-created_at")
                 post.view_count += 1
                 post.save()
                 post_serializer = PostSerializer(
@@ -80,6 +81,11 @@ class PostView(APIView):
                 posts, many=True, context={"request_type": "list"}
             )
 
+            return Response(
+                # {"count": posts.count(), "data": post_serializer.data},
+                post_serializer.data,
+                status=status.HTTP_200_OK,
+            )
             return Response(
                 # {"count": posts.count(), "data": post_serializer.data},
                 post_serializer.data,

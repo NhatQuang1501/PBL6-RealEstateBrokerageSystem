@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
@@ -14,7 +12,7 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch(`http://127.0.0.1:8000/auth/login/`, {
         method: "POST",
@@ -26,9 +24,9 @@ const LoginForm = () => {
           password: password,
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         setSessionToken(data.tokens.access);
         setRole(data.role);
@@ -37,27 +35,23 @@ const LoginForm = () => {
         console.log("Đăng nhập thành công!");
         console.log("Role: ", role);
         console.log("Ten: ", username);
-      
-        if (data.data && role === 'admin') {
-          setName(data.data.username); 
-          setId(data.data.user_id); 
+
+        if (data.data && role === "admin") {
+          setName(data.data.username);
+          setId(data.data.user_id);
+        } else if (data.data && role === "user") {
+          setName(data.data.user.username);
+          setId(data.data.user_id);
         } else {
           console.error("Dữ liệu không hợp lệ:", data);
           setError("Dữ liệu người dùng không hợp lệ.");
         }
-        if (data.data && role === 'user') {
-          setName(data.data.user.username); 
-          setId(data.data.user_id); 
-        } else {
-          console.error("Dữ liệu không hợp lệ:", data);
-          setError("Dữ liệu người dùng không hợp lệ.");
+
+        if (role === "admin") {
+          navigate("/admin/dashboard");
+        } else if (role === "user") {
+          navigate("/user/main-page-user");
         }
-        if (role === 'admin') {
-          navigate('/admin/dashboard'); 
-        } else if (role === 'user') {
-          navigate('/user/main-page-user'); 
-        }
-  
       } else {
         setError(data.message || "Đăng nhập thất bại");
       }
@@ -68,9 +62,18 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto">
-      <div className="flex w-3/4 max-w-[50%] min-h-[30rem] m-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-36">
-        {/* Thanh trái */}
+    <div
+      className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto relative"
+      style={{
+        backgroundImage: `url('https://ww1.prweb.com/prfiles/2015/03/02/12556168/Geneva_Q1_Facade.jpg')`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        // filter: "blur(8px)",
+      }}
+    >
+      <div className="absolute inset-0 bg-black opacity-50"></div>
+      <div className="relative flex w-3/4 max-w-[50%] min-h-[30rem] m-auto bg-white shadow-2xl rounded-[2rem] overflow-hidden mt-30">
+        {/* Left Section */}
         <div className="w-1/2 p-8 flex flex-col items-center justify-center">
           <h2 className="text-2xl font-bold text-black mb-6 pb-10">
             Đăng nhập
@@ -137,7 +140,9 @@ const LoginForm = () => {
             Đăng ký
           </button>
           <p className=" text-[12px]">Hoặc</p>
-          <a href="/" className="underline text-[13px]">Quay lại trang chủ</a>
+          <a href="/" className="underline text-[13px]">
+            Quay lại trang chủ
+          </a>
         </div>
       </div>
     </div>
@@ -145,4 +150,3 @@ const LoginForm = () => {
 };
 
 export default LoginForm;
-

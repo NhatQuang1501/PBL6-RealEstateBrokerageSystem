@@ -9,31 +9,29 @@ import {
   faShareAlt,
   faBookmark,
   faListAlt,
+  faArrowLeft,
+  faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import Comment from "../../components/comment/Comment";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const DetailPost = () => {
-  const { id } = useAppContext();
+  const { id, sessionToken } = useAppContext();
   const { postId } = useParams();
-  const { sessionToken } = useAppContext();
   const [post, setPost] = useState();
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState();
   const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();
+  const [reactionsCount, setReactionsCount] = useState();
+  const [commentCount, setCommentCount] = useState();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const handleClick = () => {
-    setTimeout(() => {
-      setIsClicked(!isClicked);
-    }, 80);
-  };
 
   const handleSaveClick = () => {
     setTimeout(() => {
@@ -45,6 +43,7 @@ const DetailPost = () => {
     navigate(`/user/update-post/${postId}`);
   };
 
+  // Delete post
   const handleDelete = async (postId) => {
     const userConfirmed = window.confirm(
       "Bạn có chắc chắn muốn xóa bài đăng này không?"
@@ -75,6 +74,7 @@ const DetailPost = () => {
     }
   };
 
+  // Get post
   useEffect(() => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
@@ -93,6 +93,8 @@ const DetailPost = () => {
 
         const data = await response.json();
         console.log("Post data:", data);
+        setReactionsCount(data.reactions_count);
+        setCommentCount(data.comments_count);
         setPost(data);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -100,10 +102,88 @@ const DetailPost = () => {
     };
 
     fetchPostById();
-  }, [postId]);
+
+    const checkLiked = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/user-posts-like/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.status === 200) {
+          const likedPosts = response.data.map((post) => post.post_id);
+          if (likedPosts.includes(postId)) {
+            setIsClicked(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking liked posts:", error);
+      }
+    };
+    checkLiked();
+
+    // fetch images
+  }, [postId, sessionToken]);
+
+  // check liked
+  // useEffect(() => {}, [sessionToken, postId]);
+
+  const handleClick = useCallback(async () => {
+    // setIsClicked((prevClicked) => {
+    //   setReactionsCount((prevCount) =>
+    //     prevClicked ? prevCount - 1 : prevCount + 1
+    //   );
+    //   return !prevClicked;
+    // });
+    if (!sessionToken) {
+      alert("Bạn cần đăng nhập để thực hiện hành động này.");
+      return;
+    } else {
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/posts/${postId}/like/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error liking the post:", error);
+      }
+      window.location.reload();
+    }
+  }, [sessionToken, postId]);
+
+  //test upload image
+  const handleUploadImage = () => {
+    navigate(`/upload-image/${postId}`);
+  };
 
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 font-montserrat">
+      <button
+        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center"
+        onClick={() => window.history.back()}
+      >
+        <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
+        Quay lại
+      </button>
+
+      <button
+        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center"
+        onClick={handleUploadImage}
+      >
+        <FontAwesomeIcon icon={faUpload} className="mr-2" />
+        Tải ảnh lên
+      </button>
+
       <h3 className="mt-5 p-2 text-2xl font-bold text-white flex items-center gap-2 pl-5 w-[22rem] shadow-2xl shadow-[#E4FFFC] rounded-[3rem]">
         <FontAwesomeIcon
           icon={faListAlt}
@@ -160,8 +240,9 @@ const DetailPost = () => {
               <div className="flex flex-row justify-between">
                 <div className="">
                   <ProfileInformation
-                    name={post.user.username} // Truy cập đúng vào thuộc tính username của tác giả
-                    date={post.created_at} // Truy cập vào ngày tạo bài viết
+                    name={post.user.username}
+                    user_id={post.user.user_id}
+                    date={post.created_at}
                   />
                 </div>
 
@@ -179,12 +260,12 @@ const DetailPost = () => {
                         }`}
                       />
                     </button>
-                    <span>33</span>
+                    <span>{reactionsCount}</span>
                   </div>
                   {/* Chat */}
-                  <div className="flex items-end text-gray-500 space-x-1">
+                  <div className="flex items-end text-[#3CA9F9] space-x-1">
                     <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
-                    <span>124</span>
+                    <span>{commentCount}</span>
                   </div>
                   {/* Share */}
                   <div className="flex items-end text-gray-500 space-x-1">
@@ -223,9 +304,12 @@ const DetailPost = () => {
                 city={post.city}
                 description={post.description}
               />
+              {/* Image */}
+              {/* http://127.0.0.1:8000/api/posts/cc129313-2e8c-44a5-84d8-f55a85529f49/images/ */}
               <ImageCard
-                title="Hình ảnh mô tả:"
-                imageUrl="https://th.bing.com/th/id/OIP.jbWA3pC_GsfnBH5IohOa8gHaFB?rs=1&pid=ImgDetMain"
+                type="detail"
+                postId={postId}
+                // images={images}
               />
               <DetailDescription
                 description={post.description}

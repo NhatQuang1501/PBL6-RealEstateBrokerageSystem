@@ -1,8 +1,9 @@
 // components/ProfileCard.js
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import { useState } from "react";
+import axios from "axios";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -15,8 +16,14 @@ import {
 
 const ProfileCard = () => {
   const navigate = useNavigate();
-  const { id } = useAppContext();
+  const { id, sessionToken } = useAppContext();
   const [user, setUser] = useState(null);
+  const fileInputRef = useRef(null);
+  const [profileImage, setProfileImage] = useState(null); // Updated here
+  const [fileName, setFileName] = useState("Hãy chọn file ảnh");
+  const [avatar, setAvatar] = useState(null);
+  const { userId } = useParams();
+  const [isFriend, setIsFriend] = useState(false);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -24,10 +31,17 @@ const ProfileCard = () => {
   };
 
   useEffect(() => {
-    console.log("User ID:", id);
+    console.log("My ID:", id);
+    console.log("User ID:", userId);
     const fetchUserById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/auth/users/${id}/`;
+        let url;
+        if (userId) {
+          url = `http://127.0.0.1:8000/auth/users/${userId}/`;
+        } else {
+          url = `http://127.0.0.1:8000/auth/users/${id}/`;
+        }
+
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -48,7 +62,56 @@ const ProfileCard = () => {
     };
 
     fetchUserById();
-  }, [id]);
+
+    // ava
+    const fetchAvatar = async () => {
+      try {
+        let url;
+        if (userId) {
+          url = `http://127.0.0.1:8000/auth/users-avatar/${userId}/`;
+        } else {
+          url = `http://127.0.0.1:8000/auth/users-avatar/${id}/`;
+        }
+        const response = await axios.get(url, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log(response);
+        if (response.data.avatar_url === null) {
+          response.data.avatar_url =
+            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
+        }
+        setAvatar(response.data.avatar_url);
+      } catch (error) {
+        console.error("Error fetching avatar:", error);
+      }
+    };
+    fetchAvatar();
+
+    // Check if the user is a friend
+    const fetchFriends = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/friendlist/${id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          }
+        );
+
+        const friends = response.data.friends;
+        console.log("Friends data-----:", friends);
+        const friendIds = friends.map((friend) => friend.user_id);
+        console.log("Friend IDs------:", friendIds);
+        setIsFriend(friendIds.includes(userId));
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+      }
+    };
+    fetchFriends();
+  }, [id, userId, sessionToken]);
 
   if (!user) {
     return <div>Loading...</div>;
@@ -62,24 +125,146 @@ const ProfileCard = () => {
     );
   };
 
-  return (
-    <div className="bg-blue-600 text-white p-6 rounded-lg shadow-lg">
-      {/* Profile Image */}
-      <div className="mb-4 flex justify-center">
-        <img
-          src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/b514e3cf-d394-43fb-be65-1711518576b6/dfn0ve3-906de5ab-99c9-4b44-bea6-93871c92b44c.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcL2I1MTRlM2NmLWQzOTQtNDNmYi1iZTY1LTE3MTE1MTg1NzZiNlwvZGZuMHZlMy05MDZkZTVhYi05OWM5LTRiNDQtYmVhNi05Mzg3MWM5MmI0NGMucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.cg82kq5m0-7VH5b2LoFAUEdWLsLTcdczzsB_nFBjH44"
-          alt="profile"
-          className="rounded-full w-[12rem] h-[12rem] object-cover"
-        />
-      </div>
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const fileType = file.type;
+      if (fileType !== "image/png" && fileType !== "image/jpeg") {
+        alert("Hãy tải ảnh với định dạng `.png` hoặc `.jpg`.");
+        fileInputRef.current.value = ""; // Reset file input
+        setFileName("Hãy chọn file ảnh"); // Reset file name display
+        return;
+      }
 
-      {/* Contact Button */}
-      <button
-        className="bg-teal-500 px-4 py-2 rounded-lg w-full mb-4"
-        onClick={() => handleUpdateProfile()}
-      >
-        Cập nhật trang cá nhân
-      </button>
+      const fileSizeLimit = 25 * 1024 * 1024;
+      if (file.size > fileSizeLimit) {
+        alert("File ảnh không được quá 25 MB.");
+        fileInputRef.current.value = "";
+        setFileName("Hãy chọn file ảnh");
+        return;
+      }
+
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+      updateAvatar(file);
+    }
+  };
+
+  const updateAvatar = async (file) => {
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/auth/users-avatar/`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      console.log("Avatar updated successfully:", response.data);
+      alert("Ảnh đại diện được tải lên thành công !");
+      setAvatar(response.data.avatar_url);
+      window.location.reload();
+    } catch (error) {
+      console.error("Error updating avatar:", error);
+      alert("Tải ảnh đại diện thất bại !");
+    }
+  };
+
+  return (
+    <div className="bg-[#FBBF24] text-white p-6 rounded-lg shadow-lg">
+      {/* Profile Image */}
+      <div className="mb-4 flex flex-col justify-center">
+        <div className="grid justify-center">
+          {avatar ? (
+            <img
+              src={avatar}
+              alt="profile"
+              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-500"
+            />
+          ) : (
+            <img
+              //Ảnh thay thế
+              src="https://th.bing.com/th/id/OIP.PVzhiWdGqLXudD0PNtsMtwHaHa?w=980&h=980&rs=1&pid=ImgDetMain"
+              alt="profile"
+              className="rounded-full w-[12rem] h-[12rem] object-cover"
+            />
+          )}
+
+          {!userId || userId === id ? (
+            <>
+              <button
+                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                onClick={() => fileInputRef.current.click()}
+              >
+                Thay đổi ảnh đại diện
+              </button>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleImageUpload}
+              />
+            </>
+          ) : isFriend ? (
+            // Trường hợp bạn bè
+            <>
+              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
+                Bạn bè
+              </button>
+            </>
+          ) : (
+            // Trường hợp người lạ
+            <>
+              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
+                Kết bạn{isFriend ? "👍" : "👎"}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+      {!userId || userId === id ? (
+        <>
+          {/* Contact Button */}
+          <button
+            className="bg-teal-500 px-4 py-2 rounded-lg w-full mb-4"
+            onClick={() => handleUpdateProfile()}
+          >
+            Cập nhật trang cá nhân
+          </button>
+        </>
+      ) : isFriend ? (
+        // Trường hợp bạn bè
+        <>
+          {/* Contact Button */}
+          <button
+            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            // onClick={() => handleUpdateProfile()}
+          >
+            Nhắn tin
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Contact Button */}
+          {/* <button
+            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            // onClick={() => handleUpdateProfile()}
+          >
+            Nhắn tin
+          </button> */}
+        </>
+      )}
 
       {/* Face Customizer Options */}
       <div className="p-6 bg-white rounded-lg shadow-md">
