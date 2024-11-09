@@ -111,6 +111,7 @@ class PostSerializer(serializers.ModelSerializer):
             "reactions_count",
             "view_count",
             "comments_count",
+            "save_count",
         ]
         extra_kwargs = {
             "post_id": {"read_only": True},
@@ -135,6 +136,7 @@ class PostSerializer(serializers.ModelSerializer):
             "images": {"required": False},
             "description": {"required": False},
             "view_count": {"read_only": True},
+            "save_count": {"read_only": True},
         }
 
     def to_representation(self, instance):
@@ -221,6 +223,7 @@ class PostSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get("description", instance.description)
         instance.status = Status.PENDING_APPROVAL
         instance.view_count = validated_data.get("view_count", instance.view_count)
+        instance.save_count = validated_data.get("save_count", instance.save_count)
 
         instance.save()
         return instance
@@ -317,3 +320,18 @@ class PostImageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         post_image = PostImage.objects.create(**validated_data)
         return post_image
+
+
+class SavedPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedPost
+
+        fields = ["savedpost_id", "user", "post", "created_at"]
+        extra_kwargs = {
+            "savedpost_id": {"read_only": True},
+            "created_at": {"read_only": True},
+        }
+
+    def create(self, validated_data):
+        savedpost = SavedPost.objects.create(**validated_data)
+        return savedpost

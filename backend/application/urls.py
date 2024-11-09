@@ -20,7 +20,8 @@ urlpatterns = [
     path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
     path("house-posts/", HousePostView.as_view(), name="house-posts"),
     path("land-posts/", LandPostView.as_view(), name="land-posts"),
-    path("highlighted-posts/", HighlightedPostView.as_view(), name="highlighted-posts"),
+    path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
+    path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Sold Post Endpoints
     path(
         "sold-posts/",
