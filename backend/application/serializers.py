@@ -243,10 +243,10 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_reactions_count(self, obj):
         return PostReaction.objects.filter(post_id=obj).count()
-    
+
     def get_comments_count(self, obj):
         return PostComment.objects.filter(post_id=obj).count()
-    
+
 
 class PostCommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
