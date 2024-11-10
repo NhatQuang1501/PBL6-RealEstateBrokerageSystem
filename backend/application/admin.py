@@ -12,7 +12,13 @@ class NegotiationAdmin(admin.ModelAdmin):
     list_display = ["post", "user", "offer_price", "is_accepted"]
 
 
+class SavedPostAdmin(admin.ModelAdmin):
+    list_display = ["post", "user"]
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Negotiation, NegotiationAdmin)
 admin.site.register(PostComment)
 admin.site.register(PostReaction)
+admin.site.register(PostImage)
+admin.site.register(SavedPost, SavedPostAdmin)

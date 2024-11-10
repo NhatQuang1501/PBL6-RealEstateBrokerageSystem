@@ -3,6 +3,7 @@ from application.views.admin_post_view import AdminPostView
 from application.views.post_view import *
 from application.views.enum_view import EnumView
 from application.views.negotiation_view import *
+from application.views.ordered_post_view import *
 
 
 urlpatterns = [
@@ -15,6 +16,12 @@ urlpatterns = [
     path("posts/<str:pk>/", PostView.as_view(), name="posts-detail"),
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
+    # Ordered Post Endpoints
+    path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
+    path("house-posts/", HousePostView.as_view(), name="house-posts"),
+    path("land-posts/", LandPostView.as_view(), name="land-posts"),
+    path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
+    path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Sold Post Endpoints
     path(
         "sold-posts/",

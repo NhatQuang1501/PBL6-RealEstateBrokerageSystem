@@ -46,6 +46,7 @@ class Post(models.Model):
     description = models.TextField(blank=True, null=True)
 
     view_count = models.IntegerField(default=0)
+    save_count = models.IntegerField(default=0)
 
     highest_offer_price = models.DecimalField(
         max_digits=15, decimal_places=2, default=Decimal("0.00"), blank=True, null=True
@@ -132,3 +133,20 @@ class PostImage(models.Model):
 
     def __str__(self):
         return str(self.image_id)
+
+
+class SavedPost(models.Model):
+    savedpost_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False
+    )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="saved_post")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="saved_post_user"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")  # User chỉ được lưu mỗi bài đăng 1 lần
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.post.title}"
