@@ -47,6 +47,30 @@ class FriendRequestView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        receiver = get_object_or_404(User, username=receiver_username)
+
+        # Đã là bạn bè
+        is_friend = Friendship.objects.filter(
+            (Q(user1=request.user) & Q(user2=receiver))
+            | (Q(user1=receiver) & Q(user2=request.user))
+        ).exists()
+        if is_friend:
+            return Response(
+                {"error": "Bạn và người này đã là bạn bè"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Đã có lời mời kết bạn
+        pending_request_exists = FriendRequest.objects.filter(
+            (Q(sender=request.user) & Q(receiver=receiver))
+            | (Q(sender=receiver) & Q(receiver=request.user))
+        ).exists()
+        if pending_request_exists:
+            return Response(
+                {"error": "Đã tồn tại lời mời kết bạn đang chờ xử lý"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # Tạo yêu cầu kết bạn mới
         serializer = FriendRequestSerializer(
             data=request.data, context={"request": request}
@@ -157,16 +181,17 @@ class FriendListView(APIView):
     def get(self, request, user_id):
         user = get_object_or_404(User, user_id=user_id)
 
-        # Lấy danh sách friend requests mà người dùng đã chấp nhận
-        accepted_requests = FriendRequest.objects.filter(
-            (models.Q(sender=user) | models.Q(receiver=user)),
-            friendrequest_status="đã kết bạn",
-        ).order_by("-created_at")
+        # Lấy danh sách bạn bè hiện tại từ bảng Friendship
+        friendships = Friendship.objects.filter(Q(user1=user) | Q(user2=user)).order_by(
+            "-created_at"
+        )
 
-        # Tạo danh sách bạn bè
+        # Tạo danh sách bạn bè từ các mối quan hệ còn tồn tại
         friend_list = []
-        for request in accepted_requests:
-            friend_user = request.receiver if request.sender == user else request.sender
+        for friendship in friendships:
+            friend_user = (
+                friendship.user2 if friendship.user1 == user else friendship.user1
+            )
 
             friend_data = {
                 "user_id": str(friend_user.user_id),
@@ -190,4 +215,45 @@ class FriendListView(APIView):
                 "friends": friend_list,
             },
             status=status.HTTP_200_OK,
+        )
+
+    def delete(self, request):
+        user = request.user
+        friend_user_id = request.data.get("friend_user_id")
+
+        if not friend_user_id:
+            return Response(
+                {"error": "Hãy cung cấp user_id của người bạn muốn xóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        friend_user = get_object_or_404(User, user_id=friend_user_id)
+
+        friendship = Friendship.objects.filter(
+            (Q(user1=user) & Q(user2=friend_user))
+            | (Q(user1=friend_user) & Q(user2=user))
+        ).first()
+
+        if not friendship:
+            return Response(
+                {"error": "Người dùng này không có trong danh sách bạn bè của bạn"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user not in [friendship.user1, friendship.user2]:
+            return Response(
+                {"error": "Bạn không có quyền hủy kết bạn trong mối quan hệ này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        # Xóa quan hệ bạn bè
+        friendship.delete()
+        FriendRequest.objects.filter(
+            (Q(sender=user) & Q(receiver=friend_user))
+            | (Q(sender=friend_user) & Q(receiver=user))
+        ).delete()
+
+        return Response(
+            {"message": "Đã hủy kết bạn thành công"},
+            status=status.HTTP_204_NO_CONTENT,
         )

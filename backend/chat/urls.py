@@ -34,4 +34,9 @@ urlpatterns = [
         FriendListView.as_view(),
         name="accept_friend_requests",
     ),
+    path(
+        "unfriend/",
+        FriendListView.as_view(),
+        name="unfriend",
+    ),
 ]
