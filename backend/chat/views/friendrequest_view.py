@@ -128,6 +128,18 @@ class FriendRequestView(APIView):
     def delete(self, request, pk):
         # Xóa yêu cầu kết bạn
         friend_request = get_object_or_404(FriendRequest, friendrequest_id=pk)
+        if request.user != friend_request.sender:
+            return Response(
+                {"error": "Bạn không có quyền xóa yêu cầu kết bạn này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if friend_request.status != FriendRequest_status.PENDING:
+            return Response(
+                {"error": "Chỉ có thể xóa yêu cầu kết bạn khi trạng thái đang chờ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         friend_request.delete()
 
         return Response(
