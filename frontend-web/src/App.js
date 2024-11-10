@@ -28,6 +28,9 @@ import ViewPersonProfile from "./pages/user/ViewPersonProfile";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
+  const [filterStatusValue, setFilterStatusValue] = useState("");
+  const [filterPriceValue, setFilterPriceValue] = useState("");
+  const [filterAreaValue, setFilterAreaValue] = useState("");
 
   return (
     <AppProvider>
@@ -40,8 +43,18 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage setSearchValue={setSearchValue} />
-                  <MainPageUser searchValue={searchValue} />
+                  <HeroPage
+                    setSearchValue={setSearchValue}
+                    setFilterStatusValue={setFilterStatusValue}
+                    setFilterPriceValue={setFilterPriceValue}
+                    setFilterAreaValue={setFilterAreaValue}
+                  />
+                  <MainPageUser
+                    searchValue={searchValue}
+                    filterStatusValue={filterStatusValue}
+                    filterPriceValue={filterPriceValue}
+                    filterAreaValue={filterAreaValue}
+                  />
                   <Footer />
                 </>
               }
@@ -74,8 +87,18 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage setSearchValue={setSearchValue} />
-                  <MainPageUser searchValue={searchValue} />
+                  <HeroPage
+                    setSearchValue={setSearchValue}
+                    setFilterStatusValue={setFilterStatusValue}
+                    setFilterPriceValue={setFilterPriceValue}
+                    setFilterAreaValue={setFilterAreaValue}
+                  />
+                  <MainPageUser
+                    searchValue={searchValue}
+                    filterStatusValue={filterStatusValue}
+                    filterPriceValue={filterPriceValue}
+                    filterAreaValue={filterAreaValue}
+                  />
                   <Footer />
                 </>
               }

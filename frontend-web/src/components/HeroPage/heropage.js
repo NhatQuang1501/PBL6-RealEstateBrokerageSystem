@@ -5,11 +5,17 @@ import img3 from "../../assets/image/hero-bg8.jpg";
 
 import { FaSearch, FaTimes, FaLightbulb } from "react-icons/fa";
 
-const HeroSection = ({ setSearchValue }) => {
+const HeroSection = ({
+  setSearchValue,
+  setFilterStatusValue,
+  setFilterPriceValue,
+  setFilterAreaValue,
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [popupValue, setPopupValue] = useState("");
+
   const images = [
     { url: img1, alt: "Image 1" },
     { url: img2, alt: "Image 2" },
@@ -48,6 +54,18 @@ const HeroSection = ({ setSearchValue }) => {
     });
   };
 
+  const handleFilterStatusChange = (e) => {
+    setFilterStatusValue(e.target.value);
+  };
+
+  const handleFilterPriceChange = (e) => {
+    setFilterPriceValue(e.target.value);
+  };
+
+  const handleFilterAreaChange = (e) => {
+    setFilterAreaValue(e.target.value);
+  };
+
   return (
     <section className="h-[78vh] overflow-hidden font-montserrat">
       <div className="container mx-auto w-full h-full">
@@ -70,10 +88,10 @@ const HeroSection = ({ setSearchValue }) => {
           </div>
 
           <div className="main-content h-[400px] flex justify-center flex-col absolute top-0 left-0 right-0 z-10">
-            <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#29519f] via-[#b3cdd0] to-[#3CA9F9] drop-shadow-2xl">
+            <h1 className="text-4xl font-bold text-transparent text-white drop-shadow-2xl">
               <span>Chào mừng đến với</span>
             </h1>
-            <p className="text-2xl font-semibold mt-4 text-transparent bg-clip-text bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] drop-shadow-2xl">
+            <p className="text-2xl font-semibold mt-4 text-transparent text-white drop-shadow-2xl">
               Hệ thống môi giới nhà đất, bất động sản
             </p>
           </div>
@@ -168,12 +186,14 @@ const HeroSection = ({ setSearchValue }) => {
                   <select
                     id="category"
                     name="category"
+                    onChange={handleFilterStatusChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
-                    <option value="">Đang bán</option>
-                    <option value="">Đang thương lượng</option>
-                    <option value="">Đã cọc</option>
-                    <option value="">Đã bán</option>
+                    <option value="">Tất cả</option>
+                    <option value="Đang bán">Đang bán</option>
+                    <option value="Đang thương lượng">Đang thương lượng</option>
+                    <option value="Đã cọc">Đã cọc</option>
+                    <option value="Đã bán">Đã bán</option>
                   </select>
                 </div>
                 <div>
@@ -184,40 +204,44 @@ const HeroSection = ({ setSearchValue }) => {
                     Giá (VNĐ):
                   </label>
                   <select
-                    id="min-price"
-                    name="min-price"
+                    id="price"
+                    name="price"
+                    onChange={handleFilterPriceChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
-                    <option value="">Dưới 500 triệu</option>
-                    <option value="">Từ 500 triệu đến 1 tỷ</option>
-                    <option value="">Từ 1 tỷ đến 3 tỷ</option>
-                    <option value="">Từ 3 tỷ đến 5 tỷ</option>
-                    <option value="">Từ 5 tỷ đến 7 tỷ</option>
-                    <option value="">Từ 7 tỷ đến 9 tỷ</option>
-                    <option value="">Từ 9 tỷ đến 10 tỷ</option>
-                    <option value="">Trên 10 tỷ</option>
+                    <option value="">Tất cả</option>
+                    <option value="<=500">Dưới 500 triệu</option>
+                    <option value="500-1000">Từ 500 triệu đến 1 tỷ</option>
+                    <option value="1000-3000">Từ 1 tỷ đến 3 tỷ</option>
+                    <option value="3000-5000">Từ 3 tỷ đến 5 tỷ</option>
+                    <option value="5000-7000">Từ 5 tỷ đến 7 tỷ</option>
+                    <option value="7000-9000">Từ 7 tỷ đến 9 tỷ</option>
+                    <option value="9000-10000">Từ 9 tỷ đến 10 tỷ</option>
+                    <option value=">=10000">Trên 10 tỷ</option>
                   </select>
                 </div>
                 <div>
                   <label
-                    htmlFor="max-price"
+                    htmlFor="area"
                     className="block text-base font-bold text-gray-700"
                   >
                     Diện tích:
                   </label>
                   <select
-                    id="max-price"
-                    name="max-price"
+                    id="area"
+                    name="area"
+                    onChange={handleFilterAreaChange}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
                   >
-                    <option value="">Dưới 50m2</option>
-                    <option value="">Từ 50m2 đến 100m2</option>
-                    <option value="">Từ 100m2 đến 200m2</option>
-                    <option value="">Từ 200m2 đến 300m2</option>
-                    <option value="">Từ 300m2 đến 500m2</option>
-                    <option value="">Từ 500m2 đến 700m2</option>
-                    <option value="">Từ 700m2 đến 1000m2</option>
-                    <option value="">Trên 1000m2</option>
+                    <option value="">Tất cả</option>
+                    <option value="<=50">Dưới 50m2</option>
+                    <option value="50-100">Từ 50m2 đến 100m2</option>
+                    <option value="100-200">Từ 100m2 đến 200m2</option>
+                    <option value="200-300">Từ 200m2 đến 300m2</option>
+                    <option value="300-500">Từ 300m2 đến 500m2</option>
+                    <option value="500-700">Từ 500m2 đến 700m2</option>
+                    <option value="700-1000">Từ 700m2 đến 1000m2</option>
+                    <option value=">=1000">Trên 1000m2</option>
                   </select>
                 </div>
               </div>
@@ -228,6 +252,9 @@ const HeroSection = ({ setSearchValue }) => {
               >
                 Tìm kiếm
               </button>
+              <span className="w-ful h-[5rem] mt-3 ml-[7rem] text-center italic text-gray-500">
+                * Bạn có thể kết hợp các điều kiện lọc cùng lúc.
+              </span>
             </div>
           </div>
         </div>

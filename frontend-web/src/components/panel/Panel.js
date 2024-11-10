@@ -1,7 +1,16 @@
 import PropTypes from "prop-types";
 import SideBar from "../sidebar/SideBar";
+// import { useState } from "react";
 
-const Panel = ({ children, type }) => {
+const Panel = ({
+  children,
+  type,
+  setFilterLegalValue,
+  setFilterOrientationValue,
+  setFilterBedroomValue,
+  setFilterBathroomValue,
+  setFilterDistrictValue,
+}) => {
   return (
     <>
       {type !== "personal-page" ? (
@@ -11,7 +20,13 @@ const Panel = ({ children, type }) => {
               {children}
             </div>
           </div>
-          <SideBar />
+          <SideBar
+            setFilterLegalValue={setFilterLegalValue}
+            setFilterOrientationValue={setFilterOrientationValue}
+            setFilterBedroomValue={setFilterBedroomValue}
+            setFilterBathroomValue={setFilterBathroomValue}
+            setFilterDistrictValue={setFilterDistrictValue}
+          />
         </div>
       ) : (
         <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] min-h-[500vh] p-4 rounded-lg mb-4">
@@ -24,6 +39,12 @@ const Panel = ({ children, type }) => {
 
 Panel.propTypes = {
   children: PropTypes.node,
+  type: PropTypes.string,
+  setFilterLegalValue: PropTypes.func.isRequired,
+  setFilterOrientationValue: PropTypes.func.isRequired,
+  setFilterBedroomValue: PropTypes.func.isRequired,
+  setFilterBathroomValue: PropTypes.func.isRequired,
+  setFilterDistrictValue: PropTypes.func.isRequired,
 };
 
 export default Panel;

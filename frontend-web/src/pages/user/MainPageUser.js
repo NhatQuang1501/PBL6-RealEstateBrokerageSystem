@@ -7,7 +7,18 @@ import { faListAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
-const MainPageUser = ({ searchValue }) => {
+const MainPageUser = ({
+  searchValue,
+  filterStatusValue,
+  filterPriceValue,
+  filterAreaValue,
+}) => {
+  const [filterLegalValue, setFilterLegalValue] = useState([]);
+  const [filterOrientationValue, setFilterOrientationValue] = useState([]);
+  const [filterBedroomValue, setFilterBedroomValue] = useState([]);
+  const [filterBathroomValue, setFilterBathroomValue] = useState([]);
+  const [filterDistrictValue, setFilterDistrictValue] = useState([]);
+
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -44,9 +55,118 @@ const MainPageUser = ({ searchValue }) => {
         const data = await response.json();
         console.log("Post data:", data);
 
-        const sortedPosts = Array.isArray(data)
+        let sortedPosts = Array.isArray(data)
           ? data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
           : [];
+
+        // Lọc các bài đăng dựa trên filterValue
+        if (filterStatusValue) {
+          sortedPosts = sortedPosts.filter(
+            (post) => post.sale_status === filterStatusValue
+          );
+        }
+        // Lọc các bài đăng dựa trên filterPriceValue
+        if (filterPriceValue) {
+          sortedPosts = sortedPosts.filter((post) => {
+            const price = parseInt(post.price, 10);
+            switch (filterPriceValue) {
+              case "<=500":
+                return price <= 500000000;
+              case "500-1000":
+                return price >= 500000000 && price <= 1000000000;
+              case "1000-3000":
+                return price >= 1000000000 && price <= 3000000000;
+              case "3000-5000":
+                return price >= 3000000000 && price <= 5000000000;
+              case "5000-7000":
+                return price >= 5000000000 && price <= 7000000000;
+              case "7000-9000":
+                return price >= 7000000000 && price <= 9000000000;
+              case "9000-10000":
+                return price >= 9000000000 && price <= 10000000000;
+              case ">=10000":
+                return price >= 10000000000;
+              default:
+                return true;
+            }
+          });
+        }
+
+        // Lọc các bài đăng dựa trên filterAreaValue
+        if (filterAreaValue) {
+          sortedPosts = sortedPosts.filter((post) => {
+            const area = parseInt(post.area, 10);
+            switch (filterAreaValue) {
+              case "<=50":
+                return area <= 50;
+              case "50-100":
+                return area >= 50 && area <= 100;
+              case "100-200":
+                return area >= 100 && area <= 200;
+              case "200-300":
+                return area >= 200 && area <= 300;
+              case "300-500":
+                return area >= 300 && area <= 500;
+              case "500-700":
+                return area >= 500 && area <= 700;
+              case "700-1000":
+                return area >= 700 && area <= 1000;
+              case ">=1000":
+                return area >= 1000;
+              default:
+                return true;
+            }
+          });
+        }
+
+        // Lọc các bài đăng dựa trên filterLegalValue
+        if (filterLegalValue.length > 0) {
+          sortedPosts = sortedPosts.filter((post) =>
+            filterLegalValue.includes(post.legal_status)
+          );
+        }
+
+        // Lọc các bài đăng dựa trên filterOrientationValue
+        if (filterOrientationValue.length > 0) {
+          sortedPosts = sortedPosts.filter((post) =>
+            filterOrientationValue.includes(post.orientation)
+          );
+        }
+
+        // Lọc các bài đăng dựa trên filterBedroomValue
+        if (filterBedroomValue.length > 0) {
+          sortedPosts = sortedPosts.filter((post) => {
+            const bedroom = parseInt(post.bedroom, 10);
+            return filterBedroomValue.some((value) => {
+              if (value === "Nhiều hơn 5") {
+                return bedroom > 5;
+              }
+              return bedroom === parseInt(value, 10);
+            });
+          });
+        }
+
+        // Lọc các bài đăng dựa trên filterBathroomValue
+        if (filterBathroomValue.length > 0) {
+          sortedPosts = sortedPosts.filter((post) => {
+            const bathroom = parseInt(post.bathroom, 10);
+            return filterBathroomValue.some((value) => {
+              if (value === "Nhiều hơn 5") {
+                return bathroom > 5;
+              }
+              return bathroom === parseInt(value, 10);
+            });
+          });
+        }
+
+        // Lọc các bài đăng dựa trên filterDistrictValue
+        if (filterDistrictValue.length > 0) {
+          sortedPosts = sortedPosts.filter((post) =>
+            filterDistrictValue.includes(post.district)
+          );
+        }
+
+
         setPosts(sortedPosts);
       } catch (error) {
         console.error(error);
@@ -54,7 +174,17 @@ const MainPageUser = ({ searchValue }) => {
     };
 
     fetchPosts();
-  }, [searchValue]);
+  }, [
+    searchValue,
+    filterStatusValue,
+    filterPriceValue,
+    filterAreaValue,
+    filterLegalValue,
+    filterOrientationValue,
+    filterBedroomValue,
+    filterBathroomValue,
+    filterDistrictValue,
+  ]);
 
   const handleCreatePostClick = () => {
     if (!sessionToken) {
@@ -93,7 +223,14 @@ const MainPageUser = ({ searchValue }) => {
         </a>
       </div>
 
-      <Panel className="flex flex-col max-h-full">
+      <Panel
+        className="flex flex-col max-h-full"
+        setFilterLegalValue={setFilterLegalValue}
+        setFilterOrientationValue={setFilterOrientationValue}
+        setFilterBedroomValue={setFilterBedroomValue}
+        setFilterBathroomValue={setFilterBathroomValue}
+        setFilterDistrictValue={setFilterDistrictValue}
+      >
         <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
           {currentPosts.map((post, index) => (
             <div

@@ -73,15 +73,15 @@ export default function Portfolio() {
     };
 
     fetchPosts();
-  }, [sessionToken, id, filterStatus]);
+  }, [sessionToken, id, filterStatus, userId]);
 
   return (
-    <div className="bg-[#3CA9F9] text-white p-6 rounded-lg">
+    <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] p-6 rounded-lg">
       <div className="flex flex-row gap-10">
         <h2 className="text-lg font-bold mb-4">
           <button
-            className={`text-white ${
-              filterStatus === "Đã duyệt" ? "underline" : ""
+            className={`text-black ${
+              filterStatus === "Đã duyệt" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã duyệt")}
           >
@@ -90,8 +90,8 @@ export default function Portfolio() {
         </h2>
         <h2 className="text-lg font-bold mb-4">
           <button
-            className={`text-white ${
-              filterStatus === "Đang chờ duyệt" ? "underline" : ""
+            className={`text-black ${
+              filterStatus === "Đang chờ duyệt" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đang chờ duyệt")}
           >
@@ -121,7 +121,7 @@ export default function Portfolio() {
             />
           </div>
         ) : (
-          <div className="text-center font-bold">Không có bài đăng nào</div>
+          <div className="text-center text-gray-600 font-bold">Không có bài đăng nào</div>
         )}
       </Panel>
     </div>

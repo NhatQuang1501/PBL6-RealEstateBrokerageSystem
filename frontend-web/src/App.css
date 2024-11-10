@@ -7,7 +7,7 @@
 
 }
 ::-webkit-scrollbar {
-  width: 7px; /* Độ rộng của thanh cuộn */
+  width: 5px; /* Độ rộng của thanh cuộn */
 }
 
 ::-webkit-scrollbar-track {

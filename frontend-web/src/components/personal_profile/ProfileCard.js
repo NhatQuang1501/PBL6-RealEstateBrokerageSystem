@@ -12,6 +12,7 @@ import {
   faPhone,
   faCity,
   faBirthdayCake,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 const ProfileCard = () => {
@@ -180,8 +181,31 @@ const ProfileCard = () => {
     }
   };
 
+  // Send friend request
+  const handleSendFriendRequest = (username) => async () => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/friend-requests/`,
+        {
+          receiver: username,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      console.log("Friend request sent successfully:", response.data);
+      alert("Yêu cầu kết bạn đã được gửi !");
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      alert("Gửi yêu cầu kết bạn thất bại !");
+    }
+  };
+
   return (
-    <div className="bg-[#FBBF24] text-white p-6 rounded-lg shadow-lg">
+    <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
@@ -189,7 +213,7 @@ const ProfileCard = () => {
             <img
               src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-500"
+              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300"
             />
           ) : (
             <img
@@ -226,8 +250,12 @@ const ProfileCard = () => {
           ) : (
             // Trường hợp người lạ
             <>
-              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
-                Kết bạn{isFriend ? "👍" : "👎"}
+              <button
+                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                onClick={handleSendFriendRequest(user.user.username)}
+              >
+                Kết bạn
+                <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
               </button>
             </>
           )}

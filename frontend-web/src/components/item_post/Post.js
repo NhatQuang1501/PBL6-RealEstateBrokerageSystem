@@ -37,15 +37,13 @@ function Post({ post, type }) {
 const getStatusClass = (status) => {
   switch (status) {
     case "Đang bán":
-      return "bg-[#3CA9F9] text-white px-3 py-1 rounded-full shadow-md font-semibold";
+      return "bg-gradient-to-r from-blue-400 to-blue-600";
     case "Đã bán":
-      return "bg-gray-600 text-white px-3 py-1 rounded-full shadow-md font-semibold";
+      return "bg-gradient-to-r from-gray-400 to-gray-600";
     case "Đang thương lượng":
-      return "bg-yellow-500 text-white px-3 py-1 rounded-full shadow-md font-semibold";
-    case "Đã cọc":
-      return "bg-orange-500 text-white px-3 py-1 rounded-full shadow-md font-semibold";
+      return "bg-gradient-to-r from-yellow-400 to-yellow-600";
     default:
-      return "bg-gray-200 text-gray-700 px-3 py-1 rounded-full shadow-md font-semibold";
+      return "bg-gradient-to-r from-red-400 to-red-600";
   }
 };
 
@@ -160,7 +158,7 @@ const getStatusClass = (status) => {
   };
 
   return (
-    <div className="w-full mx-auto p-[1rem] bg-white rounded-lg shadow-md border-[1px] border-[#3CA9F9] border-double overflow-hidden font-montserrat ">
+    <div className="w-full mx-auto p-[1rem] bg-white rounded-lg shadow-md border-[1px] border-gray-300 border-double overflow-hidden font-montserrat ">
       {/* Header */}
       <div
         className="flex justify-between items-center px-2 cursor-pointer"
@@ -172,7 +170,7 @@ const getStatusClass = (status) => {
         </h2>
 
         <div
-          className={`px-5 max-w-[15rem] text-center py-2 text-white font-bold border-[2px] border-solid border-[#3CA9F9] rounded-[0.5rem] ${getStatusClass(
+          className={`px-5 max-w-[15rem] text-center py-2 text-white font-bold rounded-[0.5rem] ${getStatusClass(
             post.sale_status
           )}`}
         >
@@ -480,7 +478,7 @@ const getStatusClass = (status) => {
           </div>
 
           <span className="text-gray-500 w-[8rem]">
-            {post.view_count} lượt xem
+            {post.view_count/2} lượt xem
           </span>
         </div>
       </div>

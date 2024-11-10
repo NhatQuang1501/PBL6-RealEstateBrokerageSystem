@@ -91,8 +91,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user_profile
 
     def update(self, instance, validated_data):
-        if "avatar" in validated_data:
-            validated_data.pop("avatar")
+        # if "avatar" in validated_data:
+        #     validated_data.pop("avatar")
 
         instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.city = validated_data.get("city", instance.city)
@@ -102,11 +102,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
         )
         instance.gender = validated_data.get("gender", instance.gender)
 
-        # avatar = validated_data.get("avatar", None)
-        # if avatar:
-        #     if isinstance(avatar, list):
-        #         avatar = avatar[0]
-        #     instance.avatar = avatar
+        avatar = validated_data.get("avatar", None)
+        if avatar:
+            if isinstance(avatar, list):
+                avatar = avatar[0]
+            instance.avatar = avatar
 
         instance.save()
 

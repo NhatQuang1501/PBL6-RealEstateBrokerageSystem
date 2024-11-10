@@ -4,7 +4,7 @@ import SideProjects from "../../components/personal_profile/SideProjects";
 
 const ViewPersonProfile = () => {
   return (
-    <div className="min-h-screen bg-white text-white p-10 font-montserrat">
+    <div className="min-h-screen bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-white p-10 font-montserrat">
       <div className="grid grid-cols-8 gap-5">
         {/* Profile Card */}
         <div className="col-span-2 sticky top-[6rem] self-start">
