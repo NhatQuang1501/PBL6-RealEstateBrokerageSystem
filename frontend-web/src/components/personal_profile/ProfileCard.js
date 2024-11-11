@@ -14,6 +14,7 @@ import {
   faBirthdayCake,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { FaAddressCard } from "react-icons/fa";
 
 const ProfileCard = () => {
   const navigate = useNavigate();
@@ -213,7 +214,7 @@ const ProfileCard = () => {
             <img
               src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300"
+              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300 border-[3px] border-[#b2ebf2] border-solid shadow-lg"
             />
           ) : (
             <img
@@ -295,7 +296,7 @@ const ProfileCard = () => {
       )}
 
       {/* Face Customizer Options */}
-      <div className="p-6 bg-white rounded-lg shadow-md">
+      <div className="p-5 bg-[#fafffe] rounded-lg shadow-md">
         <p className="mb-4 text-xl font-semibold text-gray-800">
           Thông tin người dùng
         </p>
@@ -313,7 +314,7 @@ const ProfileCard = () => {
             </label>
           </div>
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faUser} className="text-blue-500 mr-2" />
+            <FaAddressCard className="text-blue-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.fullname)}
             </label>

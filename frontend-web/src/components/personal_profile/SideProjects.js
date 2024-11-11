@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useAppContext } from "../../AppProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 
 export default function SideProjects() {
   const { id, sessionToken } = useAppContext();
@@ -11,11 +11,22 @@ export default function SideProjects() {
   const [numFriends, setNumFriends] = useState(0);
   const [receives, setReceives] = useState([]);
   const [numReceives, setNumReceives] = useState(0);
+  const [senders, setSenders] = useState([]);
+  const [numSenders, setNumSenders] = useState(0);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFriendId, setSelectedFriendId] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { userId } = useParams();
+  const [tooltip, setTooltip] = useState({
+    visible: false,
+    text: "",
+    x: 0,
+    y: 0,
+  });
 
   const handleCreatePostClick = () => {
     navigate("/user/create-post");
@@ -48,6 +59,7 @@ export default function SideProjects() {
       }
     };
 
+    // Yêu cầu kết bạn - receiver
     const fetchReceives = async () => {
       try {
         const response = await axios.get(
@@ -61,7 +73,7 @@ export default function SideProjects() {
 
         // Lọc các lời mời kết bạn có friendrequest_status là "đã từ chối"
         const filteredReceives = response.data.data.filter(
-          (request) => request.friendrequest_status === "đã từ chối"
+          (request) => request.friendrequest_status === "đang chờ"
         );
 
         setReceives(filteredReceives);
@@ -75,7 +87,36 @@ export default function SideProjects() {
       }
     };
 
+    // Yêu cầu kết bạn - sender
+    const fetchSenders = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/friend-requests-sent/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          }
+        );
+
+        // Lọc các yêu cầu kết bạn có friendrequest_status là "đang chờ"
+        const filteredSenders = response.data.data.filter(
+          (request) => request.friendrequest_status === "đang chờ"
+        );
+
+        setSenders(filteredSenders);
+        setNumSenders(filteredSenders.length);
+        console.log("Sender data:", filteredSenders.length);
+      } catch (err) {
+        console.error("Error fetching sender:", err);
+        setError("Không thể tải danh sách yêu cầu kết bạn.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchReceives();
+    fetchSenders();
     fetchFriends();
   }, [sessionToken, id, userId]);
 
@@ -107,8 +148,104 @@ export default function SideProjects() {
     }
   };
 
+  // Decline friend request
+  const handleDeclineFriendRequest = (senderId) => async () => {
+    try {
+      await axios.put(
+        `http://127.0.0.1:8000/api/friend-requests/`,
+        {
+          friendrequest_id: senderId,
+          friendrequest_status: "đã từ chối",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      setReceives((prevReceives) =>
+        prevReceives.filter(
+          (receive) => receive.sender_profile.user_id !== senderId
+        )
+      );
+      setNumReceives((prevNumReceives) => prevNumReceives - 1);
+    } catch (err) {
+      console.error("Error declining friend request:", err);
+      setError("Không thể từ chối yêu cầu kết bạn.");
+    }
+  };
+
+  // Unfriend
+  const handleUnfriend = async () => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/unfriend/`, {
+        data: {
+          friend_user_id: selectedFriendId,
+        },
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+
+      setFriends((prevFriends) =>
+        prevFriends.filter((friend) => friend.user_id !== selectedFriendId)
+      );
+      setNumFriends((prevNumFriends) => prevNumFriends - 1);
+      setIsModalOpen(false);
+    } catch (err) {
+      console.error("Error unfriending:", err);
+      setError("Không thể hủy kết bạn.");
+    }
+  };
+
+  // Delete sender
+  const handleDeleteSender = (senderId) => async () => {
+    try {
+      await axios.delete(
+        `http://127.0.0.1:8000/api/friend-requests/${senderId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      setSenders((prevSenders) =>
+        prevSenders.filter((sender) => sender.friendrequest_id !== senderId)
+      );
+      setNumSenders((prevNumSenders) => prevNumSenders - 1);
+    } catch (err) {
+      console.error("Error deleting sender:", err);
+      setError("Không thể xóa lời mời.");
+    }
+  };
+
+  const openModal = (friendId) => {
+    setSelectedFriendId(friendId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedFriendId(null);
+  };
+
   if (loading) return <div className="text-white">Đang tải...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  const showTooltip = (text, event) => {
+    setTooltip({
+      visible: true,
+      text: text,
+      x: event.clientX,
+      y: event.clientY,
+    });
+  };
+
+  const hideTooltip = () => {
+    setTooltip({ visible: false, text: "", x: 0, y: 0 });
+  };
 
   return (
     <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg w-[20rem]">
@@ -128,7 +265,54 @@ export default function SideProjects() {
                 alt={`${friend.user.username} avatar`}
                 className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
               />
-              <p>{friend.user.username}</p>
+              <p
+                className="flex-1 truncate"
+                onMouseEnter={(e) => showTooltip(friend.user.username, e)}
+                onMouseLeave={hideTooltip}
+              >
+                {friend.user.username}
+              </p>
+              {!userId || userId === id ? (
+                <button
+                  className="ml-auto bg-gradient-to-r from-red-400 to-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                  onClick={() => openModal(friend.user_id)}
+                >
+                  Hủy kết bạn
+                </button>
+              ) : null}
+
+              {tooltip.visible && (
+                <div
+                  className="fixed bg-black text-white p-2 rounded-lg"
+                  style={{ top: tooltip.y + 20, left: tooltip.x }}
+                >
+                  {tooltip.text}
+                </div>
+              )}
+
+              {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-100">
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                    <h2 className="text-lg font-semibold mb-4">
+                      Bạn có chắc chắn muốn hủy kết bạn?
+                    </h2>
+                    <div className="flex justify-center gap-4">
+                      <button
+                        className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
+                        onClick={handleUnfriend}
+                      >
+                        Hủy kết bạn
+                      </button>
+                      <button
+                        className="bg-gray-300 text-black p-2 rounded-lg hover:bg-gray-400"
+                        onClick={closeModal}
+                      >
+                        Hủy bỏ
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -143,51 +327,62 @@ export default function SideProjects() {
               {receives.map((receive) => (
                 <div
                   key={receive.friendrequest_id}
-                  className="p-4 rounded-lg flex items-center bg-[#FBBF24] text-black font-bold"
+                  className="p-4 rounded-lg flex flex-col bg-[#FBBF24] text-black font-bold"
                 >
-                  <img
-                    src={
-                      "http://127.0.0.1:8000/" + receive.sender_profile.avatar
-                    }
-                    alt={`${receive.sender_profile.user.username} avatar`}
-                    className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
-                  />
-                  <p>{receive.sender_profile.user.username}</p>
-                  <button
-                    className="ml-auto bg-[#3CA9F9] text-white p-2 rounded-lg"
-                    onClick={handleAcceptFriendRequest(
-                      receive.friendrequest_id
-                    )}
-                  >
-                    Chấp nhận
-                  </button>
+                  <div className="flex items-center">
+                    <img
+                      src={
+                        "http://127.0.0.1:8000/" + receive.sender_profile.avatar
+                      }
+                      alt={`${receive.sender_profile.user.username} avatar`}
+                      className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
+                    />
+                    <p>{receive.sender_profile.user.username}</p>
+                    <FontAwesomeIcon icon={faUserPlus} className="ml-5" />
+                  </div>
+                  <div className="flex justify-between mt-4">
+                    <button
+                      className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-400 hover:to-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+                      onClick={() =>
+                        handleAcceptFriendRequest(receive.friendrequest_id)
+                      }
+                    >
+                      Chấp nhận
+                    </button>
+                    <button
+                      className="bg-gradient-to-r from-red-400 to-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                      onClick={() =>
+                        handleDeclineFriendRequest(receive.friendrequest_id)
+                      }
+                    >
+                      Từ chối
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* Lời mời đã gửi */}
-            <h2 className="text-lg mt-6 mb-4">Lời mời đã gửi</h2>
+            <h2 className="text-lg mt-6 mb-4">Lời mời đã gửi({numSenders})</h2>
             <div className="grid grid-cols-1 gap-4">
-              {receives.map((receive) => (
+              {senders.map((sender) => (
                 <div
-                  key={receive.friendrequest_id}
+                  key={sender.friendrequest_id}
                   className="p-4 rounded-lg flex items-center bg-[#FBBF24] text-black font-bold"
                 >
                   <img
                     src={
-                      "http://127.0.0.1:8000/" + receive.sender_profile.avatar
+                      "http://127.0.0.1:8000/" + sender.sender_profile.avatar
                     }
-                    alt={`${receive.sender_profile.user.username} avatar`}
+                    alt={`${sender.sender_profile.user.username} avatar`}
                     className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
                   />
-                  <p>{receive.sender_profile.user.username}</p>
+                  <p>{sender.sender_profile.user.username}</p>
                   <button
-                    className="ml-auto bg-[#3CA9F9] text-white p-2 rounded-lg"
-                    onClick={handleAcceptFriendRequest(
-                      receive.friendrequest_id
-                    )}
+                    className="ml-auto bg-gradient-to-r from-red-400 to-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
+                    onClick={handleDeleteSender(sender.friendrequest_id)}
                   >
-                    Chấp nhận
+                    Xóa lời mời
                   </button>
                 </div>
               ))}
