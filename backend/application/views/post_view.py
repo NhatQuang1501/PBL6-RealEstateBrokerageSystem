@@ -419,7 +419,7 @@ class MarkPostAsSoldView(APIView):
 
     def post(self, request, post_id):
         sale_status = request.data.get("sale_status")
-        Sale_status = Sale_status.map_display_to_value(sale_status)
+        sale_status = Sale_status.map_display_to_value(sale_status)
 
         post = get_object_or_404(Post, post_id=post_id)
 
