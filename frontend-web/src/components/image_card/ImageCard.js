@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 const ImageCard = ({ postId, type }) => {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -27,26 +28,39 @@ const ImageCard = ({ postId, type }) => {
   }, [postId]);
 
   useEffect(() => {
-    if (type === "detail") {
-      const interval = setInterval(() => {
+    if (type === "detail" && images.length > 1) {
+      const id = setInterval(() => {
         setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
       }, 5000);
+      setIntervalId(id);
 
-      return () => clearInterval(interval);
+      return () => clearInterval(id);
     }
   }, [images.length, type]);
 
   const handlePrevClick = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
     setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? images.length - 1 : prevIndex - 1
     );
   };
 
   const handleNextClick = () => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
     setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
   const handleThumbnailClick = (index) => {
+    if (intervalId) {
+      clearInterval(intervalId);
+      setIntervalId(null);
+    }
     setCurrentImageIndex(index);
   };
 
@@ -55,7 +69,7 @@ const ImageCard = ({ postId, type }) => {
       {type === "detail" && images.length > 1 ? (
         /* Mã cho chế độ chi tiết */
         <div
-          className="relative border-[1px] border-double border-[#3CA9F9] rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
+          className="relative border-[1px] border-double border-gray-400 rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
           style={{
             backgroundImage: `url(http://127.0.0.1:8000/${images[currentImageIndex].image})`,
             backgroundSize: "cover",
@@ -65,7 +79,9 @@ const ImageCard = ({ postId, type }) => {
           {/* Lớp phủ mờ */}
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           <div className="relative z-10">
-            <h4 className="text-[#3CA9F9] text-lg mb-2">Hình ảnh mô tả</h4>
+            <h4 className="text-white text-lg mb-2">
+              Hình ảnh mô tả ({images.length})
+            </h4>
             <div className="flex justify-center items-center">
               {images.map((image, index) => (
                 <div
@@ -82,17 +98,37 @@ const ImageCard = ({ postId, type }) => {
                 </div>
               ))}
               <button
-                className="absolute left-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none"
+                className="absolute left-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
                 onClick={handlePrevClick}
               >
                 &#9664;
               </button>
               <button
-                className="absolute right-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none"
+                className="absolute right-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
                 onClick={handleNextClick}
               >
                 &#9654;
               </button>
+            </div>
+            {/* Thumbnails */}
+            <div className="flex justify-center mt-4 space-x-2">
+              {images.map((image, index) => (
+                <div
+                  key={image.image_id}
+                  className="cursor-pointer"
+                  onClick={() => handleThumbnailClick(index)}
+                >
+                  <img
+                    src={`http://127.0.0.1:8000/${image.image}`}
+                    alt={`Ảnh của bài đăng: ${image.post_id}`}
+                    className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
+                      index === currentImageIndex
+                        ? "border-2 border-blue-500"
+                        : ""
+                    }`}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -113,7 +149,7 @@ const ImageCard = ({ postId, type }) => {
           {images.length > 0 && (
             <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           )}
-          <div className="relative z-5">
+          <div className="relative z-10">
             <h4 className="text-white text-lg mb-2">
               Hình ảnh mô tả ({images.length})
             </h4>

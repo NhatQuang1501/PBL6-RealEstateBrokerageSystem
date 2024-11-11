@@ -19,6 +19,9 @@ const MainPageUser = ({
   const [filterBathroomValue, setFilterBathroomValue] = useState([]);
   const [filterDistrictValue, setFilterDistrictValue] = useState([]);
 
+  const [sortOption, setSortOption] = useState("Mới nhất");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -39,11 +42,22 @@ const MainPageUser = ({
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const url = searchValue
-          ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
-              searchValue
-            )}`
-          : "http://127.0.0.1:8000/api/posts/";
+        let url;
+        if (searchValue) {
+          url = searchValue
+            ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
+                searchValue
+              )}`
+            : "http://127.0.0.1:8000/api/posts/";
+        } else {
+          if (sortOption === "Mới nhất") {
+            url = "http://127.0.0.1:8000/api/posts/";
+          } else if (sortOption === "Cũ nhất") {
+            url = `http://127.0.0.1:8000/api/oldest-posts/`;
+          } else if (sortOption === "Nổi bật") {
+            url = `http://127.0.0.1:8000/api/popular-posts/`;
+          }
+        }
 
         const response = await fetch(url, {
           method: "GET",
@@ -55,9 +69,7 @@ const MainPageUser = ({
         const data = await response.json();
         console.log("Post data:", data);
 
-        let sortedPosts = Array.isArray(data)
-          ? data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          : [];
+        let sortedPosts = Array.isArray(data) ? data : [];
 
         // Lọc các bài đăng dựa trên filterValue
         if (filterStatusValue) {
@@ -166,7 +178,6 @@ const MainPageUser = ({
           );
         }
 
-
         setPosts(sortedPosts);
       } catch (error) {
         console.error(error);
@@ -184,6 +195,7 @@ const MainPageUser = ({
     filterBedroomValue,
     filterBathroomValue,
     filterDistrictValue,
+    sortOption,
   ]);
 
   const handleCreatePostClick = () => {
@@ -193,6 +205,11 @@ const MainPageUser = ({
     } else {
       navigate("/user/create-post");
     }
+  };
+
+  const handleSortOptionClick = (option) => {
+    setSortOption(option);
+    setIsDropdownOpen(false);
   };
 
   return (
@@ -215,12 +232,38 @@ const MainPageUser = ({
             Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
           </h3>
         )}
-        <a
-          className="text-white font-semibold underline hover:text-blue-300 transition-colors duration-200"
-          href="#!"
-        >
-          Sắp xếp theo
-        </a>
+        <div className="relative">
+          <div
+            className="text-white font-semibold underline hover:text-blue-300 transition-colors duration-200 cursor-pointer"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+          >
+            Sắp xếp theo
+          </div>
+          {isDropdownOpen && (
+            <div className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+              <ul className="py-1">
+                <li
+                  className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
+                  onClick={() => handleSortOptionClick("Mới nhất")}
+                >
+                  Mới nhất
+                </li>
+                <li
+                  className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
+                  onClick={() => handleSortOptionClick("Cũ nhất")}
+                >
+                  Cũ nhất
+                </li>
+                <li
+                  className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
+                  onClick={() => handleSortOptionClick("Nổi bật")}
+                >
+                  Nổi bật
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </div>
 
       <Panel

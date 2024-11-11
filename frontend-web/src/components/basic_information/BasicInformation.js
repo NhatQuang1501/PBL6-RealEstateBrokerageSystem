@@ -46,20 +46,23 @@ const BasicInformation = ({
     {
       icon: faRulerCombined,
       label: "Diện tích",
-      value: `${area} m²`,
-      imageUrl: "path/to/area-image.jpg",
+      value: area ? `${area} m²` : null,
+      imageUrl:
+        "https://uploads-ssl.webflow.com/5c9e5fc6215b2b288eb5937d/5ce35bac5960482835eb254f_enc-home-works-inspections-north-carolina-land-surveying.jpg",
     },
     {
       icon: faFileContract,
       label: "Pháp lý",
       value: legal_status,
-      imageUrl: "path/to/legal-image.jpg",
+      imageUrl:
+        "https://thehollywoodlawyer.com/wp-content/uploads/2023/02/business-lawyer-is-currently-counseling-the-client-2022-12-16-03-44-23-utc-min-scaled.jpg",
     },
     {
       icon: faRoad,
       label: "Mặt tiền",
-      value: `${frontage} m`,
-      imageUrl: "path/to/frontage-image.jpg",
+      value: frontage ? `${frontage} m` : null,
+      imageUrl:
+        "https://prettyprovidence.com/wp-content/uploads/2015/06/bruno-bergher-157009-unsplash.jpg",
     },
     {
       icon: faCompass,
@@ -71,59 +74,55 @@ const BasicInformation = ({
     {
       icon: faBuilding,
       label: "Số tầng",
-      value: `${floor} tầng`,
-      imageUrl: "path/to/floor-image.jpg",
+      value: floor ? `${floor} tầng` : null,
+      imageUrl:
+        "https://png.pngtree.com/png-vector/20220812/ourlarge/pngtree-city-vector-png-image_6108104.png",
     },
     {
       icon: faBed,
       label: "Phòng ngủ",
-      value: `${bedroom} phòng`,
-      imageUrl: "path/to/bedroom-image.jpg",
+      value: bedroom ? `${bedroom} phòng` : null,
+      imageUrl:
+        "https://th.bing.com/th/id/R.b8fca2d38b3e11739dad92b98e096117?rik=EbsX8BGDstvtDw&pid=ImgRaw&r=0",
     },
     {
       icon: faBath,
       label: "Phòng tắm",
-      value: `${bathroom} phòng`,
-      imageUrl: "path/to/bathroom-image.jpg",
+      value: bathroom ? `${bathroom} phòng` : null,
+      imageUrl:
+        "https://bowa.com/wp-content/uploads/2017/08/PIN-McLean-VA-IHD-CDB-1910-Whole-Home-Renovation-Bath3-D17159-7886_01-17.jpg",
     },
-  ];
+  ].filter((item) => item.value);
 
   return (
-    <div className="space-y-16 my-12 px-6">
-      {/* Khối Giá */}
+    <div className="space-y-16 my-12 px-6 bg-blue-100 p-10 rounded-2xl">
+      {/* Giá */}
       <div className="flex justify-center">
-        <div className="relative p-12 w-full sm:w-3/4 lg:w-1/2 rounded-2xl overflow-hidden bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white shadow-2xl hover:scale-105 transform transition-all duration-300">
+        <div className="relative p-12 w-full sm:w-3/4 lg:w-4/5 rounded-2xl overflow-hidden bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-2xl hover:scale-105 transform transition-all duration-300">
           <div className="absolute inset-0 bg-black opacity-10 rounded-2xl pointer-events-none"></div>
-          <div className="relative z-10 text-center">
-            <FontAwesomeIcon icon={faDollarSign} className="text-5xl mb-4" />
-            <p className="text-3xl font-bold">Giá</p>
-            <p className="text-5xl mt-4 font-extrabold">{formatPrice(price)}</p>
+          <div className="relative z-10 flex flex-row justify-center items-center gap-2">
+            <FontAwesomeIcon icon={faDollarSign} className="text-5xl" />
+            <p className="text-3xl font-bold mr-2">Giá:</p>
+            <p className="text-5xl font-extrabold">{formatPrice(price)}</p>
           </div>
         </div>
       </div>
 
-      {/* Khối Thông tin chi tiết với ảnh nền */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Detail*/}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 ">
         {infoItems.map((item, index) => (
           <div
             key={index}
-            className="relative flex flex-col items-center p-8 rounded-2xl bg-cover bg-center text-gray-200 shadow-lg transform transition-all duration-300 hover:-translate-y-2 hover:scale-105"
+            className="relative flex flex-col items-center p-8 rounded-2xl bg-cover bg-center text-[#b2ebf2] shadow-lg transform transition-all duration-350 hover:-translate-y-2 hover:scale-105 hover:text-white"
             style={{ backgroundImage: `url(${item.imageUrl})` }}
           >
             {/* Overlay layer */}
-            <div className="absolute inset-0 bg-black opacity-60 rounded-2xl transition-opacity duration-300 hover:opacity-30"></div>
+            <div className="absolute inset-0 bg-black opacity-70 rounded-2xl transition-opacity duration-300 hover:opacity-50"></div>
 
-            <div className="relative z-10 text-center transition-colors duration-300">
-              <FontAwesomeIcon
-                icon={item.icon}
-                className="text-4xl mb-4 text-[#FFD700] hover:text-[#FFFFFF]"
-              />
-              <p className="text-xl font-semibold mb-2 text-[#FFD700] hover:text-[#FFFFFF]">
-                {item.label}
-              </p>
-              <p className="text-2xl font-bold text-[#FFD700] hover:text-[#FFFFFF]">
-                {item.value}
-              </p>
+            <div className="relative z-10 text-center transition-colors duration-300 ">
+              <FontAwesomeIcon icon={item.icon} className="text-4xl mb-4 " />
+              <p className="text-xl font-semibold mb-2">{item.label}</p>
+              <p className="text-2xl font-bold">{item.value}</p>
             </div>
           </div>
         ))}
@@ -134,21 +133,21 @@ const BasicInformation = ({
         <div className="mb-6 flex items-center text-xl">
           <FontAwesomeIcon
             icon={faMapMarkerAlt}
-            className="text-[#3CA9F9] mr-3"
+            className="text-red-700 mr-3"
           />
           <p className="font-semibold text-gray-700">Địa chỉ</p>
         </div>
         <p className="text-gray-800 text-lg text-center mb-6">
           {`${address}, Quận ${district}, Thành phố ${city}`}
         </p>
-        <div className="mb-6 flex items-center text-xl">
+        {/* <div className="mb-6 flex items-center text-xl">
           <FontAwesomeIcon
             icon={faStickyNote}
             className="text-[#3CA9F9] mr-3"
           />
           <p className="font-semibold text-gray-700">Ghi chú</p>
         </div>
-        <p className="text-gray-800 text-lg text-center">{description}</p>
+        <p className="text-gray-800 text-lg text-center">{description}</p> */}
       </div>
     </div>
   );

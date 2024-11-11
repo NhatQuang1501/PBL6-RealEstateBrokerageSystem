@@ -11,8 +11,12 @@ import {
   faListAlt,
   faArrowLeft,
   faUpload,
+  faEdit,
+  faTrash,
+  faHandshake,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useCallback } from "react";
+import { FaPen } from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import Comment from "../../components/comment/Comment";
 import { useAppContext } from "../../AppProvider";
@@ -28,6 +32,19 @@ const DetailPost = () => {
   const navigate = useNavigate();
   const [reactionsCount, setReactionsCount] = useState();
   const [commentCount, setCommentCount] = useState();
+
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Đang bán":
+        return "bg-gradient-to-r from-blue-400 to-blue-600";
+      case "Đã bán":
+        return "bg-gradient-to-r from-gray-400 to-gray-600";
+      case "Đang thương lượng":
+        return "bg-gradient-to-r from-yellow-400 to-yellow-600";
+      default:
+        return "bg-gradient-to-r from-red-400 to-red-600";
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -167,7 +184,7 @@ const DetailPost = () => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 font-montserrat">
+    <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
       <button
         className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center"
         onClick={() => window.history.back()}
@@ -176,68 +193,78 @@ const DetailPost = () => {
         Quay lại
       </button>
 
-      <button
-        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center"
-        onClick={handleUploadImage}
-      >
-        <FontAwesomeIcon icon={faUpload} className="mr-2" />
-        Tải ảnh lên
-      </button>
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
+        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <FontAwesomeIcon
+            icon={faListAlt}
+            className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+          />
+          Chi tiết bài đăng
+        </h3>
+        {post && post.user.user_id === id && (
+          <button
+            className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
+            onClick={handleUploadImage}
+          >
+            <FontAwesomeIcon icon={faUpload} className="mr-2" />
+            Tải ảnh lên
+          </button>
+        )}
+      </div>
 
-      <h3 className="mt-5 p-2 text-2xl font-bold text-white flex items-center gap-2 pl-5 w-[22rem] shadow-2xl shadow-[#E4FFFC] rounded-[3rem]">
-        <FontAwesomeIcon
-          icon={faListAlt}
-          className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
-        />
-        Chi tiết bài đăng
-      </h3>
-
-      <div className="flex flex-row-2 items-start justify-start">
+      <div className="flex flex-row-2 gap-5 items-start justify-start">
         {/* Main content */}
-        <div className="p-6 mt-5 mb-5 max-w-[65%] mx-auto rounded-lg bg-white border-double border-[#3CA9F9] border-[2px] shadow-md">
+        <div className="p-6 mt-5 mb-5 w-[58rem] mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
           {post ? (
             <>
-              <div className="flex justify-between items-center px-6 py-4 bg-white">
-                <h1 className="text-2xl font-bold text-[#3CA9F9] mb-4">
+              <div className="flex justify-between items-center px-2 py-4">
+                <h1 className="text-xl font-semibold text-black rounded-lg flex items-center">
+                  <FaPen className="mr-2" />
                   {post.title}
                 </h1>
-                <div className="px-5 w-[10rem] justify-center text-center py-2 text-[#3CA9F9] border-[2px] border-double border-[#3CA9F9] rounded-[0.5rem]">
+                <div
+                  className={`px-5 max-w-[15rem] text-center py-2 text-white font-bold rounded-[0.5rem] ${getStatusClass(
+                    post.sale_status
+                  )}`}
+                >
                   {post.sale_status}
                 </div>
               </div>
 
               {id !== post.user.user_id && (
-                <div className="mt-4 flex justify-end items-end">
-                  <button className="bg-[#3CA9F9] text-white px-5 py-3 rounded-md">
+                <div className="mt-5 flex justify-center items-center">
+                  <button className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500">
+                    <FontAwesomeIcon icon={faHandshake} className="text-lg" />
                     Thương lượng
                   </button>
                 </div>
               )}
-
               {id === post.user.user_id && (
-                <div className="mt-4 flex justify-end items-center gap-4">
+                <div className="mt-4 flex justify-center items-center gap-10">
                   <button
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
                     onClick={() => {
                       handleUpdate(post.post_id);
                     }}
                   >
+                    <FontAwesomeIcon icon={faEdit} className="text-lg" />
                     Cập nhật
                   </button>
 
                   <button
-                    className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                     onClick={() => {
                       handleDelete(post.post_id);
                     }}
                   >
+                    <FontAwesomeIcon icon={faTrash} className="text-lg" />
                     Xóa
                   </button>
                 </div>
               )}
 
               {/* Profile + reaction */}
-              <div className="flex flex-row justify-between">
+              <div className="flex flex-row justify-between border-b-[2px] border-gray-300 border-solid pb-5">
                 <div className="">
                   <ProfileInformation
                     name={post.user.username}
