@@ -87,7 +87,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 
         if FriendRequest.objects.filter(sender=sender, receiver=receiver).exists():
             raise serializers.ValidationError(
-                {"error": "Đã gửi lời mời kết bạn cho người dùng này."}
+                {"error": "Đã gửi lời mời kết bạn cho người dùng này"}
             )
 
         # Tạo FriendRequest với sender và receiver
