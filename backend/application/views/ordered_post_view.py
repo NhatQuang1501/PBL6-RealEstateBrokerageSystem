@@ -45,7 +45,8 @@ class HousePostView(APIView):
             posts, many=True, context={"request_type": "list"}
         )
         return Response(
-            {"count": posts.count(), "data": post_serializer.data},
+            # {"count": posts.count(), "data": post_serializer.data},
+            post_serializer.data,
             status=status.HTTP_200_OK,
         )
 
@@ -61,7 +62,8 @@ class LandPostView(APIView):
         )
 
         return Response(
-            {"count": posts.count(), "data": post_serializer.data},
+            # {"count": posts.count(), "data": post_serializer.data},
+            post_serializer.data,
             status=status.HTTP_200_OK,
         )
 
@@ -104,8 +106,13 @@ class PopularPostView(APIView):
 class SavePostView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [permission() for permission in self.permission_classes]
+
     def get(self, request, pk):
-        # pk = user_id
+        # pk là user_id
         user = get_object_or_404(User, user_id=pk)
         saved_posts = (
             SavedPost.objects.filter(user=user)
@@ -117,11 +124,13 @@ class SavePostView(APIView):
         post_serializer = PostSerializer(posts, many=True)
 
         return Response(
-            {"count": len(posts), "data": post_serializer.data},
+            # {"count": len(posts), "data": post_serializer.data},
+            post_serializer.data,
             status=status.HTTP_200_OK,
         )
 
     def post(self, request, pk):
+        # pk là post_id
         user = request.user
         post = get_object_or_404(Post, post_id=pk)
 
