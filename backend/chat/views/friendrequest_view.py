@@ -40,8 +40,7 @@ class FriendRequestView(APIView):
 
     def post(self, request):
         receiver_username = request.data.get("receiver")
-        if receiver_username == request.user.user_id:
-
+        if receiver_username == request.user.username:
             return Response(
                 {"error": "Bạn không thể tự gửi yêu cầu kết bạn đến chính mình"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -134,16 +133,17 @@ class FriendRequestView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        if friend_request.status != FriendRequest_status.PENDING:
+        if friend_request.friendrequest_status != FriendRequest_status.PENDING:
             return Response(
                 {"error": "Chỉ có thể xóa yêu cầu kết bạn khi trạng thái đang chờ"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        receiver_response = friend_request.receiver
         friend_request.delete()
 
         return Response(
-            {"message": "Xóa lời mời kết bạn thành công"},
+            {"message": f"Xóa lời mời kết bạn đến {receiver_response} thành công"},
             status=status.HTTP_204_NO_CONTENT,
         )
 

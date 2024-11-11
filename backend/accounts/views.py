@@ -107,6 +107,8 @@ class RegisterView(APIView):
     default_error_message = {
         "username": "Username phải chứa ít nhất một ký tự chữ cái",
         "password": "Password phải chứa ít nhất một ký tự chữ cái",
+        "email_exists": "Email đã được sử dụng.",
+        "username_exists": "Username đã được sử dụng.",
     }
 
     def post(self, request):
@@ -124,6 +126,19 @@ class RegisterView(APIView):
 
         if not any(char.isalpha() for char in user_data.get("password", "")):
             raise serializers.ValidationError(self.default_error_message["password"])
+
+        # Kiểm tra xem email và username đã tồn tại chưa
+        if User.objects.filter(email=user_data.get("email")).exists():
+            return Response(
+                {"error": self.default_error_message["email_exists"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(username=user_data.get("username")).exists():
+            return Response(
+                {"error": self.default_error_message["username_exists"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Kiểm tra vai trò hợp lệ
         role = user_data.get("role")
@@ -360,7 +375,7 @@ class AvatarView(APIView):
                 {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
                 status=status.HTTP_200_OK,
             )
-    
+
     def get(self, request, pk=None):
         user = request.user
         if pk:
@@ -371,11 +386,13 @@ class AvatarView(APIView):
             {"avatar_url": avatar_url},
             status=status.HTTP_200_OK,
         )
-    
+
     def put(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
-        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        serializers = UserProfileSerializer(
+            user_profile, data=request.data, partial=True
+        )
         if serializers.is_valid():
             serializers.save()
             avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
@@ -387,7 +404,7 @@ class AvatarView(APIView):
             {"message": "Cập nhật avatar thất bại", "error": serializers.errors},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+
     def delete(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
