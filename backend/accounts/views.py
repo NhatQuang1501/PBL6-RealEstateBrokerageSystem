@@ -24,7 +24,6 @@ class BaseView(APIView):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-
         return [permission() for permission in self.permission_classes]
 
     def get(self, request, pk=None):
@@ -349,7 +348,7 @@ class UserView(BaseView):
     model = UserProfile
     serializer = UserProfileSerializer
     admin_serializer = UserSerializer
-    permission_classes = [IsAuthenticated, IsUser]
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
 
 class AvatarView(APIView):
