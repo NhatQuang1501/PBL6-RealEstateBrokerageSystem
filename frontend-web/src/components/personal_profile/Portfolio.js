@@ -47,13 +47,19 @@ export default function Portfolio() {
         //     ? `http://127.0.0.1:8000/api/posts/${author}/`
         //     : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
         let url;
-        if(filterStatus === "Đã duyệt"){
+        if (filterStatus === "Đã duyệt") {
           url = `http://127.0.0.1:8000/api/posts/${author}/`;
         }
-        if(filterStatus === "Đang chờ duyệt" && id === author){
+        if (filterStatus === "Đang chờ duyệt" && id === author) {
           url = `http://127.0.0.1:8000/api/pending-posts/${id}/`;
         }
-        
+        if (filterStatus === "Đã lưu") {
+          if (author !== "") {
+            url = `http://127.0.0.1:8000/api/saved-posts/${author}/`;
+          } else {
+            url = `http://127.0.0.1:8000/api/saved-posts/${id}/`;
+          }
+        }
 
         const response = await fetch(url, {
           method: "GET",
@@ -77,7 +83,7 @@ export default function Portfolio() {
 
   return (
     <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] p-6 rounded-lg">
-      <div className="flex flex-row gap-10">
+      <div className="flex flex-row justify-between gap-10">
         <h2 className="text-lg font-bold mb-4">
           <button
             className={`text-black ${
@@ -96,6 +102,16 @@ export default function Portfolio() {
             onClick={() => handleFilterChange("Đang chờ duyệt")}
           >
             Bài đăng chờ duyệt
+          </button>
+        </h2>
+        <h2 className="text-lg font-bold mb-4">
+          <button
+            className={`text-black ${
+              filterStatus === "Đã lưu" ? "underline text-blue-500" : ""
+            }`}
+            onClick={() => handleFilterChange("Đã lưu")}
+          >
+            Bài đăng đã lưu
           </button>
         </h2>
       </div>
@@ -121,7 +137,9 @@ export default function Portfolio() {
             />
           </div>
         ) : (
-          <div className="text-center text-gray-600 font-bold">Không có bài đăng nào</div>
+          <div className="text-center text-gray-600 font-bold">
+            Không có bài đăng nào
+          </div>
         )}
       </Panel>
     </div>

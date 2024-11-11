@@ -31,6 +31,7 @@ function App() {
   const [filterStatusValue, setFilterStatusValue] = useState("");
   const [filterPriceValue, setFilterPriceValue] = useState("");
   const [filterAreaValue, setFilterAreaValue] = useState("");
+  const [typePost, setTypePost] = useState("");
 
   return (
     <AppProvider>
@@ -48,12 +49,14 @@ function App() {
                     setFilterStatusValue={setFilterStatusValue}
                     setFilterPriceValue={setFilterPriceValue}
                     setFilterAreaValue={setFilterAreaValue}
+                    setTypePost={setTypePost}
                   />
                   <MainPageUser
                     searchValue={searchValue}
                     filterStatusValue={filterStatusValue}
                     filterPriceValue={filterPriceValue}
                     filterAreaValue={filterAreaValue}
+                    typePost={typePost}
                   />
                   <Footer />
                 </>
@@ -92,12 +95,14 @@ function App() {
                     setFilterStatusValue={setFilterStatusValue}
                     setFilterPriceValue={setFilterPriceValue}
                     setFilterAreaValue={setFilterAreaValue}
+                    setTypePost={setTypePost}
                   />
                   <MainPageUser
                     searchValue={searchValue}
                     filterStatusValue={filterStatusValue}
                     filterPriceValue={filterPriceValue}
                     filterAreaValue={filterAreaValue}
+                    typePost={typePost}
                   />
                   <Footer />
                 </>

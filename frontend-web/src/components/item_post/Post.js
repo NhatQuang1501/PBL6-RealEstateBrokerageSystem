@@ -31,24 +31,25 @@ function Post({ post, type }) {
   const { id, sessionToken, posts, setPost } = useAppContext();
   const navigate = useNavigate();
   const [reactionsCount, setReactionsCount] = useState(post.reactions_count);
+  const [savesCount, setSavesCount] = useState(post.save_count);
   const [isClicked, setIsClicked] = useState();
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState();
 
-const getStatusClass = (status) => {
-  switch (status) {
-    case "Đang bán":
-      return "bg-gradient-to-r from-blue-400 to-blue-600";
-    case "Đã bán":
-      return "bg-gradient-to-r from-gray-400 to-gray-600";
-    case "Đang thương lượng":
-      return "bg-gradient-to-r from-yellow-400 to-yellow-600";
-    default:
-      return "bg-gradient-to-r from-red-400 to-red-600";
-  }
-};
-
+  const getStatusClass = (status) => {
+    switch (status) {
+      case "Đang bán":
+        return "bg-gradient-to-r from-blue-400 to-blue-600";
+      case "Đã bán":
+        return "bg-gradient-to-r from-gray-400 to-gray-600";
+      case "Đang thương lượng":
+        return "bg-gradient-to-r from-yellow-400 to-yellow-600";
+      default:
+        return "bg-gradient-to-r from-red-400 to-red-600";
+    }
+  };
 
   useEffect(() => {
+    // Check like
     const checkLiked = async () => {
       try {
         const response = await axios.get(
@@ -70,8 +71,33 @@ const getStatusClass = (status) => {
         console.error("Error checking liked posts:", error);
       }
     };
+
+    // Check save
+    const checkSaved = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/saved-posts/${id}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        if (response.status === 200) {
+          const savedPosts = response.data.map((post) => post.post_id);
+          if (savedPosts.includes(post.post_id)) {
+            setIsSaved(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking saved posts:", error);
+      }
+    };
+
+    checkSaved();
     checkLiked();
-  }, [post.post_id, sessionToken]);
+  }, [post.post_id, sessionToken, id]);
 
   const handleClick = useCallback(async () => {
     if (!sessionToken) {
@@ -101,9 +127,34 @@ const getStatusClass = (status) => {
     }
   }, [sessionToken, post.post_id]);
 
-  const handleSaveClick = () => {
-    setIsSaved(!isSaved);
-  };
+  const handleSaveClick = useCallback(async () => {
+    if (!sessionToken) {
+      alert("Bạn cần đăng nhập để thực hiện hành động này.");
+      return;
+    } else {
+      setIsSaved((prevSaved) => {
+        setSavesCount((prevCount) =>
+          prevSaved ? prevCount - 1 : prevCount + 1
+        );
+        return !prevSaved;
+      });
+      try {
+        const response = await axios.post(
+          `http://127.0.0.1:8000/api/saved-posts/${post.post_id}/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Error saving the post:", error);
+      }
+    }
+  }, [sessionToken, post.post_id]);
+
 
   const formatPrice = (price) => {
     if (price >= 1_000_000_000) {
@@ -403,7 +454,7 @@ const getStatusClass = (status) => {
                           isSaved ? "text-yellow-400" : "text-gray-500"
                         }`}
                       />
-                      <span>22</span>
+                      <span>{savesCount}</span>
                     </div>
                   </button>
                   <span className="text-xs">Lưu bài</span>
@@ -478,7 +529,7 @@ const getStatusClass = (status) => {
           </div>
 
           <span className="text-gray-500 w-[8rem]">
-            {post.view_count/2} lượt xem
+            {Math.floor(post.view_count / 2)} lượt xem
           </span>
         </div>
       </div>
@@ -491,6 +542,7 @@ Post.propTypes = {
     title: PropTypes.string.isRequired,
     post_id: PropTypes.string.isRequired,
     reactions_count: PropTypes.number.isRequired,
+    save_count: PropTypes.number.isRequired,
   }).isRequired,
 };
 

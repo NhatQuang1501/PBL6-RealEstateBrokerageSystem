@@ -10,11 +10,13 @@ const HeroSection = ({
   setFilterStatusValue,
   setFilterPriceValue,
   setFilterAreaValue,
+  setTypePost,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [popupValue, setPopupValue] = useState("");
+  const [type, setType] = useState("house");
 
   const images = [
     { url: img1, alt: "Image 1" },
@@ -66,6 +68,10 @@ const HeroSection = ({
     setFilterAreaValue(e.target.value);
   };
 
+  useEffect(() => {
+    setTypePost(type);
+  }, [type, setTypePost]);
+
   return (
     <section className="h-[78vh] overflow-hidden font-montserrat">
       <div className="container mx-auto w-full h-full">
@@ -100,13 +106,34 @@ const HeroSection = ({
         <div className="w-full absolute inset-x-0 bottom-[7rem]">
           <div className="rounded-lg mt-10 p-6 w-[70%] m-auto">
             <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-[#3CA9F9] border-double">
-              <button className="tab-btn bg-[#3CA9F9] text-white font-semibold px-4 py-2 rounded-xl z-10">
+              <button
+                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
+                  type === "house"
+                    ? "bg-[#3CA9F9] text-white scale-105"
+                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                }`}
+                onClick={() => setType("house")}
+              >
                 Nhà
               </button>
-              <button className="tab-btn text-black font-semibold px-4 py-2 rounded-xl hover:bg-[#3CA9F9] hover:text-white z-10">
+              <button
+                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
+                  type === "land"
+                    ? "bg-[#3CA9F9] text-white scale-105"
+                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                }`}
+                onClick={() => setType("land")}
+              >
                 Đất
               </button>
-              <button className="tab-btn text-black font-semibold px-4 py-2 rounded-xl hover:bg-[#3CA9F9] hover:text-white z-10">
+              <button
+                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
+                  type === "news"
+                    ? "bg-[#3CA9F9] text-white scale-105"
+                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                }`}
+                onClick={() => setType("news")}
+              >
                 Tin tức
               </button>
             </div>

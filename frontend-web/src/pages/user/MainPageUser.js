@@ -12,6 +12,7 @@ const MainPageUser = ({
   filterStatusValue,
   filterPriceValue,
   filterAreaValue,
+  typePost,
 }) => {
   const [filterLegalValue, setFilterLegalValue] = useState([]);
   const [filterOrientationValue, setFilterOrientationValue] = useState([]);
@@ -49,6 +50,12 @@ const MainPageUser = ({
                 searchValue
               )}`
             : "http://127.0.0.1:8000/api/posts/";
+        } else if (typePost) {
+          if (typePost === "house") {
+            url = "http://127.0.0.1:8000/api/house-posts/";
+          } else if (typePost === "land") {
+            url = "http://127.0.0.1:8000/api/land-posts/";
+          }
         } else {
           if (sortOption === "Mới nhất") {
             url = "http://127.0.0.1:8000/api/posts/";
@@ -196,6 +203,7 @@ const MainPageUser = ({
     filterBathroomValue,
     filterDistrictValue,
     sortOption,
+    typePost,
   ]);
 
   const handleCreatePostClick = () => {
