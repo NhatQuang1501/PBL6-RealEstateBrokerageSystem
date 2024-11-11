@@ -126,15 +126,15 @@ class PostNegotiationsView(APIView):
         if str(post.user_id_id) == str(request.user.user_id):
             return Response(
                 {
-                    "message": "Bạn không thể tự thương lượng với bài đăng của chính mình."
+                    "message": "Bạn không thể tự thương lượng với bài đăng của chính mình"
                 },
                 status=status.HTTP_403_FORBIDDEN,
             )
 
         # Kiểm tra trạng thái bài đăng
         if post.status != Status.APPROVED or post.sale_status not in [
+            Sale_status.SELLING,
             Sale_status.NEGOTIATING,
-            Sale_status.DEPOSITED,
         ]:
             return Response(
                 {"message": "Không thể thực hiện thương lượng cho bài đăng này"},
