@@ -95,7 +95,8 @@ class PopularPostView(APIView):
         post_serializer = PostSerializer(posts, many=True)
 
         return Response(
-            {"count": posts.count(), "data": post_serializer.data},
+            # {"count": posts.count(), "data": post_serializer.data},
+            post_serializer.data,
             status=status.HTTP_200_OK,
         )
 
@@ -116,8 +117,7 @@ class SavePostView(APIView):
         post_serializer = PostSerializer(posts, many=True)
 
         return Response(
-            # {"count": len(posts), "data": post_serializer.data},
-            post_serializer.data,
+            {"count": len(posts), "data": post_serializer.data},
             status=status.HTTP_200_OK,
         )
 
