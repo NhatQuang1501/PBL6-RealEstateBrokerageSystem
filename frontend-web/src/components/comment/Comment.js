@@ -131,7 +131,7 @@ const Comment = ({ id, sessionToken }) => {
 
   return (
     <div className="flex flex-col justify-start items-center h-screen mr-5">
-      <div className="flex flex-col items-center justify-between p-6 mt-5 mb-5 mr-5 h-full w-full mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
+      <div className="flex flex-col items-center justify-between p-6 mt-5 mb-5 mr-5 h-full w-[32rem] mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
         <div className="flex items-center justify-center w-full mb-4 gap-3 border-b-[2px] border-gray-300 border-solid pb-5">
           <FaComment className="text-3xl text-[#3CA9F9]" />
           <h1 className="text-2xl font-bold text-[#3CA9F9]">Bình luận</h1>

@@ -22,6 +22,7 @@ import Comment from "../../components/comment/Comment";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import NegotiationList from "../../components/neogotiation/NegotiationList";
 
 const DetailPost = () => {
   const { id, sessionToken } = useAppContext();
@@ -212,9 +213,9 @@ const DetailPost = () => {
         )}
       </div>
 
-      <div className="flex flex-row-2 gap-5 items-start justify-start">
+      <div className="flex flex-row-2 gap-3 items-start justify-center">
         {/* Main content */}
-        <div className="p-6 mt-5 mb-5 w-[58rem] mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
+        <div className="p-6 mt-5 mb-5 ml-10 w-[57rem] rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
           {post ? (
             <>
               <div className="flex justify-between items-center px-2 py-4">
@@ -349,9 +350,17 @@ const DetailPost = () => {
             </div>
           )}
         </div>
+        <div className="flex flex-col">
+          {/* Comment */}
+          <Comment id={postId} sessionToken={sessionToken} />
 
-        {/* Comment */}
-        <Comment id={postId} sessionToken={sessionToken} />
+          {/* Neogotiation */}
+          {post && post.user.user_id === id ? (
+            <NegotiationList type="owner" />
+          ) : (
+            <NegotiationList />
+          )}
+        </div>
       </div>
     </div>
   );

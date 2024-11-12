@@ -13,8 +13,11 @@ import {
   faCity,
   faBirthdayCake,
   faUserPlus,
+  faCommentDots,
+  faUserEdit,
+  faCamera,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaAddressCard } from "react-icons/fa";
+import { FaAddressCard, FaUserFriends } from "react-icons/fa";
 
 const ProfileCard = () => {
   const navigate = useNavigate();
@@ -228,9 +231,10 @@ const ProfileCard = () => {
           {!userId || userId === id ? (
             <>
               <button
-                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-blue-200 flex items-center gap-2"
                 onClick={() => fileInputRef.current.click()}
               >
+                <FontAwesomeIcon icon={faCamera} className="ml-2"/> {/* Thêm biểu tượng */}
                 Thay đổi ảnh đại diện
               </button>
 
@@ -243,11 +247,10 @@ const ProfileCard = () => {
             </>
           ) : isFriend ? (
             // Trường hợp bạn bè
-            <>
-              <button className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200">
-                Bạn bè
-              </button>
-            </>
+            <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200 p-1">
+              <div className="text-sm font-bold text-blue-600">Bạn bè</div>
+              <FaUserFriends className="text-2xl text-blue-600 ml-2" />
+            </div>
           ) : (
             // Trường hợp người lạ
             <>
@@ -266,9 +269,10 @@ const ProfileCard = () => {
         <>
           {/* Contact Button */}
           <button
-            className="bg-teal-500 px-4 py-2 rounded-lg w-full mb-4"
+            className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 hover:text-white border-[1px] border-white border-solid transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2"
             onClick={() => handleUpdateProfile()}
           >
+            <FontAwesomeIcon icon={faUserEdit} /> {/* Thêm biểu tượng */}
             Cập nhật trang cá nhân
           </button>
         </>
@@ -277,9 +281,10 @@ const ProfileCard = () => {
         <>
           {/* Contact Button */}
           <button
-            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            className="bg-gradient-to-r from-purple-300 to-purple-400 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2 border-[1px] border-solid border-white"
             // onClick={() => handleUpdateProfile()}
           >
+            <FontAwesomeIcon icon={faCommentDots} />
             Nhắn tin
           </button>
         </>

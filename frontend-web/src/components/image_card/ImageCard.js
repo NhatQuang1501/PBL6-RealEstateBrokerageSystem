@@ -149,7 +149,7 @@ const ImageCard = ({ postId, type }) => {
           {images.length > 0 && (
             <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           )}
-          <div className="relative z-10">
+          <div className="relative z-5">
             <h4 className="text-white text-lg mb-2">
               Hình ảnh mô tả ({images.length})
             </h4>

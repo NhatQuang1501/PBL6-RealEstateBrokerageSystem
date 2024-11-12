@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useAppContext } from "../../AppProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faUserPlus,
+  faUser,
+  faComment,
+  faFlag,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function SideProjects() {
   const { id, sessionToken } = useAppContext();
@@ -14,6 +20,7 @@ export default function SideProjects() {
   const [senders, setSenders] = useState([]);
   const [numSenders, setNumSenders] = useState(0);
 
+  const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFriendId, setSelectedFriendId] = useState(null);
 
@@ -21,6 +28,8 @@ export default function SideProjects() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const { userId } = useParams();
+  const menuRef = useRef(null);
+
   const [tooltip, setTooltip] = useState({
     visible: false,
     text: "",
@@ -115,13 +124,24 @@ export default function SideProjects() {
       }
     };
 
+    // Đóng Menu khi con trỏ chuột trỏ ra ngoài
+    const handleMouseDowwn = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
     fetchReceives();
     fetchSenders();
     fetchFriends();
+    document.addEventListener("mousedown", handleMouseDowwn);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDowwn);
+    };
   }, [sessionToken, id, userId]);
 
   // Accept friend request
-  const handleAcceptFriendRequest = (senderId) => async () => {
+  const handleAcceptFriendRequest = async (senderId) => {
     try {
       await axios.put(
         `http://127.0.0.1:8000/api/friend-requests/`,
@@ -135,6 +155,7 @@ export default function SideProjects() {
           },
         }
       );
+      console.log("Accept friend request:", senderId);
 
       setReceives((prevReceives) =>
         prevReceives.filter(
@@ -142,6 +163,7 @@ export default function SideProjects() {
         )
       );
       setNumReceives((prevNumReceives) => prevNumReceives - 1);
+      window.location.reload();
     } catch (err) {
       console.error("Error accepting friend request:", err);
       setError("Không thể chấp nhận yêu cầu kết bạn.");
@@ -149,7 +171,7 @@ export default function SideProjects() {
   };
 
   // Decline friend request
-  const handleDeclineFriendRequest = (senderId) => async () => {
+  const handleDeclineFriendRequest = async (senderId) => {
     try {
       await axios.put(
         `http://127.0.0.1:8000/api/friend-requests/`,
@@ -170,6 +192,7 @@ export default function SideProjects() {
         )
       );
       setNumReceives((prevNumReceives) => prevNumReceives - 1);
+      window.location.reload();
     } catch (err) {
       console.error("Error declining friend request:", err);
       setError("Không thể từ chối yêu cầu kết bạn.");
@@ -247,6 +270,14 @@ export default function SideProjects() {
     setTooltip({ visible: false, text: "", x: 0, y: 0 });
   };
 
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
+  };
+
   return (
     <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg w-[20rem]">
       <div>
@@ -263,7 +294,8 @@ export default function SideProjects() {
               <img
                 src={"http://127.0.0.1:8000/" + friend.user.avatar}
                 alt={`${friend.user.username} avatar`}
-                className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
+                className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
+                onClick={toggleMenu}
               />
               <p
                 className="flex-1 truncate"
@@ -287,6 +319,36 @@ export default function SideProjects() {
                   style={{ top: tooltip.y + 20, left: tooltip.x }}
                 >
                   {tooltip.text}
+                </div>
+              )}
+
+              {isOpen && (
+                <div
+                  ref={menuRef}
+                  className="absolute left-5 bottom-3 mt-2 w-auto p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                >
+                  <button
+                    className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                    onClick={() => {
+                      handlePersonalProfileClick(friend.user_id);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                    <span className="text-gray-700">Thông tin cá nhân</span>
+                  </button>
+                  <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                    <FontAwesomeIcon
+                      icon={faComment}
+                      className="text-green-500"
+                    />
+                    <span className="text-gray-700">
+                      Nhắn tin với người này
+                    </span>
+                  </button>
+                  <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                    <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+                    <span className="text-gray-700">Báo cáo</span>
+                  </button>
                 </div>
               )}
 
@@ -372,18 +434,34 @@ export default function SideProjects() {
                 >
                   <img
                     src={
-                      "http://127.0.0.1:8000/" + sender.sender_profile.avatar
+                      "http://127.0.0.1:8000/" + sender.receiver_profile.avatar
                     }
-                    alt={`${sender.sender_profile.user.username} avatar`}
+                    alt={`${sender.receiver_profile.user.username} avatar`}
                     className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
                   />
-                  <p>{sender.sender_profile.user.username}</p>
+                  <p
+                    className="flex-1 truncate"
+                    onMouseEnter={(e) =>
+                      showTooltip(sender.receiver_profile.user.username, e)
+                    }
+                    onMouseLeave={hideTooltip}
+                  >
+                    {sender.receiver_profile.user.username}
+                  </p>
                   <button
                     className="ml-auto bg-gradient-to-r from-red-400 to-red-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-red-500 hover:to-red-700 transition-all duration-300 ease-in-out transform hover:scale-105"
                     onClick={handleDeleteSender(sender.friendrequest_id)}
                   >
                     Xóa lời mời
                   </button>
+                  {tooltip.visible && (
+                    <div
+                      className="fixed bg-black text-white p-2 rounded-lg"
+                      style={{ top: tooltip.y + 20, left: tooltip.x }}
+                    >
+                      {tooltip.text}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

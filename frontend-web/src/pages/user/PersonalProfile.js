@@ -1,8 +1,13 @@
+import { useEffect } from "react";
 import Portfolio from "../../components/personal_profile/Portfolio";
 import ProfileCard from "../../components/personal_profile/ProfileCard";
 import SideProjects from "../../components/personal_profile/SideProjects";
 
 const PersonalProfile = () => {
+  useEffect(() => {
+    // window.location.reload();
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-white p-10 font-montserrat">
       <div className="grid grid-cols-8 gap-5">

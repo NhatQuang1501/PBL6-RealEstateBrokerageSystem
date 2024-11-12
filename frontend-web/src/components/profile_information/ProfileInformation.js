@@ -128,7 +128,7 @@ const ProfileInformation = ({ name, date, user_id }) => {
           {isOpen && (
             <div
               ref={menuRef}
-              className="absolute left-5 bottom-3 mt-2 w-56 p-2 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+              className="absolute left-5 bottom-3 mt-2 w-[18rem] p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
             >
               <button
                 className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"

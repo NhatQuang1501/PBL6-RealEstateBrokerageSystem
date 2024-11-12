@@ -185,7 +185,7 @@ function App() {
               element={
                 <>
                   <Header />
-                  <ViewPersonProfile />
+                  <PersonalProfile />
                   <Footer />
                 </>
               }
