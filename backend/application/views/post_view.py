@@ -14,11 +14,13 @@ from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from application.utils import *
 import time
-from django.db.models import Q
+from django.db.models import Q, Count, F
 import unicodedata
 import re
+from datetime import timedelta
 
 
 class PostView(APIView):
@@ -32,6 +34,9 @@ class PostView(APIView):
         return [permission() for permission in self.permission_classes]
 
     def get(self, request, pk=None):
+        params = {key.strip(): value for key, value in request.query_params.items()}
+        category = params.get("category", "").strip() if params.get("category") else ""
+
         if pk:
             if User.objects.filter(user_id=pk).exists():
                 user = get_object_or_404(User, user_id=pk)
@@ -67,25 +72,67 @@ class PostView(APIView):
                 )
 
         else:
-            # if request.user.is_authenticated:
-            #     user_id = request.user
-            #     query = Q(status=Status.APPROVED)
-            #     posts = Post.objects.filter(query).order_by("updated_at")
-            # else:
-            # posts = Post.objects.all().order_by("updated_at") # tất cả bài đăng CHỜ DUYỆT và ĐÃ DUYỆT
+            if not category:
+                query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
-            posts = Post.objects.filter(query).order_by("-created_at")
+            elif category == "oldest posts":
+                query = Q(status=Status.APPROVED)
+                posts = Post.objects.filter(query).order_by("created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            post_serializer = PostSerializer(
-                posts, many=True, context={"request_type": "list"}
-            )
+            elif category == "house":
+                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.HOUSE)
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            return Response(
-                # {"count": posts.count(), "data": post_serializer.data},
-                post_serializer.data,
-                status=status.HTTP_200_OK,
-            )
+            elif category == "land":
+                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.LAND)
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
+
+            elif category == "popular":
+                recent_months = 6
+                current_date = timezone.now()
+                start_date = current_date - timedelta(days=recent_months * 30)
+
+                # Tính điểm phổ biến của bài đăng dựa trên reactions, comments, view_count, save_count
+                posts = (
+                    Post.objects.filter(
+                        status=Status.APPROVED, created_at__gte=start_date
+                    )
+                    .annotate(
+                        reaction_count=Count("postreaction"),
+                        comment_count=Count("postcomment"),
+                    )
+                    .annotate(
+                        popular_score=(
+                            0.3 * Count("postreaction")  # Trọng số cho reactions
+                            + 0.7 * Count("postcomment")  # Trọng số cho comments
+                            + 0.1 * F("view_count")  # Trọng số cho view_count
+                            + 0.5 * F("save_count")  # Trọng số cho save_count
+                        )
+                    )
+                    .order_by("-popular_score", "-created_at")
+                )
+
+                post_serializer = PostSerializer(posts, many=True)
+
+            else:
+                return Response(
+                    {"message": "Loại bài đăng không hợp lệ"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             return Response(
                 # {"count": posts.count(), "data": post_serializer.data},
                 post_serializer.data,
