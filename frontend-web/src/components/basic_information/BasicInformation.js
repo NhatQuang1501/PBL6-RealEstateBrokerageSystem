@@ -11,6 +11,8 @@ import {
   faMapMarkerAlt,
   faStickyNote,
 } from "@fortawesome/free-solid-svg-icons";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const BasicInformation = ({
   price,
@@ -148,6 +150,18 @@ const BasicInformation = ({
           <p className="font-semibold text-gray-700">Ghi chú</p>
         </div>
         <p className="text-gray-800 text-lg text-center">{description}</p> */}
+        {/* Ghi chú */}
+        <div className="mb-6 flex items-center text-xl">
+          <FontAwesomeIcon
+            icon={faStickyNote}
+            className="text-[#3CA9F9] mr-3"
+          />
+          <p className="font-semibold text-gray-700">Ghi chú</p>
+        </div>
+        <div
+          className="text-gray-800 text-lg text-center"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       </div>
     </div>
   );

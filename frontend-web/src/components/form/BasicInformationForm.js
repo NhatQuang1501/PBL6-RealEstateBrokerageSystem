@@ -20,6 +20,8 @@ import AddressInput from "../map_api/AddressInputWithPopup";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import AddImage from "./AddImage";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -57,6 +59,10 @@ const BasicInformation = () => {
     }
     setSale_status("Đang bán");
   }, [selectedProperty]);
+
+  const handleDescriptionChange = (value) => {
+    setDescription(value);
+  };
 
   const handleSelectProperty = (property) => {
     setSelectedProperty(property);
@@ -606,13 +612,33 @@ const BasicInformation = () => {
                     Ghi chú:
                   </label>
                   <div className="relative">
-                    <textarea
+                    {/* <textarea
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={description}
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
                       id="description"
                       onChange={(e) => setDescription(e.target.value)}
-                    ></textarea>
+                    ></textarea> */}
+                    <ReactQuill
+                      value={description}
+                      onChange={handleDescriptionChange}
+                      placeholder="Nhập ghi chú cho bài đăng của bạn"
+                      modules={{
+                        toolbar: [
+                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                          [{ 'align': [] }],
+                          ['bold', 'italic', 'underline', 'strike'],
+                          [{ 'color': [] }, { 'background': [] }],
+                          ['link'],
+                          ['blockquote', 'code-block'],
+                          ['image'],
+                        ],
+                      }}
+                      formats={[
+                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
+                      ]}
+                    />
                     <FontAwesomeIcon
                       icon={faStickyNote}
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
@@ -897,13 +923,33 @@ const BasicInformation = () => {
                     Ghi chú:
                   </label>
                   <div className="relative">
-                    <textarea
+                    {/* <textarea
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={description}
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
                       id="description"
                       onChange={(e) => setDescription(e.target.value)}
-                    ></textarea>
+                    ></textarea> */}
+                    <ReactQuill
+                      value={description}
+                      onChange={handleDescriptionChange}
+                      placeholder="Nhập ghi chú cho bài đăng của bạn"
+                      modules={{
+                        toolbar: [
+                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                          [{ 'align': [] }],
+                          ['bold', 'italic', 'underline', 'strike'],
+                          [{ 'color': [] }, { 'background': [] }],
+                          ['link'],
+                          ['blockquote', 'code-block'],
+                          ['image'],
+                        ],
+                      }}
+                      formats={[
+                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
+                      ]}
+                    />
                     <FontAwesomeIcon
                       icon={faStickyNote}
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
