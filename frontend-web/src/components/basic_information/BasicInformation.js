@@ -30,15 +30,15 @@ const BasicInformation = ({
     if (price >= 1_000_000_000) {
       const billionValue = price / 1_000_000_000;
       return Number.isInteger(billionValue)
-        ? `${billionValue} tỷ VND`
-        : `${billionValue.toFixed(3)} tỷ VND`;
+        ? `${billionValue} tỷ VNĐ`
+        : `${billionValue.toFixed(3)} tỷ VNĐ`;
     } else if (price >= 1_000_000) {
       const millionValue = price / 1_000_000;
       return Number.isInteger(millionValue)
-        ? `${millionValue} triệu VND`
-        : `${millionValue.toFixed(3)} triệu VND`;
+        ? `${millionValue} triệu VNĐ`
+        : `${millionValue.toFixed(3)} triệu VNĐ`;
     } else {
-      return `${price} VND`;
+      return `${price} VNĐ`;
     }
   };
 
