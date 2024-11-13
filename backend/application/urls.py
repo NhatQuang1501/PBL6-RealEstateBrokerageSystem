@@ -9,18 +9,18 @@ from application.views.ordered_post_view import *
 urlpatterns = [
     # Post Management Endpoints
     path("posts/", PostView.as_view(), name="posts"),
+    path("posts/<str:pk>/", PostView.as_view(), name="posts-detail"),
     path("pending-posts/", PendingPostView.as_view(), name="pending-posts"),
     path(
         "pending-posts/<str:pk>/", PendingPostView.as_view(), name="user-pending-posts"
     ),
-    path("posts/<str:pk>/", PostView.as_view(), name="posts-detail"),
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
     # Ordered Post Endpoints
-    path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
-    path("house-posts/", HousePostView.as_view(), name="house-posts"),
-    path("land-posts/", LandPostView.as_view(), name="land-posts"),
-    path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
+    # path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
+    # path("house-posts/", HousePostView.as_view(), name="house-posts"),
+    # path("land-posts/", LandPostView.as_view(), name="land-posts"),
+    # path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
     path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Sold Post Endpoints
     path(
