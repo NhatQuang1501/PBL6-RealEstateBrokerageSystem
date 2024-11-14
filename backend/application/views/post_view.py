@@ -254,7 +254,7 @@ class SearchView(APIView):
             text = request.data.get("text")
             print("Text trong request data:", text)
 
-        posts = Post.objects.all().order_by("-created_at")
+        posts = Post.objects.filter(status=Status.APPROVED).order_by("-created_at")
         posts_serializer = PostSerializer(posts, many=True)
         result = []
 
