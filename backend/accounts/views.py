@@ -120,11 +120,18 @@ class RegisterView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Kiểm tra xem username và password có chứa ký tự chữ cái không
         if not any(char.isalpha() for char in user_data.get("username", "")):
-            raise serializers.ValidationError(self.default_error_message["username"])
+            return Response(
+                {"error": self.default_error_message["username"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not any(char.isalpha() for char in user_data.get("password", "")):
-            raise serializers.ValidationError(self.default_error_message["password"])
+            return Response(
+                {"error": self.default_error_message["password"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Kiểm tra xem email và username đã tồn tại chưa
         if User.objects.filter(email=user_data.get("email")).exists():

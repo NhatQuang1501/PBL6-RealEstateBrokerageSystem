@@ -16,11 +16,6 @@ urlpatterns = [
     ),
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
-    # Ordered Post Endpoints
-    # path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
-    # path("house-posts/", HousePostView.as_view(), name="house-posts"),
-    # path("land-posts/", LandPostView.as_view(), name="land-posts"),
-    # path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
     path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Sold Post Endpoints
     path(

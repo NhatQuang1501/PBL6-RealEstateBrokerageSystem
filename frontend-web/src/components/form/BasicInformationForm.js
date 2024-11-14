@@ -22,6 +22,7 @@ import { useAppContext } from "../../AppProvider";
 import AddImage from "./AddImage";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import quillConfig from './quillConfig';
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -623,21 +624,8 @@ const BasicInformation = () => {
                       value={description}
                       onChange={handleDescriptionChange}
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
-                      modules={{
-                        toolbar: [
-                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                          [{ 'align': [] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          [{ 'color': [] }, { 'background': [] }],
-                          ['link'],
-                          ['blockquote', 'code-block'],
-                          ['image'],
-                        ],
-                      }}
-                      formats={[
-                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
-                      ]}
+                      modules={quillConfig.modules}
+                      formats={quillConfig.formats}
                     />
                     <FontAwesomeIcon
                       icon={faStickyNote}
@@ -934,21 +922,8 @@ const BasicInformation = () => {
                       value={description}
                       onChange={handleDescriptionChange}
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
-                      modules={{
-                        toolbar: [
-                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                          [{ 'align': [] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          [{ 'color': [] }, { 'background': [] }],
-                          ['link'],
-                          ['blockquote', 'code-block'],
-                          ['image'],
-                        ],
-                      }}
-                      formats={[
-                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
-                      ]}
+                      modules={quillConfig.modules}
+                      formats={quillConfig.formats}
                     />
                     <FontAwesomeIcon
                       icon={faStickyNote}

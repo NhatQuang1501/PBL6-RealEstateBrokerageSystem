@@ -36,6 +36,7 @@ class PostView(APIView):
     def get(self, request, pk=None):
         params = {key.strip(): value for key, value in request.query_params.items()}
         category = params.get("category", "").strip() if params.get("category") else ""
+        time = params.get("time", "").strip() if params.get("time") else ""
 
         if pk:
             if User.objects.filter(user_id=pk).exists():
@@ -72,33 +73,14 @@ class PostView(APIView):
                 )
 
         else:
-            if not category:
-                query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
-                posts = Post.objects.filter(query).order_by("-created_at")
-                post_serializer = PostSerializer(
-                    posts, many=True, context={"request_type": "list"}
-                )
+            # Xây dựng điều kiện lọc category
+            query = Q(status=Status.APPROVED)
 
-            elif category == "oldest posts":
-                query = Q(status=Status.APPROVED)
-                posts = Post.objects.filter(query).order_by("created_at")
-                post_serializer = PostSerializer(
-                    posts, many=True, context={"request_type": "list"}
-                )
-
-            elif category == "house":
-                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.HOUSE)
-                posts = Post.objects.filter(query).order_by("-created_at")
-                post_serializer = PostSerializer(
-                    posts, many=True, context={"request_type": "list"}
-                )
+            if category == "house":
+                query &= Q(estate_type=EstateType.HOUSE)
 
             elif category == "land":
-                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.LAND)
-                posts = Post.objects.filter(query).order_by("-created_at")
-                post_serializer = PostSerializer(
-                    posts, many=True, context={"request_type": "list"}
-                )
+                query &= Q(estate_type=EstateType.LAND)
 
             elif category == "popular":
                 recent_months = 6
@@ -107,9 +89,7 @@ class PostView(APIView):
 
                 # Tính điểm phổ biến của bài đăng dựa trên reactions, comments, view_count, save_count
                 posts = (
-                    Post.objects.filter(
-                        status=Status.APPROVED, created_at__gte=start_date
-                    )
+                    Post.objects.filter(query, created_at__gte=start_date)
                     .annotate(
                         reaction_count=Count("postreaction"),
                         comment_count=Count("postcomment"),
@@ -122,22 +102,27 @@ class PostView(APIView):
                             + 0.5 * F("save_count")  # Trọng số cho save_count
                         )
                     )
-                    .order_by("-popular_score", "-created_at")
+                    .order_by("-popular_score")
                 )
 
-                post_serializer = PostSerializer(posts, many=True)
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
+
+                return Response(post_serializer.data, status=status.HTTP_200_OK)
+
+            if time == "oldtonew":
+                order_by = "created_at"
 
             else:
-                return Response(
-                    {"message": "Loại bài đăng không hợp lệ"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+                order_by = "-created_at"
 
-            return Response(
-                # {"count": posts.count(), "data": post_serializer.data},
-                post_serializer.data,
-                status=status.HTTP_200_OK,
+            posts = Post.objects.filter(query).order_by(order_by)
+            post_serializer = PostSerializer(
+                posts, many=True, context={"request_type": "list"}
             )
+
+            return Response(post_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         post_data = request.data.copy()
@@ -160,6 +145,14 @@ class PostView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        # Kiểm tra user hiện tại không phải là người đăng
+        if post.user_id != request.user:
+            return Response(
+                {"message": "Bạn không có quyền cập nhật bài đăng này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         post_serializer = PostSerializer(post, data=request.data, partial=True)
 
         if post_serializer.is_valid():
@@ -180,6 +173,13 @@ class PostView(APIView):
 
     def delete(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        if post.user_id != request.user:
+            return Response(
+                {"message": "Bạn không có quyền xóa bài đăng này."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         post.delete()
 
         return Response(
