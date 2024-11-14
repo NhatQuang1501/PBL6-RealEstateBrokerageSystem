@@ -187,7 +187,7 @@ const DetailPost = () => {
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
       <button
-        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center"
+        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-8 self-start flex items-center"
         onClick={() => window.history.back()}
       >
         <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />

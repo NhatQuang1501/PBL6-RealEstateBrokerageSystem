@@ -24,7 +24,7 @@ import UpdatePost from "./pages/user/UpdatePost";
 import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
 import { useState } from "react";
-import ViewPersonProfile from "./pages/user/ViewPersonProfile";
+import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -193,6 +193,10 @@ function App() {
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />
+            <Route
+              path="/admin/detail-post/:postId"
+              element={<PostDetailAdmin />}
+            />
 
             <Route path="*" element={<Error />} />
           </Routes>
