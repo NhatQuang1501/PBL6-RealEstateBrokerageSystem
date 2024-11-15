@@ -202,17 +202,6 @@ class PostSerializer(serializers.ModelSerializer):
         return post
 
     def update(self, instance, validated_data):
-        if instance.sale_status in [
-            Sale_status.NEGOTIATING,
-            Sale_status.DEPOSITED,
-            Sale_status.SOLD,
-        ]:
-            raise serializers.ValidationError(
-                {
-                    "detail": "Bài đăng không thể cập nhật khi đang thương lượng, đã cọc hoặc đã bán"
-                }
-            )
-
         instance.title = validated_data.get("title", instance.title)
         instance.estate_type = validated_data.get("estate_type", instance.estate_type)
         instance.price = validated_data.get("price", instance.price)
@@ -234,8 +223,8 @@ class PostSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get("description", instance.description)
 
         instance.status = Status.PENDING_APPROVAL
-        # instance.view_count = validated_data.get("view_count", instance.view_count)
-        # instance.save_count = validated_data.get("save_count", instance.save_count)
+        instance.view_count = validated_data.get("view_count", instance.view_count)
+        instance.save_count = validated_data.get("save_count", instance.save_count)
 
         instance.save()
         return instance

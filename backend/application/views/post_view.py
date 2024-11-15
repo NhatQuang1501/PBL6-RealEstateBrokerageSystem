@@ -153,6 +153,18 @@ class PostView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         post_serializer = PostSerializer(post, data=request.data, partial=True)
 
         if post_serializer.is_valid():
@@ -419,6 +431,19 @@ class PostImageView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Ảnh bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         images = PostImage.objects.filter(post_id=post)
         images.delete()
 
