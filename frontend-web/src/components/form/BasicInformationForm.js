@@ -625,18 +625,31 @@ const BasicInformation = () => {
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
                       modules={{
                         toolbar: [
-                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                          [{ 'align': [] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          [{ 'color': [] }, { 'background': [] }],
-                          ['link'],
-                          ['blockquote', 'code-block'],
-                          ['image'],
+                          [{ header: "1" }, { header: "2" }, { font: [] }],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          [{ align: [] }],
+                          ["bold", "italic", "underline", "strike"],
+                          [{ color: [] }, { background: [] }],
+                          ["link"],
+                          ["blockquote", "code-block"],
+                          ["image"],
                         ],
                       }}
                       formats={[
-                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
+                        "header",
+                        "font",
+                        "list",
+                        "align",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "color",
+                        "background",
+                        "link",
+                        "blockquote",
+                        "code-block",
+                        "image",
                       ]}
                     />
                     <FontAwesomeIcon
@@ -936,18 +949,31 @@ const BasicInformation = () => {
                       placeholder="Nhập ghi chú cho bài đăng của bạn"
                       modules={{
                         toolbar: [
-                          [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-                          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                          [{ 'align': [] }],
-                          ['bold', 'italic', 'underline', 'strike'],
-                          [{ 'color': [] }, { 'background': [] }],
-                          ['link'],
-                          ['blockquote', 'code-block'],
-                          ['image'],
+                          [{ header: "1" }, { header: "2" }, { font: [] }],
+                          [{ list: "ordered" }, { list: "bullet" }],
+                          [{ align: [] }],
+                          ["bold", "italic", "underline", "strike"],
+                          [{ color: [] }, { background: [] }],
+                          ["link"],
+                          ["blockquote", "code-block"],
+                          ["image"],
                         ],
                       }}
                       formats={[
-                        'header', 'font', 'list', 'align', 'bold', 'italic', 'underline', 'strike', 'color', 'background', 'link', 'blockquote', 'code-block', 'image'
+                        "header",
+                        "font",
+                        "list",
+                        "align",
+                        "bold",
+                        "italic",
+                        "underline",
+                        "strike",
+                        "color",
+                        "background",
+                        "link",
+                        "blockquote",
+                        "code-block",
+                        "image",
                       ]}
                     />
                     <FontAwesomeIcon

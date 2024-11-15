@@ -425,7 +425,7 @@ export default function SideProjects() {
             </div>
 
             {/* Lời mời đã gửi */}
-            <h2 className="text-lg mt-6 mb-4">Lời mời đã gửi({numSenders})</h2>
+            <h2 className="text-lg mt-6 mb-4">Lời mời đã gửi ({numSenders})</h2>
             <div className="grid grid-cols-1 gap-4">
               {senders.map((sender) => (
                 <div

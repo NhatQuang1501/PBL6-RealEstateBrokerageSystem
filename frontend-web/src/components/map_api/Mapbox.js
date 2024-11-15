@@ -15,11 +15,6 @@ const AddressInputWithSuggestions = () => {
     longitude: 108.20623,
     zoom: 18,
   });
-  const [markerPosition, setMarkerPosition] = useState({
-    latitude: 16.047079,
-    longitude: 108.20623,
-  });
-  const [confirmedPosition, setConfirmedPosition] = useState(null);
 
   const debounceTimeoutRef = useRef(null);
   const mapRef = useRef(null);
@@ -57,7 +52,7 @@ const AddressInputWithSuggestions = () => {
 
     debounceTimeoutRef.current = setTimeout(() => {
       fetchSuggestions(searchTerm);
-    }, 200);
+    }, 0);
 
     return () => {
       if (debounceTimeoutRef.current) {
@@ -69,10 +64,6 @@ const AddressInputWithSuggestions = () => {
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
     const newPosition = [parseFloat(lat), parseFloat(lon)];
-    if (isNaN(newPosition[0]) || isNaN(newPosition[1])) {
-      console.error("Invalid coordinates:", newPosition);
-      return;
-    }
     setSearchTerm(suggestion.display_name);
     setSuggestions([]);
 
@@ -80,11 +71,6 @@ const AddressInputWithSuggestions = () => {
       latitude: newPosition[0],
       longitude: newPosition[1],
       zoom: 15,
-    });
-
-    setMarkerPosition({
-      latitude: newPosition[0],
-      longitude: newPosition[1],
     });
 
     if (mapRef.current) {
@@ -95,37 +81,6 @@ const AddressInputWithSuggestions = () => {
         curve: 1.42,
       });
     }
-  };
-
-  const handleMapMove = (event) => {
-    const { lat, lng } = event.viewState;
-    if (isNaN(lat) || isNaN(lng)) {
-      console.error("Invalid coordinates:", { lat, lng });
-      return;
-    }
-    setMarkerPosition({
-      latitude: lat,
-      longitude: lng,
-    });
-  };
-
-  const handleMapRightClick = (event) => {
-    const { lngLat } = event;
-    const lng = lngLat.lng;
-    const lat = lngLat.lat;
-    setMarkerPosition({
-      latitude: lat,
-      longitude: lng,
-    });
-    setMapCenter({
-      latitude: lat,
-      longitude: lng,
-      zoom: mapCenter.zoom,
-    });
-  };
-
-  const handleConfirmPosition = () => {
-    setConfirmedPosition(markerPosition);
   };
 
   return (
@@ -160,40 +115,21 @@ const AddressInputWithSuggestions = () => {
       <Map
         ref={mapRef}
         initialViewState={mapCenter}
+        latitude={mapCenter.latitude}
+        longitude={mapCenter.longitude}
+        zoom={mapCenter.zoom}
         style={{ width: "100%", height: "600px" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
-        onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
-        onContextMenu={handleMapRightClick} // Thêm sự kiện onContextMenu để cập nhật vị trí marker khi nhấn chuột phải
       >
         <Marker
-          latitude={markerPosition.latitude}
-          longitude={markerPosition.longitude}
+          latitude={mapCenter.latitude}
+          longitude={mapCenter.longitude}
           anchor="bottom"
         >
           <FaMapMarkerAlt size={40} color="red" />
-          <p className="font-bold text-lg text-red-500">Địa chỉ của bạn</p>
         </Marker>
       </Map>
-
-      {/* Nút xác nhận */}
-      <button
-        onClick={handleConfirmPosition}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
-      >
-        Xác nhận vị trí
-      </button>
-
-      {/* Hiển thị tọa độ */}
-      {confirmedPosition && (
-        <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
-          <p className="text-lg text-gray-800 font-medium">
-            Tọa độ đã xác nhận:
-          </p>
-          <p>Kinh độ: {confirmedPosition.longitude}</p>
-          <p>Vĩ độ: {confirmedPosition.latitude}</p>
-        </div>
-      )}
     </div>
   );
 };

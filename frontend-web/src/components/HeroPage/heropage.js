@@ -16,7 +16,7 @@ const HeroSection = ({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [popupValue, setPopupValue] = useState("");
-  const [type, setType] = useState("house");
+  const [type, setType] = useState("");
 
   const images = [
     { url: img1, alt: "Image 1" },
