@@ -19,6 +19,7 @@ class ChatMessage(models.Model):
     )
 
     message = models.CharField(max_length=1000)
+    # message = models.JSONField(blank=True, null=True)
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
