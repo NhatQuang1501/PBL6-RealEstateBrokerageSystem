@@ -22,6 +22,8 @@ import {
   faCity,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const UpdatePost = () => {
   const { sessionToken } = useAppContext();
@@ -43,9 +45,9 @@ const UpdatePost = () => {
   const { postId } = useParams();
   let navigate = useNavigate();
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // useEffect(() => {
+  //   window.scrollTo(0, 0);
+  // }, []);
 
   useEffect(() => {
     const fetchPostById = async () => {
@@ -338,17 +340,19 @@ const UpdatePost = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-start justify-start gap-3">
           <div className="bg-gray-200 text-gray-700 rounded-full p-2">
             <FontAwesomeIcon icon={faInfoCircle} />
           </div>
-          <label className="text-gray-700 font-bold w-1/6">Mô tả</label>
-          <textarea
-            placeholder="Nhập mô tả chi tiết"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="input-style h-32 border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
-          />
+          <label className="text-gray-700 font-bold w-1/12">Mô tả</label>
+          <div className="flex-grow">
+            <ReactQuill
+              value={description}
+              onChange={setDescription}
+              placeholder="Nhập mô tả chi tiết"
+              className="h-[50rem] overflow-y-auto mb-[5rem] border-gray-300 border-[1px] border-double p-2 rounded-lg focus:border-blue-400"
+            />
+          </div>
         </div>
 
         <ImageCard

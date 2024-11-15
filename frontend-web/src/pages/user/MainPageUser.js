@@ -34,6 +34,7 @@ const MainPageUser = ({
   );
 
   const handlePageChange = (page) => {
+
     setCurrentPage(page);
   };
 
@@ -42,30 +43,29 @@ const MainPageUser = ({
 
   useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        let url;
-        if (searchValue) {
-          url = searchValue
-            ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
-                searchValue
-              )}`
-            : "http://127.0.0.1:8000/api/posts/";
-        } else if (typePost) {
-          if (typePost === "house") {
-            url = "http://127.0.0.1:8000/api/house-posts/";
-          } else if (typePost === "land") {
-            url = "http://127.0.0.1:8000/api/land-posts/";
-          }
-        } else {
-          if (sortOption === "Mới nhất") {
-            url = "http://127.0.0.1:8000/api/posts/";
-          } else if (sortOption === "Cũ nhất") {
-            url = `http://127.0.0.1:8000/api/oldest-posts/`;
-          } else if (sortOption === "Nổi bật") {
-            url = `http://127.0.0.1:8000/api/popular-posts/`;
-          }
+      let url;
+      if (searchValue) {
+        url = searchValue
+          ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
+              searchValue
+            )}`
+          : "http://127.0.0.1:8000/api/posts/";
+      } else if (typePost) {
+        if (typePost === "house") {
+          url = "http://127.0.0.1:8000/api/posts/?category=house";
+        } else if (typePost === "land") {
+          url = "http://127.0.0.1:8000/api/posts/?category=land";
         }
-
+      } else {
+        if (sortOption === "Mới nhất") {
+          url = "http://127.0.0.1:8000/api/posts/";
+        } else if (sortOption === "Cũ nhất") {
+          url = `http://127.0.0.1:8000/api/posts/?category=oldest posts`;
+        } else if (sortOption === "Nổi bật") {
+          url = `http://127.0.0.1:8000/api/posts/?category=popular`;
+        }
+      }
+      try {
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -75,6 +75,8 @@ const MainPageUser = ({
 
         const data = await response.json();
         console.log("Post data:", data);
+        console.log("Sort option:", sortOption);
+        console.log("URL:", url);
 
         let sortedPosts = Array.isArray(data) ? data : [];
 
@@ -182,6 +184,17 @@ const MainPageUser = ({
         if (filterDistrictValue.length > 0) {
           sortedPosts = sortedPosts.filter((post) =>
             filterDistrictValue.includes(post.district)
+          );
+        }
+
+        // Sắp xếp các bài đăng dựa trên sortOption
+        if (sortOption === "Mới nhất") {
+          sortedPosts = sortedPosts.sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at)
+          );
+        } else if (sortOption === "Cũ nhất") {
+          sortedPosts = sortedPosts.sort(
+            (a, b) => new Date(a.created_at) - new Date(b.created_at)
           );
         }
 

@@ -162,7 +162,7 @@ const DetailPost = () => {
       return;
     } else {
       try {
-        const response = await axios.post(
+        await axios.post(
           `http://127.0.0.1:8000/api/posts/${postId}/like/`,
           {},
           {

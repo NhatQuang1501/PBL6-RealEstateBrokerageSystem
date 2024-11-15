@@ -29,6 +29,7 @@ function Header() {
         setSessionToken(null);
         setRole("");
         localStorage.removeItem("refreshToken");
+        localStorage.clear();
         navigate("/");
       } else {
         console.error("Đăng xuất thất bại!");

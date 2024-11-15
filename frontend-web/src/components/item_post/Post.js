@@ -114,7 +114,7 @@ function Post({ post, type }) {
         return !prevClicked;
       });
       try {
-        const response = await axios.post(
+        await axios.post(
           `http://127.0.0.1:8000/api/posts/${post.post_id}/like/`,
           {},
           {
@@ -142,7 +142,7 @@ function Post({ post, type }) {
         return !prevSaved;
       });
       try {
-        const response = await axios.post(
+        await axios.post(
           `http://127.0.0.1:8000/api/saved-posts/${post.post_id}/`,
           {},
           {
@@ -457,7 +457,12 @@ function Post({ post, type }) {
                         isClicked ? "text-red-400" : "text-gray-500"
                       }`}
                     />
-                    <span>{reactionsCount}</span>
+                    <span>
+                      {/* {isClicked && reactionsCount === 0
+                        ? reactionsCount + 1
+                        : reactionsCount} */}
+                        {reactionsCount}
+                    </span>
                   </div>
                 </button>
                 <span className="text-xs">Yêu thích</span>
@@ -502,7 +507,12 @@ function Post({ post, type }) {
                           isSaved ? "text-yellow-400" : "text-gray-500"
                         }`}
                       />
-                      <span>{post.save_count}</span>
+                      <span>
+                        {/* {isSaved && savesCount === 0
+                          ? savesCount + 1
+                          : savesCount} */}
+                          {savesCount}
+                      </span>
                     </div>
                   </button>
                   <span className="text-xs">Lưu bài</span>

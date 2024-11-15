@@ -1,40 +1,55 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
+import Map, { Marker } from "react-map-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
-const AddressPopup = ({ onClose, onAddressSelect }) => {
-  const [searchTerm, setSearchTerm] = useState("");
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg";
+
+const AddressInputWithSuggestions = ({ street }) => {
+  const [searchTerm, setSearchTerm] = useState(street || "");
   const [suggestions, setSuggestions] = useState([]);
-  const [selectedPosition, setSelectedPosition] = useState(null);
-  const mapRef = useRef();
+  const [mapCenter, setMapCenter] = useState({
+    latitude: 16.047079,
+    longitude: 108.20623,
+    zoom: 18,
+  });
+  const [markerPosition, setMarkerPosition] = useState({
+    latitude: 16.047079,
+    longitude: 108.20623,
+  });
+  const [confirmedPosition, setConfirmedPosition] = useState(null);
+
   const debounceTimeoutRef = useRef(null);
+  const mapRef = useRef(null);
 
-const fetchSuggestions = async (query) => {
-  if (query.length < 3) return;
-  try {
-    const response = await axios.get(
-      `https://nominatim.openstreetmap.org/search`,
-      {
-        params: {
-          format: "json",
-          q: `${query}, Đà Nẵng, Việt Nam`,
-          viewbox: "108.127,16.167,108.279,15.965", // Giới hạn trong Đà Nẵng
-          bounded: 1, // Giới hạn trong vùng viewbox
-          addressdetails: 1,
-        },
-      }
-    );
-    setSuggestions(response.data);
-  } catch (error) {
-    console.error("Lỗi khi gọi API:", error);
-  }
-};
+  const fetchSuggestions = async (query) => {
+    if (query.length < 3) return;
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search`,
+        {
+          params: {
+            format: "json",
+            q: `${query}, Đà Nẵng, Việt Nam`,
+            viewbox: "108.127,16.167,108.279,15.965", // Giới hạn trong Đà Nẵng
+            bounded: 1, // Giới hạn trong vùng viewbox
+            addressdetails: 1,
+          },
+        }
+      );
+      setSuggestions(response.data);
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    }
+  };
 
-
-  // debounce 0.5s
   useEffect(() => {
-    if (searchTerm.length < 3) return;
+    if (searchTerm.length < 3) {
+      setSuggestions([]);
+      return;
+    }
 
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
@@ -51,115 +66,183 @@ const fetchSuggestions = async (query) => {
     };
   }, [searchTerm]);
 
-  // Marker
-  const SetMarker = ({ position }) => {
-    const map = useMap();
-    if (position) {
-      map.setView(position, 13);
-      return <Marker position={position} />;
-    }
-    return null;
-  };
+  useEffect(() => {
+    setSearchTerm(street || "");
+  }, [street]);
 
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
     const newPosition = [parseFloat(lat), parseFloat(lon)];
-    setSelectedPosition(newPosition);
+    if (isNaN(newPosition[0]) || isNaN(newPosition[1])) {
+      console.error("Invalid coordinates:", newPosition);
+      return;
+    }
     setSearchTerm(suggestion.display_name);
     setSuggestions([]);
-    onAddressSelect(suggestion.display_name);
+
+    setMapCenter({
+      latitude: newPosition[0],
+      longitude: newPosition[1],
+      zoom: 15,
+    });
+
+    setMarkerPosition({
+      latitude: newPosition[0],
+      longitude: newPosition[1],
+    });
+
+    if (mapRef.current) {
+      mapRef.current.flyTo({
+        center: [newPosition[1], newPosition[0]],
+        zoom: 15,
+        speed: 1.2,
+        curve: 1.42,
+      });
+    }
+  };
+
+  const handleMapMove = (event) => {
+    const { lat, lng } = event.viewState;
+    if (isNaN(lat) || isNaN(lng)) {
+      console.error("Invalid coordinates:", { lat, lng });
+      return;
+    }
+    setMarkerPosition({
+      latitude: lat,
+      longitude: lng,
+    });
+  };
+
+  const handleMapRightClick = (event) => {
+    const { lngLat } = event;
+    const lng = lngLat.lng;
+    const lat = lngLat.lat;
+    setMarkerPosition({
+      latitude: lat,
+      longitude: lng,
+    });
+    setMapCenter({
+      latitude: lat,
+      longitude: lng,
+      zoom: mapCenter.zoom,
+    });
+  };
+
+  const handleConfirmPosition = () => {
+    setConfirmedPosition(markerPosition);
   };
 
   return (
-    <div className="popup-overlay">
-      <div className="popup-content">
-        <button className="close-btn" onClick={onClose}>
-          Đóng
-        </button>
-        <div className="mb-4">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full p-2 border rounded"
-            placeholder="Nhập địa chỉ"
-          />
-          <ul className="suggestions-list">
+    <div className="mb-6">
+      <div className="relative mb-4">
+        <label className="block mb-2 mt-10 text-lg text-gray-800 font-bold">
+          Bản đồ:
+        </label>
+        <div className="mb-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-blue-50">
+          <h2 className="text-lg font-semibold text-blue-600 mb-2">
+            Hướng dẫn sử dụng bản đồ
+          </h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <li>
+              <strong className="font-bold pr-1">Nhập địa chỉ:</strong> Địa chỉ
+              bạn nhập phía trên sẽ được điền tại đây và hiển thị lên bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1 ">Xác định vị trí:</strong>{" "}
+              <span className="text-red-500 ">
+                Tuy nhiên bản đồ chưa thể xác định vị trí tuyệt đối.
+              </span>{" "}
+              Bạn có thể thao tác trực tiếp trong bản đồ để xác định vị trí
+              chính xác của bất động sản. <br></br>{" "}
+              <span className="ml-5 leading-relaxed">
+                Nếu địa chỉ bạn nhập không được gợi ý trên bản đồ, hãy thử chỉ
+                nhập tên đường hoặc thao tác trực tiếp trên bản đồ đến khi hiển
+                thị địa chỉ gợi ý.
+              </span>
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Di chuyển bản đồ:</strong>{" "}
+              Giữ-kéo chuột trái/phải để di chuyển vị trí và xoay bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Phóng to/thu nhỏ:</strong> Sử
+              dụng chuột cuộn để điều chỉnh kích thước bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Chọn vị trí:</strong> Click
+              chuột phải để chọn vị trí chính xác của bất động sản trên bản đồ.
+            </li>
+          </ul>
+        </div>
+
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="block w-full p-4 border border-gray-300 rounded-lg shadow-sm bg-white transition duration-300 ease-in-out transform hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          placeholder="Nhập địa chỉ bất động sản"
+        />
+        {suggestions.length > 0 && (
+          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-md mt-1 max-h-60 overflow-auto">
             {suggestions.map((suggestion) => (
               <li
                 key={suggestion.place_id}
                 onClick={() => handleSuggestionClick(suggestion)}
-                className="cursor-pointer hover:bg-gray-200"
+                className="cursor-pointer hover:bg-gray-200 p-2"
               >
                 {suggestion.display_name}
               </li>
             ))}
           </ul>
-        </div>
-
-        <MapContainer
-          center={[16.047079, 108.20623]}
-          zoom={13}
-          style={{ height: "600px", width: "100%" }}
-          ref={mapRef}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {selectedPosition && <SetMarker position={selectedPosition} />}
-        </MapContainer>
+        )}
       </div>
+
+      {/* Bản đồ */}
+      <Map
+        ref={mapRef}
+        initialViewState={mapCenter}
+        style={{ width: "100%", height: "500px" }}
+        mapStyle="mapbox://styles/mapbox/streets-v11"
+        mapboxAccessToken={MAPBOX_TOKEN}
+        onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
+        onContextMenu={handleMapRightClick} // Thêm sự kiện onContextMenu để cập nhật vị trí marker khi nhấn chuột phải
+      >
+        <Marker
+          latitude={markerPosition.latitude}
+          longitude={markerPosition.longitude}
+          anchor="bottom"
+        >
+          <FaMapMarkerAlt size={40} color="red" />
+          <p className="font-bold text-lg text-red-500">Địa chỉ của bạn</p>
+        </Marker>
+      </Map>
+
+      {/* Nút xác nhận */}
+      <button
+        onClick={handleConfirmPosition}
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
+      >
+        Xác nhận vị trí
+      </button>
+
+      {/* Hiển thị tọa độ */}
+      {confirmedPosition && (
+        <div className="mt-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-gray-200">
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+            Tọa độ đã xác nhận:
+          </h3>
+          <div className="flex items-center mb-2">
+            <span className="font-bold text-gray-700 mr-2">Kinh độ:</span>
+            <span className="text-gray-600">{confirmedPosition.longitude}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-bold text-gray-700 mr-2">Vĩ độ:</span>
+            <span className="text-gray-600">{confirmedPosition.latitude}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-const AddressInputWithPopup = () => {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedAddress, setSelectedAddress] = useState("");
-
-  const handleAddressSelect = (address) => {
-    setSelectedAddress(address);
-    setIsPopupOpen(false);
-  };
-
-return (
-  <div className="mb-6">
-    <div className="relative mb-4">
-      <label className="block mb-2 text-lg text-gray-800 font-medium">
-        Địa chỉ:
-      </label>
-      <input
-        type="text"
-        value={selectedAddress}
-        onClick={() => setIsPopupOpen(true)}
-        className="block w-full p-4 border border-gray-300 rounded-lg shadow-sm bg-white transition duration-300 ease-in-out transform hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600 cursor-pointer"
-        placeholder="Nhấp để kiểm tra địa chỉ bất động sản"
-        readOnly
-      />
-
-    </div>
-
-    {/* Popup địa chỉ */}
-    {isPopupOpen && (
-      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-        <div className="bg-white w-11/12 md:w-2/3 lg:w-1/2 p-6 rounded-lg shadow-lg relative">
-          <button
-            onClick={() => setIsPopupOpen(false)}
-            className="absolute top-4 right-4 text-gray-600 hover:text-gray-800 focus:outline-none"
-          >
-            ✕
-          </button>
-          <AddressPopup
-            onClose={() => setIsPopupOpen(false)}
-            onAddressSelect={handleAddressSelect}
-          />
-        </div>
-      </div>
-    )}
-  </div>
-);
-
-};
-
-export default AddressInputWithPopup;
+export default AddressInputWithSuggestions;
