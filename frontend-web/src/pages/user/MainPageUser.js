@@ -245,12 +245,12 @@ const MainPageUser = ({
             Danh sách bài đăng
           </h3>
         ) : (
-          <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h3 className="text-2xl font-medium text-white flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
               className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
             />
-            Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
+            Kết quả tìm kiếm với <span className="font-bold">"{searchValue}"</span>
           </h3>
         )}
         <div className="relative">
