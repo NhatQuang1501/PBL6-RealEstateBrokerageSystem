@@ -313,7 +313,7 @@ const DetailPost = () => {
                         }`}
                       />
                     </button>
-                    <span>2</span>
+                    <span></span>
                   </div>
                 </div>
               </div>

@@ -52,6 +52,17 @@ function Post({ post, type }) {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setReactionsCount(post.reactions_count);
+      setSavesCount(post.save_count);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [post.reactions_count, post.save_count]);
+
+  useEffect(() => {
+    setIsClicked(false);
+    setIsSaved(false);
     // Check like
     const checkLiked = async () => {
       try {
@@ -128,7 +139,15 @@ function Post({ post, type }) {
         console.error("Error liking the post:", error);
       }
     }
-  }, [sessionToken, post.post_id]);
+
+    const interval = setInterval(() => {
+      setReactionsCount(post.reactions_count);
+      setSavesCount(post.save_count);
+    }, 2000);
+
+    // Dọn dẹp interval khi component bị unmount
+    return () => clearInterval(interval);
+  }, [sessionToken, post.post_id, post.reactions_count, post.save_count]);
 
   const handleSaveClick = useCallback(async () => {
     if (!sessionToken) {
@@ -461,7 +480,7 @@ function Post({ post, type }) {
                       {/* {isClicked && reactionsCount === 0
                         ? reactionsCount + 1
                         : reactionsCount} */}
-                        {reactionsCount}
+                      {reactionsCount}
                     </span>
                   </div>
                 </button>
@@ -511,7 +530,7 @@ function Post({ post, type }) {
                         {/* {isSaved && savesCount === 0
                           ? savesCount + 1
                           : savesCount} */}
-                          {savesCount}
+                        {savesCount}
                       </span>
                     </div>
                   </button>

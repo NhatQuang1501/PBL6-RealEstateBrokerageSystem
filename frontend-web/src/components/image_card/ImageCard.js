@@ -91,7 +91,7 @@ const ImageCard = ({ postId, type }) => {
                   }`}
                 >
                   <img
-                    src={`http://127.0.0.1:8000/${image.image}`}
+                    src={`http://127.0.0.1:8000${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className="rounded-lg w-[50rem] h-[30rem] object-contain shadow-2xl bg-black"
                   />
@@ -119,7 +119,7 @@ const ImageCard = ({ postId, type }) => {
                   onClick={() => handleThumbnailClick(index)}
                 >
                   <img
-                    src={`http://127.0.0.1:8000/${image.image}`}
+                    src={`http://127.0.0.1:8000${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                       index === currentImageIndex
@@ -139,7 +139,7 @@ const ImageCard = ({ postId, type }) => {
           style={{
             backgroundImage:
               images.length > 0
-                ? `url(http://127.0.0.1:8000/${images[currentImageIndex].image})`
+                ? `url(http://127.0.0.1:8000${images[currentImageIndex].image})`
                 : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -161,7 +161,7 @@ const ImageCard = ({ postId, type }) => {
                     className="flex justify-center mb-4"
                   >
                     <img
-                      src={`http://127.0.0.1:8000/${images[currentImageIndex].image}`}
+                      src={`http://127.0.0.1:8000${images[currentImageIndex].image}`}
                       alt={`Ảnh của bài đăng: ${images[currentImageIndex].post_id}`}
                       className="rounded-lg w-full h-[20rem] object-contain shadow-2xl bg-black"
                     />
@@ -175,7 +175,7 @@ const ImageCard = ({ postId, type }) => {
                           onClick={() => handleThumbnailClick(index)}
                         >
                           <img
-                            src={`http://127.0.0.1:8000/${image.image}`}
+                            src={`http://127.0.0.1:8000${image.image}`}
                             alt={`Ảnh của bài đăng: ${image.post_id}`}
                             className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                               index === currentImageIndex

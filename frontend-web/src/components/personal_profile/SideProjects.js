@@ -292,7 +292,7 @@ export default function SideProjects() {
               className="p-4 rounded-lg flex items-center bg-white text-black font-bold"
             >
               <img
-                src={"http://127.0.0.1:8000/" + friend.user.avatar}
+                src={"http://127.0.0.1:8000" + friend.user.avatar}
                 alt={`${friend.user.username} avatar`}
                 className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
                 onClick={toggleMenu}
