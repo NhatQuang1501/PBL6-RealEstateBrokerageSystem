@@ -337,6 +337,8 @@ function Post({ post, type }) {
                   <p className="text-center mt-1">
                     {post.address}, Quận {post.district}, Thành phố {post.city}
                   </p>
+                  {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
+                  <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
                 </div>
 
                 <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -439,6 +441,15 @@ function Post({ post, type }) {
                   </p>
                   <p className="text-center mt-1">{post.orientation}</p>
                 </div>
+
+                {/* <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
+                    Tọa độ
+                  </p>
+                  <p className="text-center mt-1">KĐ: {post.longitude}</p>
+                  <p className="text-center mt-1">VĐ: {post.latitude}</p>
+                </div> */}
 
                 <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
@@ -591,29 +602,37 @@ function Post({ post, type }) {
               )}
             </div>
           )}
-          {id === post.user.user_id && (
-            <div className="mt-4 flex justify-center items-center gap-10">
-              <button
-                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                onClick={() => {
-                  handleUpdate(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faEdit} className="text-lg" />
-                Cập nhật
-              </button>
 
-              <button
-                className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
-                onClick={() => {
-                  handleDelete(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} className="text-lg" />
-                Xóa
-              </button>
-            </div>
-          )}
+          {/* Check post đang thương lượng thì không được sửa */}
+
+          <div className="mt-4 flex justify-center items-center gap-10">
+            {id === post.user.user_id && post.sale_status === "Đang bán" && (
+              <>
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  onClick={() => {
+                    handleUpdate(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                  Cập nhật
+                </button>
+              </>
+            )}
+            {id === post.user.user_id && (
+              <>
+                <button
+                  className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  onClick={() => {
+                    handleDelete(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                  Xóa
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex justify-between">

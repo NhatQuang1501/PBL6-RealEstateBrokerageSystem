@@ -71,7 +71,7 @@ const ImageCard = ({ postId, type }) => {
         <div
           className="relative border-[1px] border-double border-gray-400 rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
           style={{
-            backgroundImage: `url(http://127.0.0.1:8000/${images[currentImageIndex].image})`,
+            backgroundImage: `url(http://127.0.0.1:8000${images[currentImageIndex].image})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}

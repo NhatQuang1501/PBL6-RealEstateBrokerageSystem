@@ -29,6 +29,10 @@ const ProfileCard = () => {
   const [avatar, setAvatar] = useState(null);
   const { userId } = useParams();
   const [isFriend, setIsFriend] = useState(false);
+  const [senders, setSenders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isSend, setIsSend] = useState(false);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -116,6 +120,37 @@ const ProfileCard = () => {
       }
     };
     fetchFriends();
+
+    const fetchSenders = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/friend-requests-sent/`,
+          {
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          }
+        );
+
+        // Lọc các yêu cầu kết bạn có friendrequest_status là "đang chờ"
+        const filteredSenders = response.data.data.filter(
+          (request) => request.friendrequest_status === "đang chờ"
+        );
+        // Kiểm tra đã gửi yêu cầu kết bạn chưa
+        const senders = filteredSenders.map((sender) => sender.receiver);
+        setIsSend(senders.includes(userId));
+        console.log("Sender data=============>:", filteredSenders.length);
+        setSenders(filteredSenders);
+        console.log("Sender data:", filteredSenders.length);
+      } catch (err) {
+        console.error("Error fetching sender:", err);
+        setError("Không thể tải danh sách yêu cầu kết bạn.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSenders();
   }, [id, userId, sessionToken]);
 
   if (!user) {
@@ -208,6 +243,7 @@ const ProfileCard = () => {
     }
   };
 
+
   return (
     <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
@@ -234,7 +270,8 @@ const ProfileCard = () => {
                 className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-blue-200 flex items-center gap-2"
                 onClick={() => fileInputRef.current.click()}
               >
-                <FontAwesomeIcon icon={faCamera} className="ml-2"/> {/* Thêm biểu tượng */}
+                <FontAwesomeIcon icon={faCamera} className="ml-2" />{" "}
+                {/* Thêm biểu tượng */}
                 Thay đổi ảnh đại diện
               </button>
 
@@ -254,13 +291,18 @@ const ProfileCard = () => {
           ) : (
             // Trường hợp người lạ
             <>
-              <button
+            {isSend ? (              <button
                 className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
                 onClick={handleSendFriendRequest(user.user.username)}
               >
                 Kết bạn
                 <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
               </button>
+            ) : (
+              <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200 p-1">
+                <div className="text-sm font-bold text-blue-600">Đã gửi yêu cầu</div>
+              </div>
+            )}
             </>
           )}
         </div>

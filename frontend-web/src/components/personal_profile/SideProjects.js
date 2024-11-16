@@ -394,7 +394,7 @@ export default function SideProjects() {
                   <div className="flex items-center">
                     <img
                       src={
-                        "http://127.0.0.1:8000/" + receive.sender_profile.avatar
+                        "http://127.0.0.1:8000" + receive.sender_profile.avatar
                       }
                       alt={`${receive.sender_profile.user.username} avatar`}
                       className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
@@ -434,7 +434,7 @@ export default function SideProjects() {
                 >
                   <img
                     src={
-                      "http://127.0.0.1:8000/" + sender.receiver_profile.avatar
+                      "http://127.0.0.1:8000" + sender.receiver_profile.avatar
                     }
                     alt={`${sender.receiver_profile.user.username} avatar`}
                     className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"

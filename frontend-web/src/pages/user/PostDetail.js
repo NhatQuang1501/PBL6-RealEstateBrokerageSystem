@@ -23,6 +23,7 @@ import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import NegotiationList from "../../components/neogotiation/NegotiationList";
+import MapView from "../../components/map_api/Mapbox";
 
 const DetailPost = () => {
   const { id, sessionToken } = useAppContext();
@@ -33,6 +34,7 @@ const DetailPost = () => {
   const navigate = useNavigate();
   const [reactionsCount, setReactionsCount] = useState();
   const [commentCount, setCommentCount] = useState();
+  const [savesCount, setSavesCount] = useState();
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -113,6 +115,7 @@ const DetailPost = () => {
         console.log("Post data:", data);
         setReactionsCount(data.reactions_count);
         setCommentCount(data.comments_count);
+        setSavesCount(data.save_count);
         setPost(data);
       } catch (error) {
         console.error("Error fetching post:", error);
@@ -313,7 +316,7 @@ const DetailPost = () => {
                         }`}
                       />
                     </button>
-                    <span></span>
+                    <span>{savesCount}</span>
                   </div>
                 </div>
               </div>
@@ -331,6 +334,8 @@ const DetailPost = () => {
                 district={post.district}
                 city={post.city}
                 description={post.description}
+                longitude={post.longitude}
+                latitude={post.latitude}
               />
               {/* Image */}
               {/* http://127.0.0.1:8000/api/posts/cc129313-2e8c-44a5-84d8-f55a85529f49/images/ */}
@@ -356,9 +361,15 @@ const DetailPost = () => {
 
           {/* Neogotiation */}
           {post && post.user.user_id === id ? (
-            <NegotiationList type="owner" />
+            <>
+              <NegotiationList type="owner" />
+              <MapView longitude={post?.longitude} latitude={post?.latitude} />
+            </>
           ) : (
-            <NegotiationList />
+            <>
+              <NegotiationList />
+              <MapView longitude={post?.longitude} latitude={post?.latitude} />
+            </>
           )}
         </div>
       </div>
