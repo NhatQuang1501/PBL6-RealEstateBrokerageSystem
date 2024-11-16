@@ -9,9 +9,9 @@ from accounts.serializers import *
 from accounts.permission import *
 from application.models import *
 from application.serializers import *
-from chat.models import *
-from chat.serializers import *
-from chat.views.friendrequest_view import *
+from friends.models import *
+from friends.serializers import *
+from friends.views.friendrequest_view import *
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 

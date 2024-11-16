@@ -289,6 +289,8 @@ class SearchView(APIView):
                     matches_text(post["bedroom"]),
                     matches_text(post["bathroom"]),
                     matches_text(post["floor"]),
+                    matches_text(post["longitude"]),
+                    matches_text(post["latitude"]),
                     matches_text(post["legal_status"]),
                     matches_text(post["sale_status"]),
                     matches_text(post["description"]),
