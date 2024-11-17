@@ -321,7 +321,7 @@ function Post({ post, type }) {
 
                 <DetailDescription
                   description={post.description}
-                  maxLength={30}
+                  maxLength={20}
                   moreLink={`/user/detail-post/${post.post_id}`}
                   onClick={handleDetailClick}
                 />
@@ -400,7 +400,7 @@ function Post({ post, type }) {
 
                 <DetailDescription
                   description={post.description}
-                  maxLength={30}
+                  maxLength={20}
                   moreLink={`/user/detail-post/${post.post_id}`}
                   onClick={handleDetailClick}
                 />
@@ -552,56 +552,58 @@ function Post({ post, type }) {
           </div>
 
           {/* Neo_btn */}
-          {id !== post.user.user_id && (
-            <div className="mt-5 flex justify-center items-center">
-              <button
-                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                onClick={() => {
-                  handleNeogotiate(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faHandshake} className="text-lg" />
-                Thương lượng
-              </button>
-              {isPopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">
-                      Hãy nhập giá tiền bạn muốn thương lượng
-                    </h2>
-                    <p className="text-sm text-gray-600 mb-6">
-                      <strong>Chú ý:</strong> Khi thương lượng, giá thương lượng
-                      mà bạn đưa ra không được nhỏ hơn{" "}
-                      <span className="text-red-500 font-semibold">70%</span>{" "}
-                      giá tiền mà chủ bài viết đã đăng bán.
-                    </p>
-                    <input
-                      type="number"
-                      value={price}
-                      min="0"
-                      onChange={handlePriceChange}
-                      className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      placeholder="Nhập giá tiền (VNĐ)"
-                    />
-                    <div className="flex justify-center gap-4">
-                      <button
-                        className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
-                        onClick={handleSubmit}
-                      >
-                        Xác nhận
-                      </button>
-                      <button
-                        className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                        onClick={handleClose}
-                      >
-                        Hủy bỏ
-                      </button>
+          {id !== post.user.user_id &&
+            (post.sale_status === "Đang bán" ||
+              post.sale_status === "Đang thương lượng") && (
+              <div className="mt-5 flex justify-center items-center">
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                  onClick={() => {
+                    handleNeogotiate(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHandshake} className="text-lg" />
+                  Thương lượng
+                </button>
+                {isPopupOpen && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4">
+                        Hãy nhập giá tiền bạn muốn thương lượng
+                      </h2>
+                      <p className="text-sm text-gray-600 mb-6">
+                        <strong>Chú ý:</strong> Khi thương lượng, giá thương
+                        lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                        <span className="text-red-500 font-semibold">70%</span>{" "}
+                        giá tiền mà chủ bài viết đã đăng bán.
+                      </p>
+                      <input
+                        type="number"
+                        value={price}
+                        min="0"
+                        onChange={handlePriceChange}
+                        className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        placeholder="Nhập giá tiền (VNĐ)"
+                      />
+                      <div className="flex justify-center gap-4">
+                        <button
+                          className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                          onClick={handleSubmit}
+                        >
+                          Xác nhận
+                        </button>
+                        <button
+                          className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                          onClick={handleClose}
+                        >
+                          Hủy bỏ
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
 
           {/* Check post đang thương lượng thì không được sửa */}
 

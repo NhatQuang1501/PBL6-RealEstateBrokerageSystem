@@ -288,7 +288,7 @@ const BasicInformation = () => {
               Thông tin cơ bản
             </h2>
             <form
-              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100"
+              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100 "
               onSubmit={handleSubmit}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

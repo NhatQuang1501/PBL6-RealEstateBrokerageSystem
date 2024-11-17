@@ -205,7 +205,8 @@ const DetailPost = () => {
           />
           Chi tiết bài đăng
         </h3>
-        {post && post.user.user_id === id && (
+        
+        {post && post.user.user_id === id && post.sale_status === "Đang bán" && (
           <button
             className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
             onClick={handleUploadImage}
@@ -243,29 +244,37 @@ const DetailPost = () => {
                   </button>
                 </div>
               )}
-              {id === post.user.user_id && (
-                <div className="mt-4 flex justify-center items-center gap-10">
-                  <button
-                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                    onClick={() => {
-                      handleUpdate(post.post_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faEdit} className="text-lg" />
-                    Cập nhật
-                  </button>
 
-                  <button
-                    className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
-                    onClick={() => {
-                      handleDelete(post.post_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faTrash} className="text-lg" />
-                    Xóa
-                  </button>
-                </div>
-              )}
+              <div className="mt-4 flex justify-center items-center gap-10">
+                {id === post.user.user_id &&
+                  post.sale_status === "Đang bán" && (
+                    <>
+                      <button
+                        className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                        onClick={() => {
+                          handleUpdate(post.post_id);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                        Cập nhật
+                      </button>
+                    </>
+                  )}
+
+                {id === post.user.user_id && (
+                  <>
+                    <button
+                      className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                      onClick={() => {
+                        handleDelete(post.post_id);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                      Xóa
+                    </button>
+                  </>
+                )}
+              </div>
 
               {/* Profile + reaction */}
               <div className="flex flex-row justify-between border-b-[2px] border-gray-300 border-solid pb-5">
@@ -338,12 +347,12 @@ const DetailPost = () => {
                 latitude={post.latitude}
               />
               {/* Image */}
-              {/* http://127.0.0.1:8000/api/posts/cc129313-2e8c-44a5-84d8-f55a85529f49/images/ */}
-              <ImageCard
-                type="detail"
-                postId={postId}
-                // images={images}
-              />
+              {id === post.user.user_id && (
+                <ImageCard type="detail" postId={postId} auth="owner" />
+              )}
+              {id !== post.user.user_id && (
+                <ImageCard type="detail" postId={postId} auth="user" />
+              )}
               <DetailDescription
                 description={post.description}
                 maxLength={5000000}

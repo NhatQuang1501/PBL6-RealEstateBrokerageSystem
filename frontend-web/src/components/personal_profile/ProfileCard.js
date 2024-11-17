@@ -291,7 +291,7 @@ const ProfileCard = () => {
           ) : (
             // Trường hợp người lạ
             <>
-            {isSend ? (              <button
+            {!isSend ? (              <button
                 className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
                 onClick={handleSendFriendRequest(user.user.username)}
               >

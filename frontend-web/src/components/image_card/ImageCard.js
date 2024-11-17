@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useAppContext } from "../../AppProvider";
 
-const ImageCard = ({ postId, type }) => {
+const ImageCard = ({ postId, type, auth }) => {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const { sessionToken } = useAppContext();
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -64,6 +67,32 @@ const ImageCard = ({ postId, type }) => {
     setCurrentImageIndex(index);
   };
 
+  const handleDeleteAllImages = async () => {
+    setShowPopup(false);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        alert("Xóa ảnh thành công !");
+        window.location.reload();
+      } else {
+        console.error("Failed to delete the post");
+        alert("Xóa ảnh thất bại !");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa ảnh:", error);
+    }
+  };
+
   return (
     <>
       {type === "detail" && images.length > 1 ? (
@@ -79,9 +108,45 @@ const ImageCard = ({ postId, type }) => {
           {/* Lớp phủ mờ */}
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           <div className="relative z-10">
-            <h4 className="text-white text-lg mb-2">
-              Hình ảnh mô tả ({images.length})
-            </h4>
+            <div className="flex justify-between">
+              <h4 className="text-white text-lg mb-2">
+                Hình ảnh mô tả ({images.length})
+              </h4>
+              {auth === "owner"  && (
+                <>
+                  <button
+                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    onClick={() => setShowPopup(true)}
+                  >
+                    Xóa ảnh
+                  </button>
+                  {showPopup && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h2 className="text-xl font-bold mb-4">Xác nhận xóa</h2>
+                        <p className="mb-4">
+                          Bạn có chắc chắn muốn xóa toàn bộ ảnh?
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                          <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                            onClick={handleDeleteAllImages}
+                          >
+                            Xóa
+                          </button>
+                          <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+                            onClick={() => setShowPopup(false)}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             <div className="flex justify-center items-center">
               {images.map((image, index) => (
                 <div

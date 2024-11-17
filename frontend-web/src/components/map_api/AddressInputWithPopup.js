@@ -177,7 +177,7 @@ const AddressInputWithSuggestions = ({
       <Map
         ref={mapRef}
         initialViewState={mapCenter}
-        style={{ width: "100%", height: "600px" }}
+        style={{ width: "100%", height: "500px" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
         onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
