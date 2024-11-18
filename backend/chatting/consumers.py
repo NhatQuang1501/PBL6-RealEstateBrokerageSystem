@@ -36,10 +36,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
 
             # Gửi các tin nhắn hiện có
-            messages = await self.get_recent_messages(self.chatroom)
+            messages = await self.get_messages(self.chatroom)
             await self.send(
                 text_data=json.dumps(
-                    {"type": "chat_messages", "messages": messages}, default=str
+                    {"type": "chat_messages", "messages": messages},
+                    default=str,
                 )
             )
 
@@ -59,8 +60,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.chatroom, self.scope["user"], message_content
         )
 
-        # Lấy 10 tin nhắn gần nhất
-        recent_messages = await self.get_recent_messages(self.chatroom)
+        # Lấy tin nhắn gần nhất
+        recent_messages = await self.get_messages(self.chatroom)
 
         # Gửi tin nhắn đến nhóm chat
         await self.channel_layer.group_send(
@@ -89,7 +90,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_messages(self, chatroom):
-        messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")
+        messages = Message.objects.filter(chatroom=chatroom).order_by("-created_at")
+        # count = messages.count()
         return MessageSerializer(messages, many=True).data
 
     @database_sync_to_async
@@ -98,4 +100,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
         messages = Message.objects.filter(chatroom=chatroom).order_by("-created_at")[
             :latest_messages_count
         ]
+        # messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")
         return MessageSerializer(messages, many=True).data
