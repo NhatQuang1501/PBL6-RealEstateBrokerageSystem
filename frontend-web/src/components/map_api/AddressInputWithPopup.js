@@ -15,13 +15,13 @@ const AddressInputWithSuggestions = ({
   const [searchTerm, setSearchTerm] = useState(street || "");
   const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState({
-    latitude: 16.047079,
-    longitude: 108.20623,
+    latitude: 16.07470983524796,
+    longitude: 108.15221889239507,
     zoom: 18,
   });
   const [markerPosition, setMarkerPosition] = useState({
-    latitude: 16.047079,
-    longitude: 108.20623,
+    latitude: 16.07470983524796,
+    longitude: 108.15221889239507,
   });
   const [confirmedPosition, setConfirmedPosition] = useState(null);
 

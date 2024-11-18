@@ -31,13 +31,13 @@ const mapStyleNames = {
 const MapView = ({ longitude, latitude }) => {
   const [isValidCoordinates, setIsValidCoordinates] = useState(false);
   const [mapCenter, setMapCenter] = useState({
-    latitude: latitude || 16.047079,
-    longitude: longitude || 108.20623,
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
     zoom: 18,
   });
   const [markerPosition, setMarkerPosition] = useState({
-    latitude: latitude || 16.047079,
-    longitude: longitude || 108.20623,
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
   });
   const [mapStyle, setMapStyle] = useState(mapStyles.Streets);
 
