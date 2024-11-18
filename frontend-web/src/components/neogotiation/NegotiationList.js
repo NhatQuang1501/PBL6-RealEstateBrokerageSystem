@@ -82,7 +82,7 @@ const NegotiationList = ({ type }) => {
   };
 
   return (
-    <div className="p-6 bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] ">
+    <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] ">
       <div className="border-b-[2px] border-gray-300 border-solid">
         <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
           <FontAwesomeIcon icon={faHandshake} /> {/* Thêm biểu tượng */}

@@ -76,7 +76,7 @@ function Header() {
           <div className="main-content h-[10vh] w-screen px-3 flex items-center justify-between">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
-              <strong className="font-bold text-base ml-2">SweetHome</strong>
+              <strong className="font-extrabold text-base ml-2">SweetHome</strong>
             </div>
             <nav className="flex items-center w-[60%] px-6">
               <ul className="flex space-x-6 gap-10">
@@ -193,11 +193,11 @@ function Header() {
                 </li>
                 <li>
                   <Link
-                    to="/user/chat-box"
+                    to="/user/chat"
                     className={`${linkStyle} ${
-                      activeLink === "/user/chat-box" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/chat" ? "text-[#3CA9F9]" : ""
                     }`}
-                    onClick={() => setActiveLink("/user/chat-box")}
+                    onClick={() => setActiveLink("/user/chat")}
                   >
                     Nhắn tin
                   </Link>

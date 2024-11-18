@@ -25,7 +25,7 @@ const DetailDescription = ({
         </h2>
       </div>
       <div
-        className="text-gray-800 text-lg"
+        className="text-gray-800 text-lg break-words whitespace-pre-wrap"
         dangerouslySetInnerHTML={{ __html: truncatedText }}
       />
       {safeDescription.length > maxLength && !enableToggle && (

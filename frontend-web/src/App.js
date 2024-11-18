@@ -25,6 +25,7 @@ import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
 import { useState } from "react";
 import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
+import Chat from "./pages/user/Chat";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -176,6 +177,16 @@ function App() {
               element={
                 <>
                   <ChatPage />
+                </>
+              }
+            />
+
+            <Route
+              path="/user/chat"
+              element={
+                <>
+                  <Header />
+                  <Chat />
                 </>
               }
             />
