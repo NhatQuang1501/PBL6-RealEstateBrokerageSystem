@@ -35,6 +35,8 @@ const DetailPost = () => {
   const [reactionsCount, setReactionsCount] = useState();
   const [commentCount, setCommentCount] = useState();
   const [savesCount, setSavesCount] = useState();
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [price, setPrice] = useState("");
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -187,6 +189,47 @@ const DetailPost = () => {
     navigate(`/upload-image/${postId}`);
   };
 
+  // Thương lượng
+  const handleNeogotiate = (postId) => {
+    console.log("Negotiate post ID:", postId);  
+    if (!sessionToken) {
+      alert("Bạn cần đăng nhập để thực hiện hành động này.");
+      return;
+    } else {
+      setIsPopupOpen(true);
+    }
+  };
+    const handlePriceChange = (event) => {
+      setPrice(event.target.value);
+    };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/post-negotiations/${postId}/`,
+        { offer_price: price },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Negotiation response:", response.data);
+      setIsPopupOpen(false);
+      setPrice("");
+      alert("Đã gửi yêu cầu thương lượng thành công!");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error submitting negotiation:", error);
+    }
+  };
+
+  const handleClose = () => {
+    setIsPopupOpen(false);
+    setPrice("");
+  };
+
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
       <button
@@ -205,16 +248,18 @@ const DetailPost = () => {
           />
           Chi tiết bài đăng
         </h3>
-        
-        {post && post.user.user_id === id && post.sale_status === "Đang bán" && (
-          <button
-            className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
-            onClick={handleUploadImage}
-          >
-            <FontAwesomeIcon icon={faUpload} className="mr-2" />
-            Tải ảnh lên
-          </button>
-        )}
+
+        {post &&
+          post.user.user_id === id &&
+          post.sale_status === "Đang bán" && (
+            <button
+              className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
+              onClick={handleUploadImage}
+            >
+              <FontAwesomeIcon icon={faUpload} className="mr-2" />
+              Tải ảnh lên
+            </button>
+          )}
       </div>
 
       <div className="flex flex-row-2 gap-3 items-start justify-center">
@@ -238,10 +283,54 @@ const DetailPost = () => {
 
               {id !== post.user.user_id && (
                 <div className="mt-5 flex justify-center items-center">
-                  <button className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500">
+                  <button
+                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                    onClick={() => {
+                      handleNeogotiate(post.post_id);
+                    }}
+                  >
                     <FontAwesomeIcon icon={faHandshake} className="text-lg" />
                     Thương lượng
                   </button>
+                  {isPopupOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4">
+                          Hãy nhập giá tiền bạn muốn thương lượng
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-6">
+                          <strong>Chú ý:</strong> Khi thương lượng, giá thương
+                          lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                          <span className="text-red-500 font-semibold">
+                            70%
+                          </span>{" "}
+                          giá tiền mà chủ bài viết đã đăng bán.
+                        </p>
+                        <input
+                          type="number"
+                          value={price}
+                          min="0"
+                          onChange={handlePriceChange}
+                          className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          placeholder="Nhập giá tiền (VNĐ)"
+                        />
+                        <div className="flex justify-center gap-4">
+                          <button
+                            className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                            onClick={handleSubmit}
+                          >
+                            Xác nhận
+                          </button>
+                          <button
+                            className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                            onClick={handleClose}
+                          >
+                            Hủy bỏ
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
