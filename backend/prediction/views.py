@@ -7,9 +7,13 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from .serializers import PredictionInputSerializer
 
-rf_model = joblib.load('D:/Data/Ki7/PBL6/Crawl_nhatot/random_forest_model.pkl')
-encoding_ward_df = pd.read_csv('D:/Data/Ki7/PBL6/Crawl_nhatot/mean_target_by_ward.csv')
-encoding_ward = encoding_ward_df.set_index('ward')['mean_price_m2'].to_dict()
+# rf_model = joblib.load('D:/Data/Ki7/PBL6/Crawl_nhatot/random_forest_model.pkl')
+# encoding_ward_df = pd.read_csv('D:/Data/Ki7/PBL6/Crawl_nhatot/mean_target_by_ward.csv')
+# encoding_ward = encoding_ward_df.set_index('ward')['mean_price_m2'].to_dict()
+
+rf_model = joblib.load('')
+encoding_ward_df = pd.read_csv('')
+# encoding_ward = encoding_ward_df.set_index('ward')['mean_price_m2'].to_dict()
 
 def predict_price(area, width, length, ward, has_frontage, has_car_lane, has_rear_expansion, orientation):
     df = pd.DataFrame({
