@@ -96,9 +96,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_recent_messages(self, chatroom):
-        latest_messages_count = 10
-        messages = Message.objects.filter(chatroom=chatroom).order_by("-created_at")[
+        latest_messages_count = 20
+        messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")[
             :latest_messages_count
         ]
-        # messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")
         return MessageSerializer(messages, many=True).data
