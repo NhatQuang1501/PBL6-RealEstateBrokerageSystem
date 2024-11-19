@@ -5,10 +5,10 @@ import axios from "axios";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg";
+  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg"; // Thay bằng token Mapbox của bạn
 
-const AddressInputWithSuggestions = ({ street }) => {
-  const [searchTerm, setSearchTerm] = useState(street || "");
+const AddressInputWithSuggestions = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState({
     latitude: 16.07470983524796,
@@ -65,10 +65,6 @@ const AddressInputWithSuggestions = ({ street }) => {
       }
     };
   }, [searchTerm]);
-
-  useEffect(() => {
-    setSearchTerm(street || "");
-  }, [street]);
 
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
@@ -135,46 +131,9 @@ const AddressInputWithSuggestions = ({ street }) => {
   return (
     <div className="mb-6">
       <div className="relative mb-4">
-        <label className="block mb-2 mt-10 text-lg text-gray-800 font-bold">
-          Bản đồ:
+        <label className="block mb-2 text-lg text-gray-800 font-medium">
+          Địa chỉ:
         </label>
-        <div className="mb-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-blue-50">
-          <h2 className="text-lg font-semibold text-blue-600 mb-2">
-            Hướng dẫn sử dụng bản đồ
-          </h2>
-          <ul className="list-disc list-inside text-gray-700 space-y-2">
-            <li>
-              <strong className="font-bold pr-1">Nhập địa chỉ:</strong> Địa chỉ
-              bạn nhập phía trên sẽ được điền tại đây và hiển thị lên bản đồ.
-            </li>
-            <li>
-              <strong className="font-bold pr-1 ">Xác định vị trí:</strong>{" "}
-              <span className="text-red-500 ">
-                Tuy nhiên bản đồ chưa thể xác định vị trí tuyệt đối.
-              </span>{" "}
-              Bạn có thể thao tác trực tiếp trong bản đồ để xác định vị trí
-              chính xác của bất động sản. <br></br>{" "}
-              <span className="ml-5 leading-relaxed">
-                Nếu địa chỉ bạn nhập không được gợi ý trên bản đồ, hãy thử chỉ
-                nhập tên đường hoặc thao tác trực tiếp trên bản đồ đến khi hiển
-                thị địa chỉ gợi ý.
-              </span>
-            </li>
-            <li>
-              <strong className="font-bold pr-1">Di chuyển bản đồ:</strong>{" "}
-              Giữ-kéo chuột trái/phải để di chuyển vị trí và xoay bản đồ.
-            </li>
-            <li>
-              <strong className="font-bold pr-1">Phóng to/thu nhỏ:</strong> Sử
-              dụng chuột cuộn để điều chỉnh kích thước bản đồ.
-            </li>
-            <li>
-              <strong className="font-bold pr-1">Chọn vị trí:</strong> Click
-              chuột phải để chọn vị trí chính xác của bất động sản trên bản đồ.
-            </li>
-          </ul>
-        </div>
-
         <input
           type="text"
           value={searchTerm}
@@ -201,7 +160,7 @@ const AddressInputWithSuggestions = ({ street }) => {
       <Map
         ref={mapRef}
         initialViewState={mapCenter}
-        style={{ width: "100%", height: "500px" }}
+        style={{ width: "100%", height: "600px" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
         onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
@@ -220,25 +179,19 @@ const AddressInputWithSuggestions = ({ street }) => {
       {/* Nút xác nhận */}
       <button
         onClick={handleConfirmPosition}
-        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
       >
         Xác nhận vị trí
       </button>
 
       {/* Hiển thị tọa độ */}
       {confirmedPosition && (
-        <div className="mt-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-gray-200">
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">
+        <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+          <p className="text-lg text-gray-800 font-medium">
             Tọa độ đã xác nhận:
-          </h3>
-          <div className="flex items-center mb-2">
-            <span className="font-bold text-gray-700 mr-2">Kinh độ:</span>
-            <span className="text-gray-600">{confirmedPosition.longitude}</span>
-          </div>
-          <div className="flex items-center">
-            <span className="font-bold text-gray-700 mr-2">Vĩ độ:</span>
-            <span className="text-gray-600">{confirmedPosition.latitude}</span>
-          </div>
+          </p>
+          <p>Kinh độ: {confirmedPosition.longitude}</p>
+          <p>Vĩ độ: {confirmedPosition.latitude}</p>
         </div>
       )}
     </div>
