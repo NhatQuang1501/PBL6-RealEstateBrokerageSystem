@@ -22,7 +22,6 @@ import { useAppContext } from "../../AppProvider";
 import AddImage from "./AddImage";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import quillConfig from "./quillConfig";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -660,8 +659,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
               </div>
-              <AddressInput street={address}/>
-              <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
+              <div className=" w-full flex justify-center">
                 <button
                   className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
@@ -671,6 +669,7 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
+            <AddressInput />
           </div>
         )}
 
@@ -984,8 +983,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
               </div>
-              <AddressInput street={address} />
-              <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
+              <div className=" w-full flex justify-center">
                 <button
                   className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
@@ -995,6 +993,7 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
+            <AddressInput />
           </div>
         )}
       </div>

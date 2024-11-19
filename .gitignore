@@ -6,5 +6,4 @@ venv/
 __pycache__/
 backend/**/*.pyc
 
-# Quang's ignore
 compare.js
