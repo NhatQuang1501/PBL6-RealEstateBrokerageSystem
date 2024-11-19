@@ -102,6 +102,8 @@ class PostSerializer(serializers.ModelSerializer):
             "bedroom",
             "bathroom",
             "floor",
+            "longitude",
+            "latitude",
             "legal_status",
             "sale_status",
             "images",
@@ -131,6 +133,8 @@ class PostSerializer(serializers.ModelSerializer):
             "bedroom": {"required": False},
             "bathroom": {"required": False},
             "floor": {"required": False},
+            "longitude": {"required": False},
+            "latitude": {"required": False},
             "legal_status": {"required": True},
             "sale_status": {"required": True},
             "images": {"required": False},
@@ -215,6 +219,8 @@ class PostSerializer(serializers.ModelSerializer):
         instance.bedroom = validated_data.get("bedroom", instance.bedroom)
         instance.bathroom = validated_data.get("bathroom", instance.bathroom)
         instance.floor = validated_data.get("floor", instance.floor)
+        instance.longitude = validated_data.get("longitude", instance.longitude)
+        instance.latitude = validated_data.get("latitude", instance.latitude)
         instance.legal_status = validated_data.get(
             "legal_status", instance.legal_status
         )

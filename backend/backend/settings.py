@@ -48,8 +48,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "accounts",
     "application",
-    "chat",
-    "prediction",
+    "friends",
+    "chatting",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -173,6 +174,15 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+
+ASGI_APPLICATION = "backend.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
+
 
 CACHES = {
     "default": {

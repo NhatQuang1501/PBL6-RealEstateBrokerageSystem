@@ -9,8 +9,10 @@ from accounts.serializers import *
 from accounts.permission import *
 from application.models import *
 from application.serializers import *
-from chat.models import *
-from chat.serializers import *
+from friends.models import *
+from friends.serializers import *
+from chatting.models import *
+from chatting.serializers import *
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
@@ -61,14 +63,29 @@ class FriendRequestView(APIView):
 
         # Đã có lời mời kết bạn
         pending_request_exists = FriendRequest.objects.filter(
-            (Q(sender=request.user) & Q(receiver=receiver))
-            | (Q(sender=receiver) & Q(receiver=request.user))
+            (
+                (Q(sender=request.user) & Q(receiver=receiver))
+                | (Q(sender=receiver) & Q(receiver=request.user))
+            )
+            & Q(friendrequest_status=FriendRequest_status.PENDING)
         ).exists()
         if pending_request_exists:
             return Response(
-                {"error": "Đã tồn tại lời mời kết bạn đang chờ xử lý"},
+                {
+                    "error": f"Đã tồn tại lời mời kết bạn đang chờ xử lý giữa {request.user.username} và {receiver_username}"
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+        declined_request_exists = FriendRequest.objects.filter(
+            (
+                Q(sender=request.user) & Q(receiver=receiver)
+                | (Q(sender=receiver) & Q(receiver=request.user))
+            )
+            & (Q(friendrequest_status=FriendRequest_status.DECLINED))
+        ).first()
+        if declined_request_exists:
+            declined_request_exists.delete()
 
         # Tạo yêu cầu kết bạn mới
         serializer = FriendRequestSerializer(
@@ -90,6 +107,16 @@ class FriendRequestView(APIView):
         )
 
         friend_request = FriendRequest.objects.get(friendrequest_id=friendrequest_id)
+
+        # Kiểm tra xem người dùng hiện tại có phải là người nhận lời mời kết bạn không
+        if request.user != friend_request.receiver:
+            return Response(
+                {
+                    "error": "Bạn không có quyền chấp nhận hoặc từ chối lời mời kết bạn này"
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         friend_request.friendrequest_status = friendrequest_status
 
         if friendrequest_status == "đã kết bạn":
@@ -105,24 +132,59 @@ class FriendRequestView(APIView):
                     key=lambda x: x.user_id,
                 ),
             )
-            message = "Đã chấp nhận yêu cầu kết bạn thành công"
+
+            # Tạo phòng chat riêng tư cho hai người
+            user1 = friend_request.sender
+            user2 = friend_request.receiver
+
+            # Kiểm tra xem phòng chat riêng tư giữa hai người đã tồn tại chưa
+            if (
+                not ChatRoom.objects.filter(is_private=True, participants=user1)
+                .filter(participants=user2)
+                .exists()
+            ):
+                chatroom = ChatRoom.objects.create(
+                    created_by=user1,
+                    is_private=True,
+                    chatroom_name=f"{user1.username} & {user2.username}",
+                )
+                chatroom.participants.set([user1, user2])
+                chatroom.save()
+                chatroom_serializer = ChatRoomSerializer(chatroom)
+
+            message = f"Đã chấp nhận yêu cầu kết bạn của {user1.username}. Tạo phòng chat riêng tư thành công giữa {user1.username} và {user2.username}"
+
+            friend_request.save()
+            serializer = FriendRequestSerializer(friend_request)
+
+            # Thêm thông báo thành công vào phản hồi
+            return Response(
+                {
+                    "message": message,
+                    "data": serializer.data,
+                    "chatroom-data": chatroom_serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         elif friendrequest_status == "đã từ chối":
-            message = "Đã từ chối yêu cầu kết bạn thành công"
+            message = f"Đã từ chối yêu cầu kết bạn của {friend_request.sender.username}"
+
+            friend_request.save()
+            serializer = FriendRequestSerializer(friend_request)
+
+            return Response(
+                {
+                    "message": message,
+                    "data": serializer.data,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         else:
             return Response(
                 {"error": "Hành động không hợp lệ"}, status=status.HTTP_400_BAD_REQUEST
             )
-
-        friend_request.save()
-
-        serializer = FriendRequestSerializer(friend_request)
-
-        # Thêm thông báo thành công vào phản hồi
-        return Response(
-            {"message": message, "data": serializer.data}, status=status.HTTP_200_OK
-        )
 
     def delete(self, request, pk):
         # Xóa yêu cầu kết bạn
@@ -205,6 +267,13 @@ class FriendListView(APIView):
                 friendship.user2 if friendship.user1 == user else friendship.user1
             )
 
+            # Lấy phòng chat riêng tư giữa user và friend_user
+            chatroom = (
+                ChatRoom.objects.filter(is_private=True, participants=user)
+                .filter(participants=friend_user)
+                .first()
+            )
+
             friend_data = {
                 "user_id": str(friend_user.user_id),
                 "user": {
@@ -217,12 +286,14 @@ class FriendListView(APIView):
                         else None
                     ),
                 },
+                "chatroom_id": chatroom.chatroom_id if chatroom else None,
             }
 
             friend_list.append(friend_data)
 
         return Response(
             {
+                "message": f"Danh sách bạn bè của {user.username}",
                 "count": len(friend_list),
                 "friends": friend_list,
             },
@@ -265,7 +336,12 @@ class FriendListView(APIView):
             | (Q(sender=friend_user) & Q(receiver=user))
         ).delete()
 
+        # Xóa phòng chat riêng tư giữa hai người
+        ChatRoom.objects.filter(is_private=True, participants=user).filter(
+            participants=friend_user
+        ).delete()
+
         return Response(
-            {"message": "Đã hủy kết bạn thành công"},
+            {"message": "Đã hủy kết bạn thành công và xóa phòng chat riêng tư"},
             status=status.HTTP_204_NO_CONTENT,
         )

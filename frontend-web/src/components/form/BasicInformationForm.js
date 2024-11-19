@@ -50,6 +50,8 @@ const BasicInformation = () => {
   const [frontage, setFrontage] = useState(null);
   const [title, setTitle] = useState("");
   const [sale_status, setSale_status] = useState("");
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
 
   useEffect(() => {
     if (selectedProperty === "house") {
@@ -88,7 +90,9 @@ const BasicInformation = () => {
         !legal_status ||
         !orientation ||
         !frontage ||
-        !title) &&
+        !title ||
+        !longitude ||
+        !latitude) &&
       selectedProperty === "land"
     ) {
       alert("Vui lòng điền đầy đủ thông tin !");
@@ -105,7 +109,9 @@ const BasicInformation = () => {
         !title ||
         !floor ||
         !bedroom ||
-        !bathroom) &&
+        !bathroom ||
+        !longitude ||
+        !latitude) &&
       selectedProperty === "house"
     ) {
       alert("Vui lòng điền đầy đủ thông tin !");
@@ -143,6 +149,8 @@ const BasicInformation = () => {
           frontage: frontage,
           title: title,
           sale_status: sale_status,
+          longitude: longitude,
+          latitude: latitude,
         }),
       });
 
@@ -161,12 +169,6 @@ const BasicInformation = () => {
         } else {
           console.error("post_id is missing in the response data");
         }
-
-        // if (addMoreImages) {
-        //   handleUploadImage();
-        // } else {
-        //   navigate("/user/main-page-user");
-        // }
       } else {
         console.log("Đăng bài thất bại!");
         alert("Đăng bài thất bại!");
@@ -185,6 +187,16 @@ const BasicInformation = () => {
   const handleConfirmModal = () => {
     setShowModal(false);
     navigate(`/upload-image/${post_id}`);
+  };
+
+  const handleCoordinatesChange = (lng, lat) => {
+    setLongitude(lng);
+    setLatitude(lat);
+  };
+
+  const handleConfirmedCoordinates = (lng, lat) => {
+    setLongitude(lng);
+    setLatitude(lat);
   };
 
   return (
@@ -276,7 +288,7 @@ const BasicInformation = () => {
               Thông tin cơ bản
             </h2>
             <form
-              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100"
+              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100 "
               onSubmit={handleSubmit}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -573,7 +585,7 @@ const BasicInformation = () => {
                     />
                     <FontAwesomeIcon
                       icon={faBath}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      className="absolute left-3 top-1/2 transform-translate-y-1/2 text-gray-500"
                     />
                   </div>
                 </div>
@@ -659,7 +671,12 @@ const BasicInformation = () => {
                   </div>
                 </div>
               </div>
-              <div className=" w-full flex justify-center">
+              <AddressInput
+                street={address}
+                onCoordinatesChange={handleCoordinatesChange}
+                onConfirmedCoordinates={handleConfirmedCoordinates}
+              />
+              <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
                   className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
@@ -936,13 +953,6 @@ const BasicInformation = () => {
                     Ghi chú:
                   </label>
                   <div className="relative">
-                    {/* <textarea
-                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={description}
-                      placeholder="Nhập ghi chú cho bài đăng của bạn"
-                      id="description"
-                      onChange={(e) => setDescription(e.target.value)}
-                    ></textarea> */}
                     <ReactQuill
                       value={description}
                       onChange={handleDescriptionChange}
@@ -983,7 +993,12 @@ const BasicInformation = () => {
                   </div>
                 </div>
               </div>
-              <div className=" w-full flex justify-center">
+              <AddressInput
+                street={address}
+                onCoordinatesChange={handleCoordinatesChange}
+                onConfirmedCoordinates={handleConfirmedCoordinates}
+              />
+              <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
                   className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}

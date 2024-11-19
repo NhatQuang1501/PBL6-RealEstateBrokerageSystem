@@ -160,6 +160,26 @@ class PostView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        # Kiểm tra user hiện tại không phải là người đăng
+        if post.user_id != request.user:
+            return Response(
+                {"message": "Bạn không có quyền cập nhật bài đăng này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         post_serializer = PostSerializer(post, data=request.data, partial=True)
 
         if post_serializer.is_valid():
@@ -277,6 +297,8 @@ class SearchView(APIView):
                     matches_text(post["bedroom"]),
                     matches_text(post["bathroom"]),
                     matches_text(post["floor"]),
+                    matches_text(post["longitude"]),
+                    matches_text(post["latitude"]),
                     matches_text(post["legal_status"]),
                     matches_text(post["sale_status"]),
                     matches_text(post["description"]),
@@ -419,6 +441,19 @@ class PostImageView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Ảnh bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         images = PostImage.objects.filter(post_id=post)
         images.delete()
 

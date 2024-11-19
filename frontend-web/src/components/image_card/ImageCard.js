@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useAppContext } from "../../AppProvider";
 
-const ImageCard = ({ postId, type }) => {
+const ImageCard = ({ postId, type, auth }) => {
   const [images, setImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [intervalId, setIntervalId] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const { sessionToken } = useAppContext();
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -64,6 +67,32 @@ const ImageCard = ({ postId, type }) => {
     setCurrentImageIndex(index);
   };
 
+  const handleDeleteAllImages = async () => {
+    setShowPopup(false);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        alert("Xóa ảnh thành công !");
+        window.location.reload();
+      } else {
+        console.error("Failed to delete the post");
+        alert("Xóa ảnh thất bại !");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Lỗi khi xóa ảnh:", error);
+    }
+  };
+
   return (
     <>
       {type === "detail" && images.length > 1 ? (
@@ -71,7 +100,7 @@ const ImageCard = ({ postId, type }) => {
         <div
           className="relative border-[1px] border-double border-gray-400 rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
           style={{
-            backgroundImage: `url(http://127.0.0.1:8000/${images[currentImageIndex].image})`,
+            backgroundImage: `url(http://127.0.0.1:8000${images[currentImageIndex].image})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -79,9 +108,45 @@ const ImageCard = ({ postId, type }) => {
           {/* Lớp phủ mờ */}
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           <div className="relative z-10">
-            <h4 className="text-white text-lg mb-2">
-              Hình ảnh mô tả ({images.length})
-            </h4>
+            <div className="flex justify-between">
+              <h4 className="text-white text-lg mb-2">
+                Hình ảnh mô tả ({images.length})
+              </h4>
+              {auth === "owner" && (
+                <>
+                  <button
+                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    onClick={() => setShowPopup(true)}
+                  >
+                    Xóa ảnh
+                  </button>
+                  {showPopup && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h2 className="text-xl font-bold mb-4">Xác nhận xóa</h2>
+                        <p className="mb-4">
+                          Bạn có chắc chắn muốn xóa toàn bộ ảnh?
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                          <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                            onClick={handleDeleteAllImages}
+                          >
+                            Xóa
+                          </button>
+                          <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+                            onClick={() => setShowPopup(false)}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             <div className="flex justify-center items-center">
               {images.map((image, index) => (
                 <div
@@ -91,7 +156,7 @@ const ImageCard = ({ postId, type }) => {
                   }`}
                 >
                   <img
-                    src={`http://127.0.0.1:8000/${image.image}`}
+                    src={`http://127.0.0.1:8000${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className="rounded-lg w-[50rem] h-[30rem] object-contain shadow-2xl bg-black"
                   />
@@ -119,7 +184,7 @@ const ImageCard = ({ postId, type }) => {
                   onClick={() => handleThumbnailClick(index)}
                 >
                   <img
-                    src={`http://127.0.0.1:8000/${image.image}`}
+                    src={`http://127.0.0.1:8000${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                       index === currentImageIndex
@@ -139,7 +204,7 @@ const ImageCard = ({ postId, type }) => {
           style={{
             backgroundImage:
               images.length > 0
-                ? `url(http://127.0.0.1:8000/${images[currentImageIndex].image})`
+                ? `url(http://127.0.0.1:8000${images[currentImageIndex].image})`
                 : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -150,9 +215,45 @@ const ImageCard = ({ postId, type }) => {
             <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           )}
           <div className="relative z-5">
-            <h4 className="text-white text-lg mb-2">
-              Hình ảnh mô tả ({images.length})
-            </h4>
+            <div className="flex justify-between">
+              <h4 className="text-white text-lg mb-2">
+                Hình ảnh mô tả ({images.length})
+              </h4>
+              {auth === "owner" && images.length > 0 && (
+                <>
+                  <button
+                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    onClick={() => setShowPopup(true)}
+                  >
+                    Xóa ảnh
+                  </button>
+                  {showPopup && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                      <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                        <h2 className="text-xl font-bold mb-4">Xác nhận xóa</h2>
+                        <p className="mb-4">
+                          Bạn có chắc chắn muốn xóa toàn bộ ảnh?
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                          <button
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                            onClick={handleDeleteAllImages}
+                          >
+                            Xóa
+                          </button>
+                          <button
+                            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg"
+                            onClick={() => setShowPopup(false)}
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
             <div className="flex justify-center">
               {images.length > 0 ? (
                 <div className="flex flex-col items-center">
@@ -161,7 +262,7 @@ const ImageCard = ({ postId, type }) => {
                     className="flex justify-center mb-4"
                   >
                     <img
-                      src={`http://127.0.0.1:8000/${images[currentImageIndex].image}`}
+                      src={`http://127.0.0.1:8000${images[currentImageIndex].image}`}
                       alt={`Ảnh của bài đăng: ${images[currentImageIndex].post_id}`}
                       className="rounded-lg w-full h-[20rem] object-contain shadow-2xl bg-black"
                     />
@@ -175,7 +276,7 @@ const ImageCard = ({ postId, type }) => {
                           onClick={() => handleThumbnailClick(index)}
                         >
                           <img
-                            src={`http://127.0.0.1:8000/${image.image}`}
+                            src={`http://127.0.0.1:8000${image.image}`}
                             alt={`Ảnh của bài đăng: ${image.post_id}`}
                             className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                               index === currentImageIndex

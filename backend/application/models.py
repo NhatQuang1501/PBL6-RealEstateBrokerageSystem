@@ -32,6 +32,12 @@ class Post(models.Model):
     bedroom = models.IntegerField(blank=True, null=True)
     bathroom = models.IntegerField(blank=True, null=True)
     floor = models.IntegerField(blank=True, null=True)
+    longitude = models.DecimalField(
+        max_digits=30, decimal_places=20, blank=True, null=True
+    )
+    latitude = models.DecimalField(
+        max_digits=30, decimal_places=20, blank=True, null=True
+    )
     legal_status = models.CharField(
         choices=Legal_status.choices,
         max_length=50,

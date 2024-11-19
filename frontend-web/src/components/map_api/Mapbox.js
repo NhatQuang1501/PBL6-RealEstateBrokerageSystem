@@ -1,137 +1,134 @@
 import React, { useState, useEffect, useRef } from "react";
 import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import axios from "axios";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaMap } from "react-icons/fa";
 
 const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg"; // Thay bằng token Mapbox của bạn
+  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg";
 
-const AddressInputWithSuggestions = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+const mapStyles = {
+  Streets: "mapbox://styles/mapbox/streets-v11", // Đường phố
+  Outdoors: "mapbox://styles/mapbox/outdoors-v11", // Ngoài trời
+  Light: "mapbox://styles/mapbox/light-v10", // Sáng
+  Dark: "mapbox://styles/mapbox/dark-v10", // Tối
+  Satellite: "mapbox://styles/mapbox/satellite-v9", // Vệ tinh
+  "Satellite Streets": "mapbox://styles/mapbox/satellite-streets-v11", // Vệ tinh và Đường phố
+  "Navigation Day": "mapbox://styles/mapbox/navigation-day-v1", // Điều hướng ban ngày
+  "Navigation Night": "mapbox://styles/mapbox/navigation-night-v1", // Điều hướng ban đêm
+};
+
+const mapStyleNames = {
+  Streets: "Đường phố",
+  Outdoors: "Ngoài trời",
+  Light: "Sáng",
+  Dark: "Tối",
+  Satellite: "Vệ tinh",
+  "Satellite Streets": "Vệ tinh và Đường phố",
+  "Navigation Day": "Điều hướng ban ngày",
+  "Navigation Night": "Điều hướng ban đêm",
+};
+
+const MapView = ({ longitude, latitude }) => {
+  const [isValidCoordinates, setIsValidCoordinates] = useState(false);
   const [mapCenter, setMapCenter] = useState({
-    latitude: 16.047079,
-    longitude: 108.20623,
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
     zoom: 18,
   });
+  const [markerPosition, setMarkerPosition] = useState({
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
+  });
+  const [mapStyle, setMapStyle] = useState(mapStyles.Streets);
 
-  const debounceTimeoutRef = useRef(null);
   const mapRef = useRef(null);
 
-  const fetchSuggestions = async (query) => {
-    if (query.length < 3) return;
-    try {
-      const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search`,
-        {
-          params: {
-            format: "json",
-            q: `${query}, Đà Nẵng, Việt Nam`,
-            viewbox: "108.127,16.167,108.279,15.965", // Giới hạn trong Đà Nẵng
-            bounded: 1, // Giới hạn trong vùng viewbox
-            addressdetails: 1,
-          },
-        }
-      );
-      setSuggestions(response.data);
-    } catch (error) {
-      console.error("Lỗi khi gọi API:", error);
-    }
-  };
-
   useEffect(() => {
-    if (searchTerm.length < 3) {
-      setSuggestions([]);
-      return;
-    }
+    if (longitude && latitude) {
+      setIsValidCoordinates(true);
+      const newLatitude = parseFloat(latitude);
+      const newLongitude = parseFloat(longitude);
 
-    if (debounceTimeoutRef.current) {
-      clearTimeout(debounceTimeoutRef.current);
-    }
-
-    debounceTimeoutRef.current = setTimeout(() => {
-      fetchSuggestions(searchTerm);
-    }, 0);
-
-    return () => {
-      if (debounceTimeoutRef.current) {
-        clearTimeout(debounceTimeoutRef.current);
-      }
-    };
-  }, [searchTerm]);
-
-  const handleSuggestionClick = (suggestion) => {
-    const { lat, lon } = suggestion;
-    const newPosition = [parseFloat(lat), parseFloat(lon)];
-    setSearchTerm(suggestion.display_name);
-    setSuggestions([]);
-
-    setMapCenter({
-      latitude: newPosition[0],
-      longitude: newPosition[1],
-      zoom: 15,
-    });
-
-    if (mapRef.current) {
-      mapRef.current.flyTo({
-        center: [newPosition[1], newPosition[0]],
-        zoom: 15,
-        speed: 1.2,
-        curve: 1.42,
+      setMapCenter({
+        latitude: newLatitude,
+        longitude: newLongitude,
+        zoom: 18,
       });
+      setMarkerPosition({
+        latitude: newLatitude,
+        longitude: newLongitude,
+      });
+
+      if (mapRef.current) {
+        mapRef.current.flyTo({
+          center: [newLongitude, newLatitude],
+          zoom: 19,
+          speed: 0.5,
+          curve: 1.52,
+        });
+      }
+    } else {
+      setIsValidCoordinates(false);
     }
+  }, [longitude, latitude]);
+
+  const handleMapStyleChange = (event) => {
+    setMapStyle(mapStyles[event.target.value]);
   };
 
   return (
-    <div className="mb-6">
-      <div className="relative mb-4">
-        <label className="block mb-2 text-lg text-gray-800 font-medium">
-          Địa chỉ:
-        </label>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="block w-full p-4 border border-gray-300 rounded-lg shadow-sm bg-white transition duration-300 ease-in-out transform hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600"
-          placeholder="Nhập địa chỉ bất động sản"
-        />
-        {suggestions.length > 0 && (
-          <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-md mt-1 max-h-60 overflow-auto">
-            {suggestions.map((suggestion) => (
-              <li
-                key={suggestion.place_id}
-                onClick={() => handleSuggestionClick(suggestion)}
-                className="cursor-pointer hover:bg-gray-200 p-2"
-              >
-                {suggestion.display_name}
-              </li>
+    <div className="mb-6 mt-[3rem] w-[32rem] ">
+      <div className="p-6 bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] ">
+        <div className="border-b-[2px] border-gray-300 border-solid">
+          <h2 className="text-2xl font-extrabold text-red-600 mb-6 text-center flex items-center justify-center gap-2">
+            <FaMap className="text-red-600 text-2xl" />
+            Vị trí bất động sản
+          </h2>
+        </div>
+        <div className="mt-4">
+          <label className="block mb-2 text-lg text-gray-800 font-bold">
+            Chọn kiểu bản đồ:
+          </label>
+          <select
+            onChange={handleMapStyleChange}
+            className="block w-full p-2 border border-gray-300 rounded-lg shadow-sm bg-white transition duration-300 ease-in-out transform hover:shadow-md focus:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-600"
+          >
+            {Object.keys(mapStyles).map((style) => (
+              <option key={style} value={style}>
+                {mapStyleNames[style]}
+              </option>
             ))}
-          </ul>
-        )}
+          </select>
+        </div>
       </div>
 
       {/* Bản đồ */}
-      <Map
-        ref={mapRef}
-        initialViewState={mapCenter}
-        latitude={mapCenter.latitude}
-        longitude={mapCenter.longitude}
-        zoom={mapCenter.zoom}
-        style={{ width: "100%", height: "600px" }}
-        mapStyle="mapbox://styles/mapbox/streets-v11"
-        mapboxAccessToken={MAPBOX_TOKEN}
-      >
-        <Marker
-          latitude={mapCenter.latitude}
-          longitude={mapCenter.longitude}
-          anchor="bottom"
-        >
-          <FaMapMarkerAlt size={40} color="red" />
-        </Marker>
-      </Map>
+      <div className="border-double border-gray-300 border-[2px] shadow-md">
+        {isValidCoordinates ? (
+          <Map
+            ref={mapRef}
+            initialViewState={mapCenter}
+            style={{ width: "100%", height: "500px" }}
+            mapStyle={mapStyle}
+            mapboxAccessToken={MAPBOX_TOKEN}
+          >
+            <Marker
+              latitude={markerPosition.latitude}
+              longitude={markerPosition.longitude}
+              anchor="bottom"
+            >
+              <FaMapMarkerAlt size={40} color="red" />
+              <p className="font-bold text-lg text-red-500">Vị trí BĐS</p>
+            </Marker>
+          </Map>
+        ) : (
+          <div className="flex items-center justify-center h-[500px] text-gray-500">
+            Chủ bài đăng chưa cập nhật vị trí trên bản đồ
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default AddressInputWithSuggestions;
+export default MapView;

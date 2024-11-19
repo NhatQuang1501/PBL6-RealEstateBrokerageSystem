@@ -4,35 +4,35 @@ from accounts.models import *
 from accounts.serializers import *
 from application.models import *
 from application.serializers import *
-from chat.models import *
+from friends.models import *
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 
 
-class ChatMessageSerializer(serializers.ModelSerializer):
-    sender_profile = UserProfileSerializer(read_only=True)
-    receiver_profile = UserProfileSerializer(read_only=True)
+# class ChatMessageSerializer(serializers.ModelSerializer):
+#     sender_profile = UserProfileSerializer(read_only=True)
+#     receiver_profile = UserProfileSerializer(read_only=True)
 
-    class Meta:
-        model = ChatMessage
-        fields = [
-            "message_id",
-            "sender",
-            "receiver",
-            "sender_profile",
-            "receiver_profile",
-            "message",
-            "is_read",
-            "created_at",
-        ]
-        extra_kwargs = {
-            "message_id": {"read_only": True},
-            "created_at": {"read_only": True},
-            "is_read": {"read_only": True},
-            "sender": {"read_only": True},
-            "receiver": {"required": True},
-            "message": {"required": True},
-        }
+#     class Meta:
+#         model = ChatMessage
+#         fields = [
+#             "message_id",
+#             "sender",
+#             "receiver",
+#             "sender_profile",
+#             "receiver_profile",
+#             "message",
+#             "is_read",
+#             "created_at",
+#         ]
+#         extra_kwargs = {
+#             "message_id": {"read_only": True},
+#             "created_at": {"read_only": True},
+#             "is_read": {"read_only": True},
+#             "sender": {"read_only": True},
+#             "receiver": {"required": True},
+#             "message": {"required": True},
+#         }
 
 
 class FriendRequestSerializer(serializers.ModelSerializer):

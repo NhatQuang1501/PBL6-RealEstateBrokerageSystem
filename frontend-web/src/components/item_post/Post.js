@@ -52,6 +52,17 @@ function Post({ post, type }) {
   };
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setReactionsCount(post.reactions_count);
+      setSavesCount(post.save_count);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [post.reactions_count, post.save_count]);
+
+  useEffect(() => {
+    setIsClicked(false);
+    setIsSaved(false);
     // Check like
     const checkLiked = async () => {
       try {
@@ -128,7 +139,15 @@ function Post({ post, type }) {
         console.error("Error liking the post:", error);
       }
     }
-  }, [sessionToken, post.post_id]);
+
+    const interval = setInterval(() => {
+      setReactionsCount(post.reactions_count);
+      setSavesCount(post.save_count);
+    }, 2000);
+
+    // Dọn dẹp interval khi component bị unmount
+    return () => clearInterval(interval);
+  }, [sessionToken, post.post_id, post.reactions_count, post.save_count]);
 
   const handleSaveClick = useCallback(async () => {
     if (!sessionToken) {
@@ -302,7 +321,7 @@ function Post({ post, type }) {
 
                 <DetailDescription
                   description={post.description}
-                  maxLength={30}
+                  maxLength={20}
                   moreLink={`/user/detail-post/${post.post_id}`}
                   onClick={handleDetailClick}
                 />
@@ -318,6 +337,8 @@ function Post({ post, type }) {
                   <p className="text-center mt-1">
                     {post.address}, Quận {post.district}, Thành phố {post.city}
                   </p>
+                  {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
+                  <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
                 </div>
 
                 <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
@@ -379,7 +400,7 @@ function Post({ post, type }) {
 
                 <DetailDescription
                   description={post.description}
-                  maxLength={30}
+                  maxLength={20}
                   moreLink={`/user/detail-post/${post.post_id}`}
                   onClick={handleDetailClick}
                 />
@@ -421,6 +442,15 @@ function Post({ post, type }) {
                   <p className="text-center mt-1">{post.orientation}</p>
                 </div>
 
+                {/* <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
+                    Tọa độ
+                  </p>
+                  <p className="text-center mt-1">KĐ: {post.longitude}</p>
+                  <p className="text-center mt-1">VĐ: {post.latitude}</p>
+                </div> */}
+
                 <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
                   <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
                     <FaRegFileAlt className="mr-2" />
@@ -461,7 +491,7 @@ function Post({ post, type }) {
                       {/* {isClicked && reactionsCount === 0
                         ? reactionsCount + 1
                         : reactionsCount} */}
-                        {reactionsCount}
+                      {reactionsCount}
                     </span>
                   </div>
                 </button>
@@ -511,7 +541,7 @@ function Post({ post, type }) {
                         {/* {isSaved && savesCount === 0
                           ? savesCount + 1
                           : savesCount} */}
-                          {savesCount}
+                        {savesCount}
                       </span>
                     </div>
                   </button>
@@ -522,79 +552,89 @@ function Post({ post, type }) {
           </div>
 
           {/* Neo_btn */}
-          {id !== post.user.user_id && (
-            <div className="mt-5 flex justify-center items-center">
-              <button
-                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                onClick={() => {
-                  handleNeogotiate(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faHandshake} className="text-lg" />
-                Thương lượng
-              </button>
-              {isPopupOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">
-                      Hãy nhập giá tiền bạn muốn thương lượng
-                    </h2>
-                    <p className="text-sm text-gray-600 mb-6">
-                      <strong>Chú ý:</strong> Khi thương lượng, giá thương lượng
-                      mà bạn đưa ra không được nhỏ hơn{" "}
-                      <span className="text-red-500 font-semibold">70%</span>{" "}
-                      giá tiền mà chủ bài viết đã đăng bán.
-                    </p>
-                    <input
-                      type="number"
-                      value={price}
-                      min="0"
-                      onChange={handlePriceChange}
-                      className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                      placeholder="Nhập giá tiền (VNĐ)"
-                    />
-                    <div className="flex justify-center gap-4">
-                      <button
-                        className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
-                        onClick={handleSubmit}
-                      >
-                        Xác nhận
-                      </button>
-                      <button
-                        className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                        onClick={handleClose}
-                      >
-                        Hủy bỏ
-                      </button>
+          {id !== post.user.user_id &&
+            (post.sale_status === "Đang bán" ||
+              post.sale_status === "Đang thương lượng") && (
+              <div className="mt-5 flex justify-center items-center">
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                  onClick={() => {
+                    handleNeogotiate(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faHandshake} className="text-lg" />
+                  Thương lượng
+                </button>
+                {isPopupOpen && (
+                  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4">
+                        Hãy nhập giá tiền bạn muốn thương lượng
+                      </h2>
+                      <p className="text-sm text-gray-600 mb-6">
+                        <strong>Chú ý:</strong> Khi thương lượng, giá thương
+                        lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                        <span className="text-red-500 font-semibold">70%</span>{" "}
+                        giá tiền mà chủ bài viết đã đăng bán.
+                      </p>
+                      <input
+                        type="number"
+                        value={price}
+                        min="0"
+                        onChange={handlePriceChange}
+                        className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        placeholder="Nhập giá tiền (VNĐ)"
+                      />
+                      <div className="flex justify-center gap-4">
+                        <button
+                          className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                          onClick={handleSubmit}
+                        >
+                          Xác nhận
+                        </button>
+                        <button
+                          className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                          onClick={handleClose}
+                        >
+                          Hủy bỏ
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
-          {id === post.user.user_id && (
-            <div className="mt-4 flex justify-center items-center gap-10">
-              <button
-                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                onClick={() => {
-                  handleUpdate(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faEdit} className="text-lg" />
-                Cập nhật
-              </button>
+                )}
+              </div>
+            )}
 
-              <button
-                className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
-                onClick={() => {
-                  handleDelete(post.post_id);
-                }}
-              >
-                <FontAwesomeIcon icon={faTrash} className="text-lg" />
-                Xóa
-              </button>
-            </div>
-          )}
+          {/* Check post đang thương lượng thì không được sửa */}
+
+          <div className="mt-4 flex justify-center items-center gap-10">
+            {id === post.user.user_id && post.sale_status === "Đang bán" && (
+              <>
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  onClick={() => {
+                    handleUpdate(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                  Cập nhật
+                </button>
+              </>
+            )}
+            {id === post.user.user_id && (
+              <>
+                <button
+                  className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  onClick={() => {
+                    handleDelete(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                  Xóa
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
       <div className="flex justify-between">

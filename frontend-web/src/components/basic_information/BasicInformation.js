@@ -25,6 +25,8 @@ const BasicInformation = ({
   district,
   city,
   description,
+  longitude,
+  latitude,
 }) => {
   const formatPrice = (price) => {
     if (price >= 1_000_000_000) {
@@ -92,6 +94,7 @@ const BasicInformation = ({
       imageUrl:
         "https://bowa.com/wp-content/uploads/2017/08/PIN-McLean-VA-IHD-CDB-1910-Whole-Home-Renovation-Bath3-D17159-7886_01-17.jpg",
     },
+
   ].filter((item) => item.value);
 
   return (
@@ -140,26 +143,9 @@ const BasicInformation = ({
         <p className="text-gray-800 text-lg text-center mb-6">
           {`${address}, Quận ${district}, Thành phố ${city}`}
         </p>
-        {/* <div className="mb-6 flex items-center text-xl">
-          <FontAwesomeIcon
-            icon={faStickyNote}
-            className="text-[#3CA9F9] mr-3"
-          />
-          <p className="font-semibold text-gray-700">Ghi chú</p>
-        </div>
-        <p className="text-gray-800 text-lg text-center">{description}</p> */}
-        {/* Ghi chú */}
-        {/* <div className="mb-6 flex items-center text-xl">
-          <FontAwesomeIcon
-            icon={faStickyNote}
-            className="text-[#3CA9F9] mr-3"
-          />
-          <p className="font-semibold text-gray-700">Ghi chú</p>
-        </div> */}
-        {/* <div
-          className="text-gray-800 text-lg text-center"
-          dangerouslySetInnerHTML={{ __html: description }}
-        /> */}
+        <p className="text-gray-800 text-lg text-center mb-6">
+          {`KĐ: ${longitude}, VĐ: ${latitude}`}
+        </p>
       </div>
     </div>
   );

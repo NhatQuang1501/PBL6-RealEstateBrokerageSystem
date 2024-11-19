@@ -5,19 +5,24 @@ import axios from "axios";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
 const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg"; // Thay bằng token Mapbox của bạn
+  "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg";
 
-const AddressInputWithSuggestions = () => {
+const MapUpdate = ({
+  longitude,
+  latitude,
+  onCoordinatesChange,
+  onConfirmedCoordinates,
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState({
-    latitude: 16.07470983524796,
-    longitude: 108.15221889239507,
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
     zoom: 18,
   });
   const [markerPosition, setMarkerPosition] = useState({
-    latitude: 16.07470983524796,
-    longitude: 108.15221889239507,
+    latitude: latitude || 16.07470983524796,
+    longitude: longitude || 108.15221889239507,
   });
   const [confirmedPosition, setConfirmedPosition] = useState(null);
 
@@ -66,6 +71,32 @@ const AddressInputWithSuggestions = () => {
     };
   }, [searchTerm]);
 
+  useEffect(() => {
+    if (longitude && latitude) {
+      const newLatitude = parseFloat(latitude);
+      const newLongitude = parseFloat(longitude);
+
+      setMapCenter({
+        latitude: newLatitude,
+        longitude: newLongitude,
+        zoom: 18,
+      });
+      setMarkerPosition({
+        latitude: newLatitude,
+        longitude: newLongitude,
+      });
+
+      if (mapRef.current) {
+        mapRef.current.flyTo({
+          center: [newLongitude, newLatitude],
+          zoom: 18,
+          speed: 1.2,
+          curve: 1.42,
+        });
+      }
+    }
+  }, [longitude, latitude]);
+
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
     const newPosition = [parseFloat(lat), parseFloat(lon)];
@@ -95,6 +126,9 @@ const AddressInputWithSuggestions = () => {
         curve: 1.42,
       });
     }
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(newPosition[1], newPosition[0]);
   };
 
   const handleMapMove = (event) => {
@@ -107,6 +141,9 @@ const AddressInputWithSuggestions = () => {
       latitude: lat,
       longitude: lng,
     });
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(lng, lat);
   };
 
   const handleMapRightClick = (event) => {
@@ -122,18 +159,25 @@ const AddressInputWithSuggestions = () => {
       longitude: lng,
       zoom: mapCenter.zoom,
     });
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(lng, lat);
   };
 
-  const handleConfirmPosition = () => {
+  const handleConfirmPosition = (event) => {
+    event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
     setConfirmedPosition(markerPosition);
+    // Gọi callback function để truyền tọa độ đã xác nhận về BasicInformationForm
+    onConfirmedCoordinates(markerPosition.longitude, markerPosition.latitude);
   };
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 w-full">
       <div className="relative mb-4">
-        <label className="block mb-2 text-lg text-gray-800 font-medium">
+        <label className="block mb-2 mt-10 text-lg text-gray-800 font-bold">
           Địa chỉ:
         </label>
+
         <input
           type="text"
           value={searchTerm}
@@ -160,7 +204,7 @@ const AddressInputWithSuggestions = () => {
       <Map
         ref={mapRef}
         initialViewState={mapCenter}
-        style={{ width: "100%", height: "600px" }}
+        style={{ width: "100%", height: "400px" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
         onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
@@ -179,23 +223,29 @@ const AddressInputWithSuggestions = () => {
       {/* Nút xác nhận */}
       <button
         onClick={handleConfirmPosition}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
+        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 focus:outline-none"
       >
         Xác nhận vị trí
       </button>
 
       {/* Hiển thị tọa độ */}
       {confirmedPosition && (
-        <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
-          <p className="text-lg text-gray-800 font-medium">
+        <div className="mt-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-gray-200">
+          <h3 className="text-xl font-semibold text-gray-800 mb-2">
             Tọa độ đã xác nhận:
-          </p>
-          <p>Kinh độ: {confirmedPosition.longitude}</p>
-          <p>Vĩ độ: {confirmedPosition.latitude}</p>
+          </h3>
+          <div className="flex items-center mb-2">
+            <span className="font-bold text-gray-700 mr-2">Kinh độ:</span>
+            <span className="text-gray-600">{confirmedPosition.longitude}</span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-bold text-gray-700 mr-2">Vĩ độ:</span>
+            <span className="text-gray-600">{confirmedPosition.latitude}</span>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default AddressInputWithSuggestions;
+export default MapUpdate;
