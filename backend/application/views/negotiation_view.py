@@ -231,7 +231,6 @@ class AcceptNegotiationView(APIView):
         # Kiểm tra trạng thái bài đăng
         if post.status != Status.APPROVED or post.sale_status not in [
             Sale_status.NEGOTIATING,
-            Sale_status.DEPOSITED,
         ]:
             return Response(
                 {"message": "Không thể chấp nhận thương lượng cho bài đăng này"},
