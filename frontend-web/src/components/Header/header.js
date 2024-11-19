@@ -76,7 +76,9 @@ function Header() {
           <div className="main-content h-[10vh] w-screen px-3 flex items-center justify-between">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
-              <strong className="font-extrabold text-base ml-2">SweetHome</strong>
+              <strong className="font-extrabold text-base ml-2">
+                SweetHome
+              </strong>
             </div>
             <nav className="flex items-center w-[60%] px-6">
               <ul className="flex space-x-6 gap-10">
@@ -110,7 +112,7 @@ function Header() {
                     }`}
                     onClick={() => setActiveLink("/guide")}
                   >
-                    Hướng dẫn
+                    AI
                   </a>
                 </li>
                 <li>
@@ -188,7 +190,7 @@ function Header() {
                     }`}
                     onClick={() => setActiveLink("/guide")}
                   >
-                    Hướng dẫn
+                    AI gợi ý
                   </a>
                 </li>
                 <li>

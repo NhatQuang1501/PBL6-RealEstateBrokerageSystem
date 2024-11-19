@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppContext } from "../../AppProvider";
 import MessageInput from "./MessageInput";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaRegSmile } from "react-icons/fa";
 
-const ChatWindow = ({ messages, setMessages }) => {
+const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const { sessionToken, id } = useAppContext();
-  const chatroomId = "c64169f0-85b2-4c9c-940c-7b561d961172";
+  // const chatroomId = "c64169f0-85b2-4c9c-940c-7b561d961172";
   const wsUrl = `ws://127.0.0.1:8000/ws/chat/${chatroomId}/?token=${sessionToken}`;
   const messagesEndRef = useRef(null);
 
@@ -93,12 +93,19 @@ const ChatWindow = ({ messages, setMessages }) => {
   };
 
   return (
-    <div className="w-full mx-auto bg-white shadow-lg rounded-lg">
-      <div className="p-4">
-        <h2 className="text-lg font-bold mb-4 text-center text-gray-800">
-          <FaUserCircle className="inline-block mr-2" />
-          Nhắn tin
-        </h2>
+    <div className="w-full mx-auto rounded-lg">
+      <div className="">
+        <div className="flex items-center mb-4 bg-gradient-to-r from-blue-400 to-blue-600 p-2 rounded-lg shadow-md">
+          <img
+            src={"http://127.0.0.1:8000" + friendInfo.avatar}
+            alt="Avatar"
+            className="w-12 h-12 rounded-full mr-4 object-cover bg-gray-200 border-[1px] border-[#3CA9F9] border-solid"
+          />
+          <h2 className="text-lg font-bold text-white flex items-center">
+            {friendInfo.userName}
+          </h2>
+          <FaRegSmile className="ml-auto text-white text-2xl" />
+        </div>
         <div className="h-[30rem] overflow-y-auto flex flex-col gap-3 bg-gray-50 p-4 rounded-lg border-[2px] border-solid border-gray-200">
           {messages.length > 0 ? (
             messages.map((message, index) => (
@@ -151,7 +158,11 @@ const ChatWindow = ({ messages, setMessages }) => {
               </React.Fragment>
             ))
           ) : (
-            <p>Không thể tải tin nhắn</p>
+            <div className="w-full flex items-center justify-center h-full">
+              <p className="font-bold text-lg">
+                Hãy bắt đầu một tin nhắn mới !
+              </p>
+            </div>
           )}
           <div ref={messagesEndRef} />
         </div>

@@ -7,11 +7,7 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg";
 
-const AddressInputWithSuggestions = ({
-  street,
-  onCoordinatesChange,
-  onConfirmedCoordinates,
-}) => {
+const AddressInputWithSuggestions = ({ street }) => {
   const [searchTerm, setSearchTerm] = useState(street || "");
   const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState({
@@ -70,6 +66,10 @@ const AddressInputWithSuggestions = ({
     };
   }, [searchTerm]);
 
+  useEffect(() => {
+    setSearchTerm(street || "");
+  }, [street]);
+
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
     const newPosition = [parseFloat(lat), parseFloat(lon)];
@@ -99,9 +99,6 @@ const AddressInputWithSuggestions = ({
         curve: 1.42,
       });
     }
-
-    // Gọi callback function để truyền tọa độ về BasicInformationForm
-    onCoordinatesChange(newPosition[1], newPosition[0]);
   };
 
   const handleMapMove = (event) => {
@@ -114,9 +111,6 @@ const AddressInputWithSuggestions = ({
       latitude: lat,
       longitude: lng,
     });
-
-    // Gọi callback function để truyền tọa độ về BasicInformationForm
-    onCoordinatesChange(lng, lat);
   };
 
   const handleMapRightClick = (event) => {
@@ -132,24 +126,54 @@ const AddressInputWithSuggestions = ({
       longitude: lng,
       zoom: mapCenter.zoom,
     });
-
-    // Gọi callback function để truyền tọa độ về BasicInformationForm
-    onCoordinatesChange(lng, lat);
   };
 
-  const handleConfirmPosition = (event) => {
-    event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
+  const handleConfirmPosition = () => {
     setConfirmedPosition(markerPosition);
-    // Gọi callback function để truyền tọa độ đã xác nhận về BasicInformationForm
-    onConfirmedCoordinates(markerPosition.longitude, markerPosition.latitude);
   };
 
   return (
     <div className="mb-6">
       <div className="relative mb-4">
         <label className="block mb-2 mt-10 text-lg text-gray-800 font-bold">
-          Địa chỉ:
+          Bản đồ:
         </label>
+        <div className="mb-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-blue-50">
+          <h2 className="text-lg font-semibold text-blue-600 mb-2">
+            Hướng dẫn sử dụng bản đồ
+          </h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <li>
+              <strong className="font-bold pr-1">Nhập địa chỉ:</strong> Địa chỉ
+              bạn nhập phía trên sẽ được điền tại đây và hiển thị lên bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1 ">Xác định vị trí:</strong>{" "}
+              <span className="text-red-500 ">
+                Tuy nhiên bản đồ chưa thể xác định vị trí tuyệt đối.
+              </span>{" "}
+              Bạn có thể thao tác trực tiếp trong bản đồ để xác định vị trí
+              chính xác của bất động sản. <br></br>{" "}
+              <span className="ml-5 leading-relaxed">
+                Nếu địa chỉ bạn nhập không được gợi ý trên bản đồ, hãy thử chỉ
+                nhập tên đường hoặc thao tác trực tiếp trên bản đồ đến khi hiển
+                thị địa chỉ gợi ý.
+              </span>
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Di chuyển bản đồ:</strong>{" "}
+              Giữ-kéo chuột trái/phải để di chuyển vị trí và xoay bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Phóng to/thu nhỏ:</strong> Sử
+              dụng chuột cuộn để điều chỉnh kích thước bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Chọn vị trí:</strong> Click
+              chuột phải để chọn vị trí chính xác của bất động sản trên bản đồ.
+            </li>
+          </ul>
+        </div>
 
         <input
           type="text"

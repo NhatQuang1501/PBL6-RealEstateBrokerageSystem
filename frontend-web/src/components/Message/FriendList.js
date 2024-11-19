@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faFlag } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUser,
+  faFlag,
+  faCommentDots,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -87,15 +91,15 @@ export default function FriendList({ selectFriend }) {
   }
 
   return (
-    <div className="bg-white text-black p-6 rounded-lg shadow-lg w-[25rem] h-[38rem] overflow-y-auto">
-      <h2 className="text-lg mb-4 font-bold">
+    <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg w-[25rem] h-[38rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
+      <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
         Danh sách bạn bè ({friends.length})
       </h2>
       <div className="grid grid-cols-1 gap-4">
         {friends.map((friend) => (
           <div
             key={friend.user_id}
-            className="p-4 rounded-lg flex items-center bg-blue-200 text-black font-bold relative"
+            className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold relative shadow-md"
           >
             {/* Avatar */}
             <img
@@ -114,9 +118,17 @@ export default function FriendList({ selectFriend }) {
             </p>
 
             <button
-              className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105"
-              onClick={() => selectFriend(friend)}
+              className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
+              onClick={() =>
+                selectFriend(
+                  friend.chatroom_id,
+                  friend.user.avatar,
+                  friend.user.username,
+                  friend.user_id
+                )
+              }
             >
+              <FontAwesomeIcon icon={faCommentDots} className="mr-2" />
               Nhắn tin
             </button>
 

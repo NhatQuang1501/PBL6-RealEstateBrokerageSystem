@@ -50,9 +50,9 @@ const UpdatePost = () => {
   const [estateType, setEstateType] = useState("");
   let navigate = useNavigate();
 
-  // useEffect(() => {
-  //   window.scrollTo(0, 0);
-  // }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchPostById = async () => {
