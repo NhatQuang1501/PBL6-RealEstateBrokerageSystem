@@ -33,7 +33,7 @@ const BasicInformation = ({
       const billionValue = price / 1_000_000_000;
       return Number.isInteger(billionValue)
         ? `${billionValue} tỷ VNĐ`
-        : `${billionValue.toFixed(3)} tỷ VNĐ`;
+        : `${billionValue.toFixed(1)} tỷ VNĐ`;
     } else if (price >= 1_000_000) {
       const millionValue = price / 1_000_000;
       return Number.isInteger(millionValue)

@@ -89,14 +89,13 @@ const ListPosts = () => {
   };
 
 return (
-  <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] p-6 rounded-lg">
-
-    <Panel className="flex flex-col max-h-full" type="personal-page">
-      <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
+  <div className="rounded-lg h-[50rem]">
+    <Panel className="flex flex-col " type="personal-page">
+      <div className="relative h-screen overflow-y-auto grid grid-cols-1 gap-4">
         {currentPosts.map((post, index) => (
           <div
             key={index}
-            className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white p-4"
+            className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white"
           >
             <Post post={post} type="personal-page" />
           </div>

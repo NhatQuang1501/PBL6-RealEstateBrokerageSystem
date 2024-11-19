@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaAd, FaComment } from "react-icons/fa";
+import { useAppContext } from "../../AppProvider";
 
 const Comment = ({ id, sessionToken }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
+  const { role } = useAppContext();
 
   // Time
   const formatTime = (date) => {
@@ -162,25 +164,29 @@ const Comment = ({ id, sessionToken }) => {
           ))}
         </ul>
 
-        {/* Comment Input */}
-        <div className="flex flex-col items-center justify-center w-full">
-          <textarea
-            name="comment"
-            id="comment"
-            cols="30"
-            rows="10"
-            className="w-[25rem] h-[5rem] border-[2px] border-double border-gray-400 rounded-[0.5rem] p-2 mt-4"
-            placeholder="Hãy nhập bình luận của bạn..."
-            value={comment}
-            onChange={handleCommentChange}
-          ></textarea>
-          <button
-            className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 mt-3"
-            onClick={handleCommentSubmit}
-          >
-            Bình luận
-          </button>
-        </div>
+        {role !== "admin" && (
+          <>
+            {/* Comment Input */}
+            <div className="flex flex-col items-center justify-center w-full">
+              <textarea
+                name="comment"
+                id="comment"
+                cols="30"
+                rows="10"
+                className="w-[25rem] h-[5rem] border-[2px] border-double border-gray-400 rounded-[0.5rem] p-2 mt-4"
+                placeholder="Hãy nhập bình luận của bạn..."
+                value={comment}
+                onChange={handleCommentChange}
+              ></textarea>
+              <button
+                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 mt-3"
+                onClick={handleCommentSubmit}
+              >
+                Bình luận
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

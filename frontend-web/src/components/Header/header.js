@@ -112,7 +112,7 @@ function Header() {
                     }`}
                     onClick={() => setActiveLink("/guide")}
                   >
-                    AI
+                    Dự đoán giá BĐS
                   </a>
                 </li>
                 <li>
@@ -190,7 +190,7 @@ function Header() {
                     }`}
                     onClick={() => setActiveLink("/guide")}
                   >
-                    AI gợi ý
+                    Dự đoán giá BĐS
                   </a>
                 </li>
                 <li>
