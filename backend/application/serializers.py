@@ -227,7 +227,6 @@ class PostSerializer(serializers.ModelSerializer):
         instance.sale_status = validated_data.get("sale_status", instance.sale_status)
         instance.images = validated_data.get("images", instance.images)
         instance.description = validated_data.get("description", instance.description)
-
         instance.status = Status.PENDING_APPROVAL
         instance.view_count = validated_data.get("view_count", instance.view_count)
         instance.save_count = validated_data.get("save_count", instance.save_count)
