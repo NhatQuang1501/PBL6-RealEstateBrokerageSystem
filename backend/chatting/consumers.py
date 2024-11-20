@@ -53,7 +53,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         # Rời khỏi phòng chat
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        if hasattr(self, "room_group_name"):
+            await self.channel_layer.group_discard(
+                self.room_group_name, self.channel_name
+            )
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -125,4 +128,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")[
             :latest_messages_count
         ]
-        return MessageSerializer(messages, many=True).data
+        serialized_messages = MessageSerializer(messages, many=True).data
+        # Chuyển đổi UUID thành chuỗi
+        for message in serialized_messages:
+            message["message_id"] = str(message["message_id"])
+            message["chatroom"] = str(message["chatroom"])
+            message["sender"] = str(message["sender"])
+        return serialized_messages
