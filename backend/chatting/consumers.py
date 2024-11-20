@@ -35,11 +35,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 )
             )
 
-            # Gửi các tin nhắn hiện có
-            messages = await self.get_messages(self.chatroom)
+            # Gửi các tin nhắn hiện có và số lượng tin nhắn
+            messages, count = await self.get_messages(self.chatroom)
             await self.send(
                 text_data=json.dumps(
-                    {"type": "chat_messages", "messages": messages},
+                    {
+                        "type": "chat_messages",
+                        "count": count,
+                        "messages": messages,
+                    },
                     default=str,
                 )
             )
@@ -61,19 +65,34 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
 
         # Lấy tin nhắn gần nhất
-        recent_messages = await self.get_messages(self.chatroom)
+        recent_messages, count = await self.get_messages(self.chatroom)
 
         # Gửi tin nhắn đến nhóm chat
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "messages": recent_messages}
+            self.room_group_name,
+            {
+                "type": "chat_message",
+                "count": count,
+                "messages": recent_messages,
+            },
         )
 
     async def chat_message(self, event):
         messages = event["messages"]
+        count = event["count"]
 
         try:
             # Gửi tin nhắn đến WebSocket
-            await self.send(text_data=json.dumps({"messages": messages}, default=str))
+            await self.send(
+                text_data=json.dumps(
+                    {
+                        "count": count,
+                        "messages": messages,
+                    },
+                    default=str,
+                )
+            )
+
         except Exception as e:
             await self.send(text_data=json.dumps({"type": "error", "message": str(e)}))
 
@@ -91,8 +110,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def get_messages(self, chatroom):
         messages = Message.objects.filter(chatroom=chatroom).order_by("created_at")
-        # count = messages.count()
-        return MessageSerializer(messages, many=True).data
+        count = messages.count()
+        serialized_messages = MessageSerializer(messages, many=True).data
+        # Chuyển đổi UUID thành chuỗi
+        for message in serialized_messages:
+            message["message_id"] = str(message["message_id"])
+            message["chatroom"] = str(message["chatroom"])
+            message["sender"] = str(message["sender"])
+        return serialized_messages, count
 
     @database_sync_to_async
     def get_recent_messages(self, chatroom):
