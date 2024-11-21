@@ -686,7 +686,7 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
-            <AddressInput />
+            
           </div>
         )}
 
@@ -1008,7 +1008,7 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
-            <AddressInput />
+            
           </div>
         )}
       </div>

@@ -9,7 +9,6 @@ urlpatterns = [
     path("api/", include("application.urls")),
     path("api/", include("friends.urls")),
     path("api/", include("chatting.urls")),
-    # path("api/", include("prediction.urls")),
 ]
 
 if settings.DEBUG:
