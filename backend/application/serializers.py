@@ -35,11 +35,6 @@ class NegotiationSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        # rep = super().to_representation(instance)
-        # # Lấy thương lượng cao nhất từ bài đăng
-        # rep["highest_offer_price"] = instance.post.highest_offer_price
-        # rep["highest_offer_user"] = instance.post.highest_offer_user
-        # return rep
         rep = super().to_representation(instance)
         # Lấy thương lượng cao nhất từ bài đăng
         rep["highest_offer_price"] = instance.post.highest_offer_price
@@ -94,9 +89,13 @@ class PostSerializer(serializers.ModelSerializer):
             "status",
             "city",
             "district",
+            "ward",
             "street",
             "address",
             "orientation",
+            "land_lot",
+            "map_sheet_number",
+            "land_parcel",
             "area",
             "frontage",
             "bedroom",
@@ -114,6 +113,8 @@ class PostSerializer(serializers.ModelSerializer):
             "view_count",
             "comments_count",
             "save_count",
+            "highest_offer_price",
+            "highest_offer_user",
         ]
         extra_kwargs = {
             "post_id": {"read_only": True},
@@ -125,9 +126,13 @@ class PostSerializer(serializers.ModelSerializer):
             "price": {"required": True},
             "city": {"required": True},
             "district": {"required": False},
+            "ward": {"required": False},
             "street": {"required": False},
             "address": {"required": True},
             "orientation": {"required": False},
+            "land_lot": {"required": False},
+            "map_sheet_number": {"required": False},
+            "land_parcel": {"required": False},
             "area": {"required": True},
             "frontage": {"required": False},
             "bedroom": {"required": False},
@@ -141,6 +146,8 @@ class PostSerializer(serializers.ModelSerializer):
             "description": {"required": False},
             "view_count": {"read_only": True},
             "save_count": {"read_only": True},
+            "highest_offer_price": {"required": False, "allow_null": True},
+            "highest_offer_user": {"required": False, "allow_null": True},
         }
 
     def to_representation(self, instance):
@@ -197,7 +204,6 @@ class PostSerializer(serializers.ModelSerializer):
         if user_id:
             user = User.objects.get(user_id=user_id)
             data["user_id"] = user
-            # data["user"] = user
 
         return data
 
@@ -211,9 +217,15 @@ class PostSerializer(serializers.ModelSerializer):
         instance.price = validated_data.get("price", instance.price)
         instance.city = validated_data.get("city", instance.city)
         instance.district = validated_data.get("district", instance.district)
+        instance.ward = validated_data.get("ward", instance.ward)
         instance.street = validated_data.get("street", instance.street)
         instance.address = validated_data.get("address", instance.address)
         instance.orientation = validated_data.get("orientation", instance.orientation)
+        instance.land_lot = validated_data.get("land_lot", instance.land_lot)
+        instance.map_sheet_number = validated_data.get(
+            "map_sheet_number", instance.map_sheet_number
+        )
+        instance.land_parcel = validated_data.get("land_parcel", instance.land_parcel)
         instance.area = validated_data.get("area", instance.area)
         instance.frontage = validated_data.get("frontage", instance.frontage)
         instance.bedroom = validated_data.get("bedroom", instance.bedroom)

@@ -68,8 +68,7 @@ class Sale_status(Enum):
 
 
 class Legal_status(Enum):
-    REDBOOK = "sổ đỏ", "Sổ đỏ"
-    PINKBOOK = "sổ hồng", "Sổ hồng"
+    REDANDPINKBOOK = "sổ đỏ/sổ hồng", "Sổ đỏ/Sổ hồng"
     NOTYET = "chưa có", "Chưa có"
     OTHER = "khác", "Khác"
 
