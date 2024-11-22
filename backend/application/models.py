@@ -12,18 +12,26 @@ class Post(models.Model):
 
     title = models.CharField(max_length=100)
     estate_type = models.CharField(choices=EstateType.choices, max_length=50)
-    price = models.DecimalField(max_digits=30, decimal_places=1)
+    price = models.BigIntegerField()
     status = models.CharField(
         choices=Status.choices, max_length=50, default=Status.PENDING_APPROVAL
     )
 
     city = models.CharField(max_length=50, blank=True, null=True)
     district = models.CharField(max_length=50, blank=True, null=True)
+    ward = models.CharField(max_length=50, blank=True, null=True)
     street = models.CharField(max_length=50, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     orientation = models.CharField(
         choices=Orientation.choices, max_length=50, blank=True, null=True
     )
+
+    # Dành cho đất
+    land_lot = models.CharField(max_length=50, blank=True, null=True)  # Lô đất
+    map_sheet_number = models.CharField(
+        max_length=50, blank=True, null=True
+    )  # Tờ bản đồ số (gồm nhiều thửa đất)
+    land_parcel = models.CharField(max_length=50, blank=True, null=True)  # Thửa đất
 
     area = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
     frontage = models.DecimalField(

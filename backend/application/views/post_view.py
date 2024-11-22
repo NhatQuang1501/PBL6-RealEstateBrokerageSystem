@@ -142,6 +142,19 @@ class PostView(APIView):
     def post(self, request):
         post_data = request.data.copy()
         post_data["user_id"] = request.user.user_id
+
+        # Kiểm tra và xử lý giá trị null cho các trường DecimalField
+        decimal_fields = [
+            "area",
+            "frontage",
+            "longitude",
+            "latitude",
+            "highest_offer_price",
+        ]
+        for field in decimal_fields:
+            if post_data.get(field) == "":
+                post_data[field] = None
+
         post_serializer = PostSerializer(data=post_data)
         # post_serializer = PostSerializer(data=request.data)
 
@@ -180,7 +193,21 @@ class PostView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        post_serializer = PostSerializer(post, data=request.data, partial=True)
+        post_data = request.data.copy()
+
+        # Kiểm tra và xử lý giá trị null cho các trường DecimalField
+        decimal_fields = [
+            "area",
+            "frontage",
+            "longitude",
+            "latitude",
+            "highest_offer_price",
+        ]
+        for field in decimal_fields:
+            if post_data.get(field) == "":
+                post_data[field] = None
+
+        post_serializer = PostSerializer(post, data=post_data, partial=True)
 
         if post_serializer.is_valid():
             post_serializer.save()
@@ -289,9 +316,13 @@ class SearchView(APIView):
                     matches_text(post["price"]),
                     matches_text(post["city"]),
                     matches_text(post["district"]),
+                    matches_text(post["ward"]),
                     matches_text(post["street"]),
                     matches_text(post["address"]),
                     matches_text(post["orientation"]),
+                    matches_text(post["land_lot"]),
+                    matches_text(post["map_sheet_number"]),
+                    matches_text(post["land_parcel"]),
                     matches_text(post["area"]),
                     matches_text(post["frontage"]),
                     matches_text(post["bedroom"]),
