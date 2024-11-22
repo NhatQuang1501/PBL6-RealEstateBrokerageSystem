@@ -7,8 +7,12 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg"; // Thay bằng token Mapbox của bạn
 
-const AddressInputWithSuggestions = () => {
-  const [searchTerm, setSearchTerm] = useState("");
+const AddressInputWithSuggestions = ({
+  street,
+  onCoordinatesChange,
+  onConfirmedCoordinates,
+}) => {
+  const [searchTerm, setSearchTerm] = useState(street || "");
   const [suggestions, setSuggestions] = useState([]);
   const [mapCenter, setMapCenter] = useState({
     latitude: 16.07470983524796,
@@ -66,6 +70,10 @@ const AddressInputWithSuggestions = () => {
     };
   }, [searchTerm]);
 
+  useEffect(() => {
+    setSearchTerm(street || "");
+  }, [street]);
+
   const handleSuggestionClick = (suggestion) => {
     const { lat, lon } = suggestion;
     const newPosition = [parseFloat(lat), parseFloat(lon)];
@@ -95,6 +103,9 @@ const AddressInputWithSuggestions = () => {
         curve: 1.42,
       });
     }
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(newPosition[1], newPosition[0]);
   };
 
   const handleMapMove = (event) => {
@@ -107,6 +118,9 @@ const AddressInputWithSuggestions = () => {
       latitude: lat,
       longitude: lng,
     });
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(lng, lat);
   };
 
   const handleMapRightClick = (event) => {
@@ -122,10 +136,53 @@ const AddressInputWithSuggestions = () => {
       longitude: lng,
       zoom: mapCenter.zoom,
     });
+
+    // Gọi callback function để truyền tọa độ về BasicInformationForm
+    onCoordinatesChange(lng, lat);
   };
 
-  const handleConfirmPosition = () => {
+  const handleConfirmPosition = (event) => {
+    event.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
     setConfirmedPosition(markerPosition);
+    // Gọi callback function để truyền tọa độ đã xác nhận về BasicInformationForm
+    onConfirmedCoordinates(markerPosition.longitude, markerPosition.latitude);
+  };
+
+  const handleUseGPS = (e) => {
+    e.preventDefault(); // Ngăn chặn sự kiện submit mặc định của form
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter({
+            latitude,
+            longitude,
+            zoom: 18,
+          });
+          setMarkerPosition({
+            latitude,
+            longitude,
+          });
+
+          if (mapRef.current) {
+            mapRef.current.flyTo({
+              center: [longitude, latitude],
+              zoom: 18,
+              speed: 1.2,
+              curve: 1.42,
+            });
+          }
+
+          // Gọi callback function để truyền tọa độ về BasicInformationForm
+          onCoordinatesChange(longitude, latitude);
+        },
+        (error) => {
+          console.error("Lỗi khi lấy tọa độ:", error);
+        }
+      );
+    } else {
+      alert("Trình duyệt của bạn không hỗ trợ định vị GPS.");
+    }
   };
 
   return (
@@ -134,6 +191,44 @@ const AddressInputWithSuggestions = () => {
         <label className="block mb-2 text-lg text-gray-800 font-medium">
           Địa chỉ:
         </label>
+
+        <div className="mb-4 p-6 border border-gray-300 rounded-lg shadow-lg bg-blue-50">
+          <h2 className="text-lg font-semibold text-blue-600 mb-2">
+            Hướng dẫn sử dụng bản đồ
+          </h2>
+          <ul className="list-disc list-inside text-gray-700 space-y-2">
+            <li>
+              <strong className="font-bold pr-1">Nhập địa chỉ:</strong> Địa chỉ
+              bạn nhập phía trên sẽ được điền tại đây và hiển thị lên bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1 ">Xác định vị trí:</strong>{" "}
+              <span className="text-red-500 ">
+                Tuy nhiên bản đồ chưa thể xác định vị trí tuyệt đối.
+              </span>{" "}
+              Bạn có thể thao tác trực tiếp trong bản đồ để xác định vị trí
+              chính xác của bất động sản. <br></br>{" "}
+              <span className="ml-5 leading-relaxed">
+                Nếu địa chỉ bạn nhập không được gợi ý trên bản đồ, hãy thử chỉ
+                nhập tên đường hoặc thao tác trực tiếp trên bản đồ đến khi hiển
+                thị địa chỉ gợi ý.
+              </span>
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Di chuyển bản đồ:</strong>{" "}
+              Giữ-kéo chuột trái/phải để di chuyển vị trí và xoay bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Phóng to/thu nhỏ:</strong> Sử
+              dụng chuột cuộn để điều chỉnh kích thước bản đồ.
+            </li>
+            <li>
+              <strong className="font-bold pr-1">Chọn vị trí:</strong> Click
+              chuột phải để chọn vị trí chính xác của bất động sản trên bản đồ.
+            </li>
+          </ul>
+        </div>
+
         <input
           type="text"
           value={searchTerm}
@@ -160,7 +255,7 @@ const AddressInputWithSuggestions = () => {
       <Map
         ref={mapRef}
         initialViewState={mapCenter}
-        style={{ width: "100%", height: "600px" }}
+        style={{ width: "100%", height: "500px" }}
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
         onMoveEnd={handleMapMove} // Thêm sự kiện onMoveEnd để cập nhật vị trí marker
@@ -182,6 +277,14 @@ const AddressInputWithSuggestions = () => {
         className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
       >
         Xác nhận vị trí
+      </button>
+
+      {/* Nút sử dụng GPS */}
+      <button
+        onClick={handleUseGPS}
+        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 focus:outline-none"
+      >
+        Sử dụng GPS
       </button>
 
       {/* Hiển thị tọa độ */}

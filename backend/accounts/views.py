@@ -434,3 +434,13 @@ class AvatarView(APIView):
             {"message": "Avatar đã được xóa"},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+class WelcomeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response(
+            {"message": "Welcome to Sweet Home!"},
+            status=status.HTTP_200_OK,
+        )
