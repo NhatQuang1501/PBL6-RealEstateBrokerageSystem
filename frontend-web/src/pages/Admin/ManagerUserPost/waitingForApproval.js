@@ -149,7 +149,7 @@ const WaitingForApproval = () => {
               <p className="text-gray-700">
                 {post.city}, {post.district}
               </p>
-              <div className="grid grid-cols-2 gap-2 mt-4">
+              {/* <div className="grid grid-cols-2 gap-2 mt-4">
                 <div className="flex items-center gap-2">
                   <strong>{post.bedroom}</strong>
                   <p>phòng ngủ</p>
@@ -158,7 +158,7 @@ const WaitingForApproval = () => {
                   <strong>{post.bathroom}</strong>
                   <p>phòng tắm</p>
                 </div>
-              </div>
+              </div> */}
               <div className="w-full flex items-center justify-center gap-8 mt-5">
                 <button
                   className="px-5 py-2 text-[#8bcaf7] border border-[#3CA9F9] rounded-lg"

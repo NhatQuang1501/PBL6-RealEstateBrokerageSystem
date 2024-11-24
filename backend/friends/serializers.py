@@ -3,7 +3,7 @@ from accounts.enums import *
 from accounts.models import *
 from accounts.serializers import *
 from application.models import *
-from application.serializers import *
+from application.serializers.post_serializer import *
 from friends.models import *
 from django.shortcuts import get_object_or_404
 from django.db.models import Q

@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from accounts.enums import *
 from accounts.models import *
 from application.models import *
-from application.serializers import PostSerializer
+from application.serializers.post_serializer import *
 from rest_framework.pagination import PageNumberPagination
 
 

@@ -97,7 +97,7 @@ const ManagerUserAccount = () => {
                   <td className="border border-gray-300 px-4 py-3 text-center">
                     {account.avatar ? (
                       <img
-                        src={`http://127.0.0.1:8000/${account.avatar}`}
+                        src={`http://127.0.0.1:8000${account.avatar}`}
                         alt="Avatar"
                         className="w-10 h-10 rounded-full mx-auto border"
                       />

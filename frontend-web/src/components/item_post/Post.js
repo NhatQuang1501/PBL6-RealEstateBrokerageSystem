@@ -28,7 +28,7 @@ import ImageCard from "../image_card/ImageCard";
 import DetailDescription from "../detail_description/DetailDescription";
 
 function Post({ post, type }) {
-  const { id, sessionToken, posts, setPost } = useAppContext();
+  const { id, sessionToken, role, posts, setPost } = useAppContext();
   const navigate = useNavigate();
   const [reactionsCount, setReactionsCount] = useState(post.reactions_count);
   const [savesCount, setSavesCount] = useState(post.save_count);
@@ -182,7 +182,7 @@ function Post({ post, type }) {
       const billionValue = price / 1_000_000_000;
       return Number.isInteger(billionValue)
         ? `${billionValue} tỷ VND`
-        : `${billionValue.toFixed(3)} tỷ VNĐ`;
+        : `${billionValue.toFixed(1)} tỷ VNĐ`;
     } else if (price >= 1_000_000) {
       const millionValue = price / 1_000_000;
       return Number.isInteger(millionValue)
@@ -335,7 +335,7 @@ function Post({ post, type }) {
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district}, Thành phố {post.city}
                   </p>
                   {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
                   <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
@@ -473,53 +473,58 @@ function Post({ post, type }) {
 
           <div className="flex justify-center ">
             <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-[#b2ebf2] border-solid pt-5 pl-5 pr-5 rounded-t-xl">
-              {/* Heart */}
-              <div className="flex flex-col items-center text-gray-500 gap-2">
-                <button
-                  onClick={handleClick}
-                  className="focus:outline-none"
-                  title="Yêu thích"
-                >
-                  <div className="flex gap-2 items-center space-x-1">
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      className={`w-6 h-6 transition duration-100 ${
-                        isClicked ? "text-red-400" : "text-gray-500"
-                      }`}
-                    />
-                    <span>
-                      {/* {isClicked && reactionsCount === 0
+              {role !== "admin" && (
+                <>
+                  {/* Heart */}
+                  <div className="flex flex-col items-center text-gray-500 gap-2">
+                    <button
+                      onClick={handleClick}
+                      className="focus:outline-none"
+                      title="Yêu thích"
+                    >
+                      <div className="flex gap-2 items-center space-x-1">
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          className={`w-6 h-6 transition duration-100 ${
+                            isClicked ? "text-red-400" : "text-gray-500"
+                          }`}
+                        />
+                        <span>
+                          {/* {isClicked && reactionsCount === 0
                         ? reactionsCount + 1
                         : reactionsCount} */}
-                      {reactionsCount}
-                    </span>
+                          {reactionsCount}
+                        </span>
+                      </div>
+                    </button>
+                    <span className="text-xs">Yêu thích</span>
                   </div>
-                </button>
-                <span className="text-xs">Yêu thích</span>
-              </div>
-              {/* Chat */}
-              <div
-                className="flex flex-col items-center text-gray-500 gap-2 cursor-pointer"
-                onClick={handleDetailClick}
-                title="Bình luận"
-              >
-                <div className="flex gap-2 items-center space-x-1">
-                  <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
-                  <span>{post.comments_count}</span>
-                </div>
-                <span className="text-xs">Bình luận</span>
-              </div>
-              {/* Share */}
-              <div
-                className="flex flex-col items-center text-gray-500 gap-2"
-                title="Chia sẻ"
-              >
-                <div className="flex gap-2 items-center space-x-1">
-                  <FontAwesomeIcon icon={faShareAlt} className="w-6 h-6" />
-                  <span>124</span>
-                </div>
-                <span className="text-xs">Chia sẻ</span>
-              </div>
+                  {/* Chat */}
+                  <div
+                    className="flex flex-col items-center text-gray-500 gap-2 cursor-pointer"
+                    onClick={handleDetailClick}
+                    title="Bình luận"
+                  >
+                    <div className="flex gap-2 items-center space-x-1">
+                      <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
+                      <span>{post.comments_count}</span>
+                    </div>
+                    <span className="text-xs">Bình luận</span>
+                  </div>
+                  {/* Share */}
+                  <div
+                    className="flex flex-col items-center text-gray-500 gap-2"
+                    title="Chia sẻ"
+                  >
+                    <div className="flex gap-2 items-center space-x-1">
+                      <FontAwesomeIcon icon={faShareAlt} className="w-6 h-6" />
+                      <span>124</span>
+                    </div>
+                    <span className="text-xs">Chia sẻ</span>
+                  </div>
+                </>
+              )}
+
               {/* Save */}
               {type !== "personal-page" && (
                 <div
@@ -553,6 +558,7 @@ function Post({ post, type }) {
 
           {/* Neo_btn */}
           {id !== post.user.user_id &&
+            role !== "admin" &&
             (post.sale_status === "Đang bán" ||
               post.sale_status === "Đang thương lượng") && (
               <div className="mt-5 flex justify-center items-center">

@@ -1,7 +1,7 @@
 from django.urls import path
-from application.views.admin_post_view import AdminPostView
+from application.views.admin_post_view import *
 from application.views.post_view import *
-from application.views.enum_view import EnumView
+from application.views.enum_view import *
 from application.views.negotiation_view import *
 from application.views.ordered_post_view import *
 from application.views.report_view import *
@@ -18,10 +18,6 @@ urlpatterns = [
     path("admin/posts/", AdminPostView.as_view(), name="admin-posts"),
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
     # Ordered Post Endpoints
-    # path("oldest-posts/", OldestPostView.as_view(), name="oldest-posts"),
-    # path("house-posts/", HousePostView.as_view(), name="house-posts"),
-    # path("land-posts/", LandPostView.as_view(), name="land-posts"),
-    # path("popular-posts/", PopularPostView.as_view(), name="popular-posts"),
     path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Sold Post Endpoints
     path(
@@ -46,9 +42,7 @@ urlpatterns = [
     # Post images Endpoints
     path("posts/<str:pk>/images/", PostImageView.as_view(), name="post-images"),
     # Negotiation Endpoints
-    path(
-        "negotiations/", NegotiationsView.as_view(), name="negotiations-list"
-    ),  # URL không có negotiation_id
+    path("negotiations/", NegotiationsView.as_view(), name="negotiations-list"),
     path(
         "negotiations/<str:negotiation_id>/",
         NegotiationsView.as_view(),
@@ -74,22 +68,44 @@ urlpatterns = [
         PostNegotiationsView.as_view(),
         name="post-negotiations",
     ),
-    # path(
-    #     "post-negotiations/<str:post_id>/",
-    #     InitiateNegotiationView.as_view(),
-    #     name="initiate_negotiation",
-    # ),
+    # Proposal Endpoints
+    path(
+        "negotiation-proposal/<str:pk>/",
+        ProposalView.as_view(),
+        name="proposals-list",
+    ),
+    path(
+        "send-proposal/<str:negotiation_id>/",
+        ProposalView.as_view(),
+        name="send-proposal",
+    ),
+    path(
+        "accept-proposal/<str:proposal_id>/",
+        AcceptProposalView.as_view(),
+        name="accept-proposal",
+    ),
+    # Consideration, Acceptance Endpoints
+    path(
+        "considered-negotiations-list/<str:post_id>/",
+        ConsideredNegotiationsView.as_view(),
+        name="considered-negotiations-list",
+    ),
+    path(
+        "consider-negotiations/",
+        ConsideredNegotiationsView.as_view(),
+        name="consider-negotiations",
+    ),
+    path(
+        "accept-negotiations/<str:negotiation_id>/",
+        AcceptNegotiationView.as_view(),
+        name="posts-negotiations-accepted",
+    ),
     path(
         "accept-negotiations/",
         AcceptNegotiationView.as_view(),
         name="accept_negotiation",
     ),
-    # path(
-    #     "posts-highest-offer/<str:post_id>/",
-    #     GetHighestOfferView.as_view(),
-    #     name="get_highest_offer",
-    # ),
-
+    
     path('report/', ReportView.as_view(), name='report'),
     path('report/<str:pk>/', ReportView.as_view(), name='report-detail'),
 ]

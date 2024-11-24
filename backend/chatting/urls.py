@@ -1,5 +1,5 @@
 from django.urls import path
-from chatting.views import ChatRoomView, MessageView
+from .views import *
 
 urlpatterns = [
     path("chatrooms/", ChatRoomView.as_view(), name="chatrooms"),

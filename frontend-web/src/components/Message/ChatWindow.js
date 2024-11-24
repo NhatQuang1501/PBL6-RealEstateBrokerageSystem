@@ -6,7 +6,7 @@ import { FaUserCircle, FaRegSmile } from "react-icons/fa";
 const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const { sessionToken, id } = useAppContext();
   // const chatroomId = "c64169f0-85b2-4c9c-940c-7b561d961172";
-  const wsUrl = `ws://127.0.0.1:8000/ws/chat/${chatroomId}/?token=${sessionToken}`;
+  const wsUrl = `ws://127.0.0.1:8000/ws/chat/${chatroomId}/?user_id=${id}`;
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
         socket.close();
       }
     };
-  }, [wsUrl, sessionToken, setMessages]);
+  }, [wsUrl, id, setMessages]);
 
   useEffect(() => {
     if (messagesEndRef.current) {

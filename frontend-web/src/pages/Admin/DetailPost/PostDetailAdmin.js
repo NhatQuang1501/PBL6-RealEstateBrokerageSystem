@@ -8,6 +8,10 @@ import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useAppContext } from "../../../AppProvider";
 import { useParams } from "react-router-dom";
+import Comment from "../../../components/comment/Comment";
+import NegotiationList from "../../../components/neogotiation/NegotiationList";
+import MapView from "../../../components/map_api/Mapbox";
+
 
 const PostDetailAdmin = () => {
   const { sessionToken } = useAppContext();
@@ -120,9 +124,15 @@ const PostDetailAdmin = () => {
                 legal_status={post.legal_status}
                 frontage={post.frontage}
                 address={post.address}
+                ward={post.ward}
                 district={post.district}
                 city={post.city}
                 description={post.description}
+                longitude={post.longitude}
+                latitude={post.latitude}
+                land_lot={post.land_lot} // Lô đất
+                land_parcel={post.land_parcel} // Thửa đất
+                map_sheet_number={post.map_sheet_number} // Tờ bản đồ
               />
               {/* Image */}
               <ImageCard type="detail" postId={postId} />
@@ -135,6 +145,18 @@ const PostDetailAdmin = () => {
             <div className="text-center text-gray-500">
               Đang tải bài đăng...
             </div>
+          )}
+        </div>
+        <div className="flex flex-col">
+          {/* Comment */}
+          <Comment id={postId} sessionToken={sessionToken} />
+
+          {/* Neogotiation */}
+          {post && (
+            <>
+              <NegotiationList />
+              <MapView longitude={post?.longitude} latitude={post?.latitude} />
+            </>
           )}
         </div>
       </div>

@@ -14,7 +14,8 @@ from .permission import *
 from rest_framework.permissions import IsAuthenticated
 from django.views.generic import View
 from django.shortcuts import render
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
 class BaseView(APIView):
@@ -270,7 +271,7 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
     def post(self, request):
         try:
@@ -281,6 +282,27 @@ class LogoutView(APIView):
             return Response(
                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    # def post(self, request):
+    #     try:
+    #         refresh_token = request.data.get("refresh", None)
+    #         if refresh_token is None:
+    #             return Response(
+    #                 {"message": "Token refresh không được cung cấp"},
+    #                 status=status.HTTP_400_BAD_REQUEST,
+    #             )
+
+    #         # Kiểm tra và blacklist token refresh
+    #         token = RefreshToken(refresh_token)
+    #         token.blacklist()
+
+    #         return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
+    #     except TokenError as e:
+    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    #     except Exception as e:
+    #         return Response(
+    #             {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    #         )
 
 
 class VerifyEmailView(View):
@@ -411,4 +433,14 @@ class AvatarView(APIView):
         return Response(
             {"message": "Avatar đã được xóa"},
             status=status.HTTP_204_NO_CONTENT,
+        )
+
+
+class WelcomeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response(
+            {"message": "Welcome to Sweet Home!"},
+            status=status.HTTP_200_OK,
         )

@@ -68,8 +68,7 @@ class Sale_status(Enum):
 
 
 class Legal_status(Enum):
-    REDBOOK = "sổ đỏ", "Sổ đỏ"
-    PINKBOOK = "sổ hồng", "Sổ hồng"
+    REDANDPINKBOOK = "sổ đỏ/sổ hồng", "Sổ đỏ/Sổ hồng"
     NOTYET = "chưa có", "Chưa có"
     OTHER = "khác", "Khác"
 
@@ -78,6 +77,13 @@ class FriendRequest_status(Enum):
     PENDING = "đang chờ", "Đang chờ"
     ACCEPTED = "đã kết bạn", "Đã kết bạn"
     DECLINED = "đã từ chối", "Đã từ chối"
+
+
+class Payment_method(Enum):
+    ONETIME = "một lần", "Một lần"
+    INSTALMENT = "trả góp", "Trả góp"
+    UPFRONT = "trả trước", "Trả trước"
+    OTHER = "khác", "Khác"
 
 class ReportType(Enum):
     POST = 'post', 'Bài đăng'

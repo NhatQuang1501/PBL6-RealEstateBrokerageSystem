@@ -1,23 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Logo from "../../../assets/image/Logo.png";
 import Icon1 from "../../../assets/image/health.png";
 import Icon2 from "../../../assets/image/clipboard-text.png";
 import ArrowIcon from "../../../assets/image/Frame12.png";
+
 const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [postMenuOpen, setPostMenuOpen] = useState(false);
 
-  // const toggleNavbar = () => {
-  //   setIsCollapsed(!isCollapsed);
-  // };
+  useEffect(() => {
+    const savedActiveMenu = localStorage.getItem("activeMenu");
+    if (savedActiveMenu) {
+      handleMenuClick(savedActiveMenu);
+    }
+  }, [handleMenuClick]);
 
   const toggleAccountMenu = () => {
     setAccountMenuOpen(!accountMenuOpen);
-
   };
 
   const togglePostMenu = () => {
     setPostMenuOpen(!postMenuOpen);
+  };
+
+  const handleMenuClickWithStorage = (menu) => {
+    handleMenuClick(menu);
+    localStorage.setItem("activeMenu", menu);
   };
 
   return (
@@ -59,12 +67,12 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
           )}
         </button>
       </div>
-      <hr class="border-t-2 border-gray-300 my-5" />
+      <hr className="border-t-2 border-gray-300 my-5" />
 
       {/* Danh sách Navbar */}
       <ul className="mt-8 space-y-2">
         <li
-          onClick={() => handleMenuClick("dashboard")}
+          onClick={() => handleMenuClickWithStorage("dashboard")}
           className="flex items-center gap-12 navbar-item p-3 hover:bg-[#9EBBD8] rounded-xl cursor-pointer"
         >
           <img src={Icon1} className="w-[23px] h-[23px]" alt="" />
@@ -81,7 +89,12 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
             onClick={toggleAccountMenu}
             className="flex justify-between items-center cursor-pointer w-full p-3 hover:bg-[#9EBBD8] rounded-xl transition-all duration-300 ease-in-out"
           >
-            <img onClick={() => handleMenuClick("accountList")} src={Icon2} className="w-[23px] h-[23px]" alt="" />
+            <img
+              onClick={() => handleMenuClickWithStorage("accountList")}
+              src={Icon2}
+              className="w-[23px] h-[23px]"
+              alt=""
+            />
 
             <span className={`block ${isCollapsed ? "hidden" : "block"}`}>
               Quản lý tài khoản
@@ -104,7 +117,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
           </button>
           {accountMenuOpen && (
             <ul className="pl-4 mt-2 space-y-2 transition-all duration-300 ease-in-out">
-              <li onClick={() => handleMenuClick("accountList")}>
+              <li onClick={() => handleMenuClickWithStorage("accountList")}>
                 <a
                   href="#!"
                   className={`block p-3 hover:bg-[#9EBBD8] rounded-xl ${
@@ -124,7 +137,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
             className="flex justify-between cursor-pointer items-center w-full p-3 hover:bg-[#9EBBD8] rounded-xl"
           >
             <img
-              onClick={() => handleMenuClick("managePosts")}
+              onClick={() => handleMenuClickWithStorage("managePosts")}
               src={Icon2}
               className="w-[23px] h-[23px]"
               alt=""
@@ -150,7 +163,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
           </button>
           {postMenuOpen && (
             <ul className="pl-4 mt-2 space-y-2">
-              <li onClick={() => handleMenuClick("managePosts")}>
+              <li onClick={() => handleMenuClickWithStorage("managePosts")}>
                 <a
                   href="#!"
                   className={`block p-3 hover:bg-[#9EBBD8] rounded-xl ${
@@ -160,7 +173,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
                   Danh sách bài đăng
                 </a>
               </li>
-              <li onClick={() => handleMenuClick("browsePosts")}>
+              <li onClick={() => handleMenuClickWithStorage("browsePosts")}>
                 <a
                   href="#!"
                   className={`block p-3 hover:bg-[#9EBBD8] rounded-xl ${
@@ -170,7 +183,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
                   Duyệt bài đăng
                 </a>
               </li>
-              <li onClick={() => handleMenuClick("creatPost")}>
+              {/* <li onClick={() => handleMenuClickWithStorage("creatPost")}>
                 <a
                   href="#!"
                   className={`block p-3 hover:bg-[#9EBBD8] rounded-xl ${
@@ -179,7 +192,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
                 >
                   Tạo bài đăng
                 </a>
-              </li>
+              </li> */}
             </ul>
           )}
         </li>

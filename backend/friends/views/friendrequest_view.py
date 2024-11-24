@@ -8,7 +8,7 @@ from accounts.models import *
 from accounts.serializers import *
 from accounts.permission import *
 from application.models import *
-from application.serializers import *
+from application.serializers.post_serializer import *
 from friends.models import *
 from friends.serializers import *
 from chatting.models import *
@@ -345,3 +345,47 @@ class FriendListView(APIView):
             {"message": "Đã hủy kết bạn thành công và xóa phòng chat riêng tư"},
             status=status.HTTP_204_NO_CONTENT,
         )
+
+
+class NegotiationChatRoomListView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
+
+    def get(self, request):
+        params = {key.strip(): value for key, value in request.query_params.items()}
+        user_id = params.get("user_id").strip()
+
+        user = get_object_or_404(User, user_id=user_id)
+
+        chatrooms = ChatRoom.objects.filter(
+            is_private=True, participants=user
+        ).order_by("-created_at")
+
+        data = []
+        for chatroom in chatrooms:
+            other_participants = chatroom.participants.exclude(user_id=user_id)
+
+            for participant in other_participants:
+                data.append(
+                    {
+                        "chatroom_id": chatroom.chatroom_id,
+                        "chatroom_name": chatroom.chatroom_name,
+                        "other_participant": {
+                            "user_id": participant.user_id,
+                            "username": participant.username,
+                            "avatar": (
+                                participant.profile.avatar.url
+                                if participant.profile.avatar
+                                else None
+                            ),
+                        },
+                    }
+                )
+
+            return Response(
+                {
+                    "message": f"Danh sách các chatroom của {user.username} và người khác",
+                    "count": len(data),
+                    "data": data,
+                },
+                status=status.HTTP_200_OK,
+            )
