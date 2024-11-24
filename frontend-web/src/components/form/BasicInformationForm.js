@@ -15,6 +15,9 @@ import {
   faBath,
   faHeading,
   faStickyNote,
+  faHome,
+  faMap,
+  faFileInvoice,
 } from "@fortawesome/free-solid-svg-icons";
 import AddressInput from "../map_api/AddressInputWithPopup";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +40,7 @@ const BasicInformation = () => {
 
   const [estate_type, setEstate_type] = useState("");
   const [address, setAddress] = useState("");
+  const [ward, setWard] = useState("");
   const [district, setDistrict] = useState("");
   const [city, setCity] = useState("Đà Nẵng");
   const [price, setPrice] = useState("");
@@ -52,6 +56,13 @@ const BasicInformation = () => {
   const [sale_status, setSale_status] = useState("");
   const [longitude, setLongitude] = useState(null);
   const [latitude, setLatitude] = useState(null);
+  const [land_lot, setLand_lot] = useState("Chưa có thông tin");
+  const [land_parcel, setLand_parcel] = useState("Chưa có thông tin");
+  const [map_sheet_number, setMap_sheet_number] = useState("Chưa có thông tin");
+
+  const [filteredWards, setFilteredWards] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [compulsory, setCompulsory] = useState(false);
 
   useEffect(() => {
     if (selectedProperty === "house") {
@@ -83,11 +94,12 @@ const BasicInformation = () => {
 
     if (
       (!address ||
+        !ward ||
         !district ||
         !city ||
         !price ||
         !area ||
-        !legal_status ||
+        (!legal_status && legal_status !== "Sổ đỏ/Sổ hồng") ||
         !orientation ||
         !frontage ||
         !title ||
@@ -99,11 +111,12 @@ const BasicInformation = () => {
       return;
     } else if (
       (!address ||
+        !ward ||
         !district ||
         !city ||
         !price ||
         !area ||
-        !legal_status ||
+        (!legal_status && legal_status !== "Sổ đỏ/Sổ hồng") ||
         !orientation ||
         !frontage ||
         !title ||
@@ -113,6 +126,49 @@ const BasicInformation = () => {
         !longitude ||
         !latitude) &&
       selectedProperty === "house"
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin !");
+      return;
+    } else if (
+      address &&
+      ward &&
+      district &&
+      city &&
+      price &&
+      area &&
+      legal_status === "Sổ đỏ/Sổ hồng" &&
+      (land_lot === "Chưa có thông tin" ||
+        land_parcel === "Chưa có thông tin" ||
+        map_sheet_number === "Chưa có thông tin") &&
+      orientation &&
+      frontage &&
+      title &&
+      floor &&
+      bedroom &&
+      bathroom &&
+      longitude &&
+      latitude &&
+      selectedProperty === "house"
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin !");
+      return;
+    } else if (
+      address &&
+      ward &&
+      district &&
+      city &&
+      price &&
+      area &&
+      legal_status === "Sổ đỏ/Sổ hồng" &&
+      (land_lot === "Chưa có thông tin" ||
+        land_parcel === "Chưa có thông tin" ||
+        map_sheet_number === "Chưa có thông tin") &&
+      orientation &&
+      frontage &&
+      title &&
+      longitude &&
+      latitude &&
+      selectedProperty === "land"
     ) {
       alert("Vui lòng điền đầy đủ thông tin !");
       return;
@@ -136,11 +192,15 @@ const BasicInformation = () => {
         body: JSON.stringify({
           estate_type: estate_type,
           address: address,
+          ward: ward,
           district: district,
           city: city,
           price: price,
           area: area,
           legal_status: legal_status,
+          land_lot: land_lot,
+          land_parcel: land_parcel,
+          map_sheet_number: map_sheet_number,
           orientation: orientation,
           floor: floor,
           bedroom: bedroom,
@@ -165,6 +225,11 @@ const BasicInformation = () => {
         if (postId) {
           setPost_id(postId); // This will update `post_id` state correctly
           console.log("postid ==> ", postId); // Double-check post_id value
+          if (legal_status === "Sổ đỏ/Sổ hồng") {
+            setCompulsory(true);
+          } else {
+            setCompulsory(false);
+          }
           setShowModal(true);
         } else {
           console.error("post_id is missing in the response data");
@@ -198,6 +263,151 @@ const BasicInformation = () => {
     setLongitude(lng);
     setLatitude(lat);
   };
+
+  const handleEnterPrice = (e) => {
+    if (
+      address &&
+      ward &&
+      district &&
+      city &&
+      area &&
+      legal_status &&
+      orientation &&
+      frontage &&
+      floor &&
+      bedroom &&
+      bathroom &&
+      selectedProperty === "house"
+    ) {
+      setPrice(e.target.value);
+    } else if (
+      address &&
+      ward &&
+      district &&
+      city &&
+      area &&
+      legal_status &&
+      orientation &&
+      frontage &&
+      selectedProperty === "land"
+    ) {
+      setPrice(e.target.value);
+    } else {
+      e.preventDefault();
+      alert("Vui lòng nhập đầy đủ thông tin trước khi nhập giá.");
+    }
+  };
+
+  const wardToDistrictMap = {
+    // Quận Liên Chiểu
+    "Hòa Hiệp Bắc": "Liên Chiểu",
+    "Hòa Hiệp Nam": "Liên Chiểu",
+    "Hòa Khánh Bắc": "Liên Chiểu",
+    "Hòa Khánh Nam": "Liên Chiểu",
+    "Hòa Minh": "Liên Chiểu",
+
+    // Quận Thanh Khê
+    "Tam Thuận": "Thanh Khê",
+    "Thanh Khê Tây": "Thanh Khê",
+    "Thanh Khê Đông": "Thanh Khê",
+    "Xuân Hà": "Thanh Khê",
+    "Tân Chính": "Thanh Khê",
+    "Chính Gián": "Thanh Khê",
+    "Vĩnh Trung": "Thanh Khê",
+    "Thạc Gián": "Thanh Khê",
+    "An Khê": "Thanh Khê",
+    "Hòa Khê": "Thanh Khê",
+
+    // Quận Hải Châu
+    "Thanh Bình": "Hải Châu",
+    "Thuận Phước": "Hải Châu",
+    "Thạch Thang": "Hải Châu",
+    "Hải Châu I": "Hải Châu",
+    "Hải Châu II": "Hải Châu",
+    "Phước Ninh": "Hải Châu",
+    "Hòa Thuận Tây": "Hải Châu",
+    "Hòa Thuận Đông": "Hải Châu",
+    "Nam Dương": "Hải Châu",
+    "Bình Hiên": "Hải Châu",
+    "Bình Thuận": "Hải Châu",
+    "Hòa Cường Bắc": "Hải Châu",
+    "Hòa Cường Nam": "Hải Châu",
+
+    // Quận Sơn Trà
+    "Thọ Quang": "Sơn Trà",
+    "Nại Hiên Đông": "Sơn Trà",
+    "Mân Thái": "Sơn Trà",
+    "An Hải Bắc": "Sơn Trà",
+    "Phước Mỹ": "Sơn Trà",
+    "An Hải Tây": "Sơn Trà",
+    "An Hải Đông": "Sơn Trà",
+
+    // Quận Ngũ Hành Sơn
+    "Mỹ An": "Ngũ Hành Sơn",
+    "Khuê Mỹ": "Ngũ Hành Sơn",
+    "Hoà Quý": "Ngũ Hành Sơn",
+    "Hoà Hải": "Ngũ Hành Sơn",
+
+    // Quận Cẩm Lệ
+    "Khuê Trung": "Cẩm Lệ",
+    "Hòa Phát": "Cẩm Lệ",
+    "Hòa An": "Cẩm Lệ",
+    "Hòa Thọ Tây": "Cẩm Lệ",
+    "Hòa Thọ Đông": "Cẩm Lệ",
+    "Hòa Xuân": "Cẩm Lệ",
+
+    // Huyện Hòa Vang
+    "Hòa Bắc": "Hòa Vang",
+    "Hòa Liên": "Hòa Vang",
+    "Hòa Ninh": "Hòa Vang",
+    "Hòa Sơn": "Hòa Vang",
+    "Hòa Nhơn": "Hòa Vang",
+    "Hòa Phú": "Hòa Vang",
+    "Hòa Phong": "Hòa Vang",
+    "Hòa Châu": "Hòa Vang",
+    "Hòa Tiến": "Hòa Vang",
+    "Hòa Phước": "Hòa Vang",
+    "Hòa Khương": "Hòa Vang",
+  };
+
+  const allWards = Object.keys(wardToDistrictMap);
+
+  const handleWardChange = (e) => {
+    const userInput = e.target.value;
+    setWard(userInput);
+
+    // Lọc danh sách Phường/Xã theo giá trị nhập
+    const filtered = allWards.filter((wardName) =>
+      wardName.toLowerCase().includes(userInput.toLowerCase())
+    );
+    setFilteredWards(filtered);
+    setShowSuggestions(true);
+
+    // Nếu nhập trùng khớp với một Phường/Xã, tự động điền Quận/Huyện
+    if (wardToDistrictMap[userInput]) {
+      setDistrict(wardToDistrictMap[userInput]);
+    } else {
+      setDistrict("");
+    }
+  };
+  const handleWardSelect = (wardName) => {
+    setWard(wardName);
+    setDistrict(wardToDistrictMap[wardName]);
+    setShowSuggestions(false);
+  };
+
+  // Ẩn gợi ý khi click bên ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".ward-input-container")) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="mt-5 mb-[10rem] justify-center font-montserrat">
@@ -288,12 +498,12 @@ const BasicInformation = () => {
               Thông tin cơ bản
             </h2>
             <form
-              className="p-8 rounded-lg shadow-xl bg-gradient-to-r from-blue-50 to-blue-100 "
+              className="p-8 rounded-lg shadow-xl bg-white"
               onSubmit={handleSubmit}
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div>
+                <div className="bg-blue-100 p-3 rounded-xl">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -319,23 +529,63 @@ const BasicInformation = () => {
                     </div>
                   </div>
 
-                  {/* Quận */}
+                  {/* Phường/Xã */}
+                  <div className="relative mb-6 ward-input-container">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="ward"
+                    >
+                      Phường/Xã:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        id="ward"
+                        value={ward}
+                        onChange={handleWardChange}
+                        onFocus={() => setShowSuggestions(true)}
+                        required
+                        placeholder="Nhập Phường/Xã"
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                      {/* Gợi ý */}
+                      {showSuggestions && filteredWards.length > 0 && (
+                        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-md mt-1 max-h-60 overflow-auto">
+                          {filteredWards.map((wardName) => (
+                            <li
+                              key={wardName}
+                              onClick={() => handleWardSelect(wardName)}
+                              className="cursor-pointer hover:bg-gray-200 p-2"
+                            >
+                              {wardName}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quận/Huyện */}
                   <div className="relative mb-6">
                     <label
                       className="block mb-2 text-gray-800 font-semibold"
                       htmlFor="district"
                     >
-                      Quận:
+                      Quận/Huyện:
                     </label>
                     <div className="relative">
                       <input
                         type="text"
                         required
-                        placeholder="vd: Hải Châu"
+                        placeholder="Quận/Huyện"
                         id="district"
                         value={district}
-                        onChange={(e) => setDistrict(e.target.value)}
-                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        readOnly
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md"
                       />
                       <FontAwesomeIcon
                         icon={faMapMarkerAlt}
@@ -370,28 +620,109 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                {/* Giá bán */}
-                <div className="relative mb-6">
-                  <label
-                    className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="price"
-                  >
-                    Giá bán (VNĐ):
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      required
-                      placeholder="vd: 5000000000"
-                      id="price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <FontAwesomeIcon
-                      icon={faDollarSign}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    />
+                <div className="bg-blue-100 p-3 rounded-xl">
+                  {/* Tình trạng pháp lý */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="legal_status"
+                    >
+                      Tình trạng pháp lý:
+                    </label>
+                    <div className="relative">
+                      <select
+                        className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        id="legal_status"
+                        value={legal_status}
+                        onChange={(e) => setLegal_status(e.target.value)}
+                      >
+                        <option value="" disabled hidden>
+                          Chọn tình trạng pháp lý
+                        </option>
+                        <option value="Sổ đỏ/Sổ hồng">Sổ đỏ/Sổ hồng</option>
+                        <option value="Chưa có">Chưa có</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                      <FontAwesomeIcon
+                        icon={faFileAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Lô đất */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="land_lot"
+                    >
+                      Lô đất:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: Lô A1-30"
+                        id="land_lot"
+                        value={land_lot}
+                        onChange={(e) => setLand_lot(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faHome}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Thửa đất */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="land_parcel"
+                    >
+                      Thửa đất số:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 5"
+                        id="land_parcel"
+                        value={land_parcel}
+                        onChange={(e) => setLand_parcel(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faFileInvoice}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bản đồ số */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="map_sheet_number"
+                    >
+                      Tờ bản đồ số:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 3"
+                        id="map_sheet_number"
+                        value={map_sheet_number}
+                        onChange={(e) => setMap_sheet_number(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMap}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -416,36 +747,6 @@ const BasicInformation = () => {
                     />
                     <FontAwesomeIcon
                       icon={faRulerCombined}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Tình trạng pháp lý */}
-                <div className="relative mb-6">
-                  <label
-                    className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="legal_status"
-                  >
-                    Tình trạng pháp lý:
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      id="legal_status"
-                      value={legal_status}
-                      onChange={(e) => setLegal_status(e.target.value)}
-                    >
-                      <option value="" disabled hidden>
-                        Chọn tình trạng pháp lý
-                      </option>
-                      <option value="Sổ hồng">Sổ hồng</option>
-                      <option value="Sổ đỏ">Sổ đỏ</option>
-                      <option value="Chưa có">Chưa có</option>
-                      <option value="Khác">Khác</option>
-                    </select>
-                    <FontAwesomeIcon
-                      icon={faFileAlt}
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                     />
                   </div>
@@ -592,6 +893,30 @@ const BasicInformation = () => {
 
                 {/* Tiêu đề bài đăng */}
                 <div className="relative mb-6 md:col-span-2">
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="price"
+                    >
+                      Giá bán (VNĐ):
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        required
+                        placeholder="vd: 5000000000"
+                        id="price"
+                        value={price}
+                        // onChange={(e) => setPrice(e.target.value)}
+                        onChange={handleEnterPrice}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faDollarSign}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
                     htmlFor="title"
@@ -686,7 +1011,6 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
-            
           </div>
         )}
 
@@ -701,7 +1025,7 @@ const BasicInformation = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div>
+                <div className="bg-blue-100 p-3 rounded-xl">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -714,7 +1038,7 @@ const BasicInformation = () => {
                       <input
                         type="text"
                         required
-                        placeholder="vd: 261 Hoàng Thị Loan"
+                        placeholder="vd: 245 Hoàng Văn Thụ"
                         id="address"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
@@ -727,23 +1051,63 @@ const BasicInformation = () => {
                     </div>
                   </div>
 
-                  {/* Quận */}
+                  {/* Phường/Xã */}
+                  <div className="relative mb-6 ward-input-container">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="ward"
+                    >
+                      Phường/Xã:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        id="ward"
+                        value={ward}
+                        onChange={handleWardChange}
+                        onFocus={() => setShowSuggestions(true)}
+                        required
+                        placeholder="Nhập Phường/Xã"
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                      {/* Gợi ý */}
+                      {showSuggestions && filteredWards.length > 0 && (
+                        <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-md mt-1 max-h-60 overflow-auto">
+                          {filteredWards.map((wardName) => (
+                            <li
+                              key={wardName}
+                              onClick={() => handleWardSelect(wardName)}
+                              className="cursor-pointer hover:bg-gray-200 p-2"
+                            >
+                              {wardName}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quận/Huyện */}
                   <div className="relative mb-6">
                     <label
                       className="block mb-2 text-gray-800 font-semibold"
                       htmlFor="district"
                     >
-                      Quận:
+                      Quận/Huyện:
                     </label>
                     <div className="relative">
                       <input
                         type="text"
                         required
-                        placeholder="vd: Liên Chiểu"
+                        placeholder="Quận/Huyện"
                         id="district"
                         value={district}
-                        onChange={(e) => setDistrict(e.target.value)}
-                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        readOnly
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md"
                       />
                       <FontAwesomeIcon
                         icon={faMapMarkerAlt}
@@ -778,28 +1142,109 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                {/* Giá bán */}
-                <div className="relative mb-6">
-                  <label
-                    className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="price"
-                  >
-                    Giá bán (VNĐ):
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      required
-                      placeholder="vd: 5000000000"
-                      id="price"
-                      value={price}
-                      onChange={(e) => setPrice(e.target.value)}
-                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <FontAwesomeIcon
-                      icon={faDollarSign}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    />
+                <div className="bg-blue-100 p-3 rounded-xl">
+                  {/* Tình trạng pháp lý */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="legal_status"
+                    >
+                      Tình trạng pháp lý:
+                    </label>
+                    <div className="relative">
+                      <select
+                        className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        id="legal_status"
+                        value={legal_status}
+                        onChange={(e) => setLegal_status(e.target.value)}
+                      >
+                        <option value="" disabled hidden>
+                          Chọn tình trạng pháp lý
+                        </option>
+                        <option value="Sổ đỏ/Sổ hồng">Sổ đỏ/Sổ hồng</option>
+                        <option value="Chưa có">Chưa có</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                      <FontAwesomeIcon
+                        icon={faFileAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Lô đất */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="land_lot"
+                    >
+                      Lô đất:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: Lô A1-30"
+                        id="land_lot"
+                        value={land_lot}
+                        onChange={(e) => setLand_lot(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faHome}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Thửa đất */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="land_parcel"
+                    >
+                      Thửa đất số:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 5"
+                        id="land_parcel"
+                        value={land_parcel}
+                        onChange={(e) => setLand_parcel(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Bản đồ số */}
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="map_sheet_number"
+                    >
+                      Tờ bản đồ số:
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        required
+                        placeholder="vd: 3"
+                        id="map_sheet_number"
+                        value={map_sheet_number}
+                        onChange={(e) => setMap_sheet_number(e.target.value)}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faMapMarkerAlt}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -824,36 +1269,6 @@ const BasicInformation = () => {
                     />
                     <FontAwesomeIcon
                       icon={faRulerCombined}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                    />
-                  </div>
-                </div>
-
-                {/* Tình trạng pháp lý */}
-                <div className="relative mb-6">
-                  <label
-                    className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="legal_status"
-                  >
-                    Tình trạng pháp lý:
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      id="legal_status"
-                      value={legal_status}
-                      onChange={(e) => setLegal_status(e.target.value)}
-                    >
-                      <option value="" disabled hidden>
-                        Chọn tình trạng pháp lý
-                      </option>
-                      <option value="Sổ hồng">Sổ hồng</option>
-                      <option value="Sổ đỏ">Sổ đỏ</option>
-                      <option value="Chưa có">Chưa có</option>
-                      <option value="Khác">Khác</option>
-                    </select>
-                    <FontAwesomeIcon
-                      icon={faFileAlt}
                       className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                     />
                   </div>
@@ -905,7 +1320,7 @@ const BasicInformation = () => {
                     <input
                       type="number"
                       required
-                      placeholder="vd: 10.5"
+                      placeholder="vd: 5.5"
                       min="0"
                       step="any"
                       id="frontage"
@@ -919,8 +1334,33 @@ const BasicInformation = () => {
                     />
                   </div>
                 </div>
+
                 {/* Tiêu đề bài đăng */}
                 <div className="relative mb-6 md:col-span-2">
+                  <div className="relative mb-6">
+                    <label
+                      className="block mb-2 text-gray-800 font-semibold"
+                      htmlFor="price"
+                    >
+                      Giá bán (VNĐ):
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        required
+                        placeholder="vd: 5000000000"
+                        id="price"
+                        value={price}
+                        // onChange={(e) => setPrice(e.target.value)}
+                        onChange={handleEnterPrice}
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <FontAwesomeIcon
+                        icon={faDollarSign}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      />
+                    </div>
+                  </div>
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
                     htmlFor="title"
@@ -931,7 +1371,7 @@ const BasicInformation = () => {
                     <input
                       type="text"
                       required
-                      placeholder="vd: Bán đất mặt tiền 10m5 ở Đà Nẵng"
+                      placeholder="vd: Bán nhà 3 tầng ở Đà Nẵng"
                       id="title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
@@ -953,6 +1393,13 @@ const BasicInformation = () => {
                     Ghi chú:
                   </label>
                   <div className="relative">
+                    {/* <textarea
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={description}
+                      placeholder="Nhập ghi chú cho bài đăng của bạn"
+                      id="description"
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea> */}
                     <ReactQuill
                       value={description}
                       onChange={handleDescriptionChange}
@@ -1008,12 +1455,15 @@ const BasicInformation = () => {
                 </button>
               </div>
             </form>
-            
           </div>
         )}
       </div>
       {showModal && (
-        <AddImage onClose={handleCloseModal} onConfirm={handleConfirmModal} />
+        <AddImage
+          onClose={handleCloseModal}
+          onConfirm={handleConfirmModal}
+          compulsory={compulsory}
+        />
       )}
     </div>
   );

@@ -429,11 +429,15 @@ const DetailPost = () => {
                 legal_status={post.legal_status}
                 frontage={post.frontage}
                 address={post.address}
+                ward={post.ward}
                 district={post.district}
                 city={post.city}
                 description={post.description}
                 longitude={post.longitude}
                 latitude={post.latitude}
+                land_lot={post.land_lot} // Lô đất
+                land_parcel={post.land_parcel} // Thửa đất
+                map_sheet_number={post.map_sheet_number} // Tờ bản đồ
               />
               {/* Image */}
               {id === post.user.user_id && (

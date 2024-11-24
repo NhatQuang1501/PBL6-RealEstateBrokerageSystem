@@ -335,7 +335,7 @@ function Post({ post, type }) {
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district}, Thành phố {post.city}
                   </p>
                   {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
                   <p className="text-center mt-1">VĐ: {post.latitude}</p> */}

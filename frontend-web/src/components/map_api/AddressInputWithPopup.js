@@ -3,6 +3,8 @@ import Map, { Marker } from "react-map-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import axios from "axios";
 import { FaMapMarkerAlt } from "react-icons/fa";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheckCircle, faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiYW5odnUyMjYiLCJhIjoiY20zaWl0ejcxMDFicDJrcTU5ZTM5N3dnZiJ9.UDrE_KkeeK4BDb4qcmCYHg"; // Thay bằng token Mapbox của bạn
@@ -188,7 +190,7 @@ const AddressInputWithSuggestions = ({
   return (
     <div className="mb-6">
       <div className="relative mb-4">
-        <label className="block mb-2 text-lg text-gray-800 font-medium">
+        <label className="block mb-2 text-lg text-gray-800 font-bold">
           Địa chỉ:
         </label>
 
@@ -270,31 +272,56 @@ const AddressInputWithSuggestions = ({
           <p className="font-bold text-lg text-red-500">Địa chỉ của bạn</p>
         </Marker>
       </Map>
+      <div className="flex justify-start gap-10">
+        {/* Nút xác nhận */}
+        <button
+          onClick={handleConfirmPosition}
+          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
+        >
+          Xác nhận vị trí
+        </button>
 
-      {/* Nút xác nhận */}
-      <button
-        onClick={handleConfirmPosition}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 focus:outline-none"
-      >
-        Xác nhận vị trí
-      </button>
-
-      {/* Nút sử dụng GPS */}
-      <button
-        onClick={handleUseGPS}
-        className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 focus:outline-none"
-      >
-        Sử dụng GPS
-      </button>
+        {/* Nút sử dụng GPS */}
+        <button
+          onClick={handleUseGPS}
+          className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg shadow-md hover:bg-green-700 focus:outline-none"
+        >
+          Sử dụng GPS
+        </button>
+      </div>
 
       {/* Hiển thị tọa độ */}
       {confirmedPosition && (
-        <div className="mt-4 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
-          <p className="text-lg text-gray-800 font-medium">
-            Tọa độ đã xác nhận:
+        <div className="mt-4 p-6 border border-gray-300 shadow-sm bg-white rounded-xl">
+          <p className="text-xl text-gray-800 font-semibold mb-4 flex items-center">
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-green-500 mr-2"
+            />
+            Tọa độ đã xác nhận
           </p>
-          <p>Kinh độ: {confirmedPosition.longitude}</p>
-          <p>Vĩ độ: {confirmedPosition.latitude}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="flex items-center">
+              <FontAwesomeIcon
+                icon={faMapMarkerAlt}
+                className="text-red-500 mr-2"
+              />
+              <p className="text-gray-700">
+                <span className="font-medium">Kinh độ:</span>{" "}
+                {confirmedPosition.longitude}
+              </p>
+            </div>
+            <div className="flex items-center">
+              <FontAwesomeIcon
+                icon={faMapMarkerAlt}
+                className="text-blue-500 mr-2"
+              />
+              <p className="text-gray-700">
+                <span className="font-medium">Vĩ độ:</span>{" "}
+                {confirmedPosition.latitude}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>
