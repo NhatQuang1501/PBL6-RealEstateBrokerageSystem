@@ -78,3 +78,8 @@ class FriendRequest_status(Enum):
     PENDING = "đang chờ", "Đang chờ"
     ACCEPTED = "đã kết bạn", "Đã kết bạn"
     DECLINED = "đã từ chối", "Đã từ chối"
+
+class ReportType(Enum):
+    POST = 'post', 'Bài đăng'
+    COMMENT = 'comment', 'Bình luận'
+    USER = 'user', 'Người dùng'

@@ -4,6 +4,7 @@ from application.views.post_view import *
 from application.views.enum_view import EnumView
 from application.views.negotiation_view import *
 from application.views.ordered_post_view import *
+from application.views.report_view import *
 
 
 urlpatterns = [
@@ -88,4 +89,7 @@ urlpatterns = [
     #     GetHighestOfferView.as_view(),
     #     name="get_highest_offer",
     # ),
+
+    path('report/', ReportView.as_view(), name='report'),
+    path('report/<str:pk>/', ReportView.as_view(), name='report-detail'),
 ]
