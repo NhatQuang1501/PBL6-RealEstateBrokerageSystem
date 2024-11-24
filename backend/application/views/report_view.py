@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from accounts.permission import IsAdmin, IsUser
 from application.models import Report
-from application.serializers import ReportSerializer
+from application.serializers.report_serializer import ReportSerializer
 from accounts.models import User
 from accounts.enums import Status
 
