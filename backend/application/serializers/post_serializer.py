@@ -5,74 +5,6 @@ from accounts.enums import *
 from accounts.serializers import *
 
 
-class NegotiationSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField(read_only=True)
-    highest_offer_price = serializers.DecimalField(
-        max_digits=20, decimal_places=2, read_only=True
-    )
-    highest_offer_user = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = Negotiation
-        fields = [
-            "negotiation_id",
-            "post",
-            "user",
-            "offer_price",
-            "created_at",
-            "highest_offer_price",
-            "highest_offer_user",
-            "is_accepted",
-        ]
-        extra_kwargs = {"negotiation_id": {"read_only": True}}
-
-    def to_internal_value(self, data):
-        user = data.get("user")
-        if user:
-            user = User.objects.get(user_id=user)
-            data["user"] = user
-
-        return data
-
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        # Lấy thương lượng cao nhất từ bài đăng
-        rep["highest_offer_price"] = instance.post.highest_offer_price
-        # Serialize thông tin người dùng cao nhất
-        highest_user = instance.post.highest_offer_user
-        if highest_user:
-            rep["highest_offer_user"] = {
-                "user_id": highest_user.user_id,
-                "username": highest_user.username,
-                "fullname": UserProfile.objects.get(user=highest_user).fullname,
-            }
-        else:
-            rep["highest_offer_user"] = None
-        return rep
-
-    def get_user(self, obj):
-        user_profile = UserProfile.objects.get(user=obj.user)
-
-        return {
-            "user_id": obj.user.user_id,
-            "username": obj.user.username,
-            "fullname": user_profile.fullname,
-        }
-
-    def get_highest_offer_user(self, obj):
-        highest_negotiation = obj.post.negotiations.order_by("-offer_price").first()
-
-        if highest_negotiation:
-            user_profile = UserProfile.objects.get(user=highest_negotiation.user)
-            return {
-                "user_id": highest_negotiation.user.user_id,
-                "username": highest_negotiation.user.username,
-                "fullname": user_profile.fullname,
-            }
-
-        return None
-
-
 class PostSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     reactions_count = serializers.SerializerMethodField()
@@ -113,8 +45,8 @@ class PostSerializer(serializers.ModelSerializer):
             "view_count",
             "comments_count",
             "save_count",
-            "highest_offer_price",
-            "highest_offer_user",
+            "highest_negotiation_price",
+            "highest_negotiation_user",
         ]
         extra_kwargs = {
             "post_id": {"read_only": True},
@@ -146,8 +78,8 @@ class PostSerializer(serializers.ModelSerializer):
             "description": {"required": False},
             "view_count": {"read_only": True},
             "save_count": {"read_only": True},
-            "highest_offer_price": {"required": False, "allow_null": True},
-            "highest_offer_user": {"required": False, "allow_null": True},
+            "highest_negotiation_price": {"required": False, "allow_null": True},
+            "highest_negotiation_user": {"required": False, "allow_null": True},
         }
 
     def to_representation(self, instance):

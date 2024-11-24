@@ -77,3 +77,10 @@ class FriendRequest_status(Enum):
     PENDING = "đang chờ", "Đang chờ"
     ACCEPTED = "đã kết bạn", "Đã kết bạn"
     DECLINED = "đã từ chối", "Đã từ chối"
+
+
+class Payment_method(Enum):
+    ONETIME = "một lần", "Một lần"
+    INSTALMENT = "trả góp", "Trả góp"
+    UPFRONT = "trả trước", "Trả trước"
+    OTHER = "khác", "Khác"

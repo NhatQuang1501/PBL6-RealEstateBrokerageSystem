@@ -8,8 +8,26 @@ class PostAdmin(admin.ModelAdmin):
 
 
 class NegotiationAdmin(admin.ModelAdmin):
+    list_editable = ["is_considered", "is_accepted"]
+    list_display = [
+        "post",
+        "user",
+        "negotiation_price",
+        "negotiation_date",
+        "is_considered",
+        "is_accepted",
+    ]
+
+
+class ProposalAdmin(admin.ModelAdmin):
     list_editable = ["is_accepted"]
-    list_display = ["post", "user", "offer_price", "is_accepted"]
+    list_display = [
+        "negotiation",
+        "user",
+        "proposal_price",
+        "proposal_date",
+        "is_accepted",
+    ]
 
 
 class SavedPostAdmin(admin.ModelAdmin):
@@ -18,6 +36,7 @@ class SavedPostAdmin(admin.ModelAdmin):
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(Negotiation, NegotiationAdmin)
+admin.site.register(Proposal, ProposalAdmin)
 admin.site.register(PostComment)
 admin.site.register(PostReaction)
 admin.site.register(PostImage)

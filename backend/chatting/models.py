@@ -8,6 +8,9 @@ import uuid
 
 class ChatRoom(models.Model):
     chatroom_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    negotiation = models.ForeignKey(
+        Negotiation, on_delete=models.CASCADE, related_name="chatrooms", null=True
+    )
     is_private = models.BooleanField(
         default=False
     )  # Xác định phòng chat riêng tư hay nhóm

@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from application.models import *
-from application.serializers import *
+from application.serializers.post_serializer import *
 from application.utils import PostGetter
 from rest_framework.response import Response
 from accounts.permission import *

@@ -9,8 +9,9 @@ from accounts.permission import *
 from accounts.models import *
 from accounts.enums import *
 from application.models import *
-from application.serializers import *
-from application.utils import PostGetter
+from application.serializers.negotiation_serrializer import *
+from application.serializers.post_serializer import *
+from application.utils import *
 from django.shortcuts import get_object_or_404
 
 
