@@ -26,6 +26,7 @@ import UploadImage from "./pages/user/UploadImage";
 import { useState } from "react";
 import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
 import Chat from "./pages/user/Chat";
+import Predict from "./pages/user/Predict";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -172,14 +173,14 @@ function App() {
               }
             />
 
-            <Route
+            {/* <Route
               path="user/chat-box"
               element={
                 <>
                   <ChatPage />
                 </>
               }
-            />
+            /> */}
 
             <Route
               path="/user/chat"
@@ -198,6 +199,15 @@ function App() {
                   <Header />
                   <PersonalProfile />
                   <Footer />
+                </>
+              }
+            />
+
+            <Route
+              path="user/predict"
+              element={
+                <>
+                  <Predict />
                 </>
               }
             />

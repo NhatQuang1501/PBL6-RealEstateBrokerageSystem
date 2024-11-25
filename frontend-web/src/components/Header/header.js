@@ -105,15 +105,15 @@ function Header() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/user/predict"
                     className={`${linkStyle} ${
-                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/predict" ? "text-[#3CA9F9]" : ""
                     }`}
-                    onClick={() => setActiveLink("/guide")}
+                    onClick={() => setActiveLink("/user/predict")}
                   >
                     Dự đoán giá BĐS
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <a
@@ -183,15 +183,15 @@ function Header() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#!"
+                  <Link
+                    to="/user/predict"
                     className={`${linkStyle} ${
-                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/predict" ? "text-[#3CA9F9]" : ""
                     }`}
-                    onClick={() => setActiveLink("/guide")}
+                    onClick={() => setActiveLink("/user/predict")}
                   >
                     Dự đoán giá BĐS
-                  </a>
+                  </Link>
                 </li>
                 <li>
                   <Link
@@ -247,4 +247,3 @@ function Header() {
 }
 
 export default Header;
-

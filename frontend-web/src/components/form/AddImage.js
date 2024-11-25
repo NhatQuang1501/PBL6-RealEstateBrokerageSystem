@@ -34,18 +34,12 @@ const AddImage = ({ onClose, onConfirm, compulsory }) => {
             Vui lòng tải lên ít nhất 1 ảnh để chứng minh các thông tin về giấy
             tờ pháp lý hoặc vị trí bất động sản trên giấy tờ.
           </p>
-          <div className="flex justify-end space-x-4">
-            <button
-              onClick={onClose}
-              className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg"
-            >
-              Hủy
-            </button>
+          <div className="flex justify-center">
             <button
               onClick={onConfirm}
               className="bg-blue-500 text-white px-4 py-2 rounded-lg"
             >
-              Thêm ảnh
+              Tiếp tục
             </button>
           </div>
         </div>

@@ -17,6 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useCallback } from "react";
 import { FaPen } from "react-icons/fa";
+import { MdArrowBack } from "react-icons/md";
 import { useParams } from "react-router-dom";
 import Comment from "../../components/comment/Comment";
 import { useAppContext } from "../../AppProvider";
@@ -233,11 +234,10 @@ const DetailPost = () => {
   return (
     <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
       <button
-        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-8 self-start flex items-center"
+        className="bg-[#3CA9F9] text-white px-3 py-3 rounded-full mt-5 ml-8 self-start flex items-center"
         onClick={() => window.history.back()}
       >
-        <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-        Quay lại
+        <MdArrowBack className="text-2xl" />
       </button>
 
       <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
