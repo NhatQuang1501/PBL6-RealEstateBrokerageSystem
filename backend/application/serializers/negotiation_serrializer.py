@@ -7,9 +7,7 @@ from accounts.serializers import *
 
 class NegotiationSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
-    highest_negotiation_price = serializers.DecimalField(
-        max_digits=20, decimal_places=2, read_only=True
-    )
+    highest_negotiation_price = serializers.IntegerField(read_only=True)
     highest_negotiation_user = serializers.SerializerMethodField(read_only=True)
     proposals = serializers.SerializerMethodField()
 
@@ -128,11 +126,13 @@ class ProposalSerializer(serializers.ModelSerializer):
         return rep
 
     def to_internal_value(self, data):
-        payment_method = data.get("payment_method")
+        proposal_method = data.get("proposal_method")
         user = data.get("user")
 
-        if payment_method:
-            data["payment_method"] = Payment_method.map_display_to_value(payment_method)
+        if proposal_method:
+            data["proposal_method"] = Payment_method.map_display_to_value(
+                proposal_method
+            )
 
         if user:
             user = User.objects.get(user_id=user)

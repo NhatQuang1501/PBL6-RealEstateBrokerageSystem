@@ -154,6 +154,22 @@ class PostNegotiationsView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        # Kiểm tra xem đề nghị đã tồn tại chưa
+        existing_negotiation = Negotiation.objects.filter(
+            post=post,
+            user=request.user,
+            negotiation_price=negotiation_price,
+            negotiation_date=request.data.get("negotiation_date"),
+            payment_method=request.data.get("payment_method"),
+            negotiation_note=request.data.get("negotiation_note"),
+        ).exists()
+
+        if existing_negotiation:
+            return Response(
+                {"message": "Thương lượng này đã tồn tại"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # Xóa thương lượng cũ của người dùng cho bài đăng này nếu tồn tại
         with transaction.atomic():
             Negotiation.objects.filter(post=post, user=request.user).delete()
@@ -188,6 +204,23 @@ class PostNegotiationsView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
+    def delete(self, request, negotiation_id):
+        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+
+        # Kiểm tra xem người dùng có phải là người đăng bài không
+        if negotiation.user != request.user:
+            return Response(
+                {"message": "Bạn không có quyền xóa thương lượng này."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        negotiation.delete()
+
+        return Response(
+            {"message": "Thương lượng đã bị xóa thành công"},
+            status=status.HTTP_200_OK,
+        )
+
 
 class ProposalView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
@@ -214,7 +247,7 @@ class ProposalView(APIView):
             serializer = ProposalSerializer(proposal)
 
             return Response(
-                {"message": "Đề nghị chi tiết", "data": serializer.data},
+                {"message": "Chi tiết đề nghị", "data": serializer.data},
                 status=status.HTTP_200_OK,
             )
 
@@ -235,6 +268,22 @@ class ProposalView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
+        if negotiation.is_considered:
+            return Response(
+                {
+                    "message": "Thương lượng đã được xem xét bởi người đăng bài, không thể gửi đề nghị mới"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if negotiation.is_accepted:
+            return Response(
+                {
+                    "message": "Thương lượng đã được chấp nhận, không thể gửi đề nghị mới"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         # Kiểm tra xem đề nghị đã tồn tại chưa
         existing_proposal = Proposal.objects.filter(
             negotiation=negotiation,
@@ -246,12 +295,15 @@ class ProposalView(APIView):
 
         if existing_proposal:
             return Response(
-                {"message": "Đề nghị này đã tồn tại."},
+                {"message": "Đề nghị này đã tồn tại"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Tạo đề nghị mới
+        # Xóa đề nghị  cũ của người đăng cho thương lượng này nếu tồn tại
         with transaction.atomic():
+            Proposal.objects.filter(negotiation=negotiation, user=request.user).delete()
+
+            # Tạo đề nghị mới
             proposal = Proposal.objects.create(
                 negotiation=negotiation,
                 user=request.user,
@@ -268,7 +320,7 @@ class ProposalView(APIView):
                 "message": "Đề nghị đã được gửi lại thành công",
                 "data": serializer.data,
             },
-            status=status.HTTP_200_OK,
+            status=status.HTTP_201_CREATED,
         )
 
 
@@ -288,7 +340,7 @@ class AcceptProposalView(APIView):
             )
 
         # Kiểm tra xem người thương lượng có chấp nhận đề nghị không
-        is_accepted = request.data.get("is_accepted", False)
+        is_accepted = request.data.get("is_accepted")
 
         if is_accepted:
             # Cập nhật trạng thái đề nghị
