@@ -34,6 +34,8 @@ class Post(models.Model):
     land_parcel = models.CharField(max_length=50, blank=True, null=True)  # Thửa đất
 
     area = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
+    length = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
+    width = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
     frontage = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True
     )  # mặt tiền
@@ -117,7 +119,9 @@ class Proposal(models.Model):
     )
     proposal_price = models.BigIntegerField(null=True, blank=True)
     proposal_date = models.DateField(null=True, blank=True)
-    proposal_method = models.CharField(max_length=255, null=True, blank=True)
+    proposal_method = models.CharField(
+        Payment_method.choices, max_length=50, default=Payment_method.OTHER
+    )
     proposal_note = models.TextField(null=True, blank=True)
 
     is_accepted = models.BooleanField(default=False)

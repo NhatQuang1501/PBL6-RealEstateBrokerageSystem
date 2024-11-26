@@ -142,6 +142,8 @@ class PostView(APIView):
         # Kiểm tra và xử lý giá trị null cho các trường DecimalField
         decimal_fields = [
             "area",
+            "length",
+            "width",
             "frontage",
             "longitude",
             "latitude",
@@ -193,6 +195,8 @@ class PostView(APIView):
         # Kiểm tra và xử lý giá trị null cho các trường DecimalField
         decimal_fields = [
             "area",
+            "length",
+            "width",
             "frontage",
             "longitude",
             "latitude",
@@ -319,6 +323,8 @@ class SearchView(APIView):
                     matches_text(post["map_sheet_number"]),
                     matches_text(post["land_parcel"]),
                     matches_text(post["area"]),
+                    matches_text(post["length"]),
+                    matches_text(post["width"]),
                     matches_text(post["frontage"]),
                     matches_text(post["bedroom"]),
                     matches_text(post["bathroom"]),

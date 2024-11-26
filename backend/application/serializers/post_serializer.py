@@ -29,6 +29,8 @@ class PostSerializer(serializers.ModelSerializer):
             "map_sheet_number",
             "land_parcel",
             "area",
+            "length",
+            "width",
             "frontage",
             "bedroom",
             "bathroom",
@@ -66,6 +68,8 @@ class PostSerializer(serializers.ModelSerializer):
             "map_sheet_number": {"required": False},
             "land_parcel": {"required": False},
             "area": {"required": True},
+            "length": {"required": False},
+            "width": {"required": False},
             "frontage": {"required": False},
             "bedroom": {"required": False},
             "bathroom": {"required": False},
@@ -159,6 +163,8 @@ class PostSerializer(serializers.ModelSerializer):
         )
         instance.land_parcel = validated_data.get("land_parcel", instance.land_parcel)
         instance.area = validated_data.get("area", instance.area)
+        instance.length = validated_data.get("length", instance.length)
+        instance.width = validated_data.get("width", instance.width)
         instance.frontage = validated_data.get("frontage", instance.frontage)
         instance.bedroom = validated_data.get("bedroom", instance.bedroom)
         instance.bathroom = validated_data.get("bathroom", instance.bathroom)
@@ -177,6 +183,19 @@ class PostSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+    def validate(self, data):
+        area = data.get("area")
+        length = data.get("length")
+        width = data.get("width")
+
+        if area and length and width:
+            if abs(area - (length * width)) >= 10:
+                raise serializers.ValidationError(
+                    "Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số 10m2)"
+                )
+
+        return data
 
     def get_user(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user_id)
