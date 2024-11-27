@@ -99,6 +99,9 @@ class Negotiation(models.Model):
     is_considered = models.BooleanField(default=False)  # Trạng thái xem xét đồng ý
     is_accepted = models.BooleanField(default=False)  # Trạng thái chấp nhận
 
+    # Tiêu chí đánh giá cho thương lượng
+    average_response_time = models.DurationField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -4,6 +4,7 @@ from accounts.models import *
 from application.models import *
 from application.serializers.post_serializer import *
 from rest_framework.pagination import PageNumberPagination
+from datetime import timedelta
 
 
 class CustomPagination(PageNumberPagination):
@@ -49,3 +50,16 @@ class PostGetter:
         )
 
         return paginator.get_paginated_response(post_serializer.data)
+
+
+def calculate_average_response_time(response_times):
+    if not response_times:
+        return None
+
+    total_time = sum(
+        (response_times[i] - response_times[i - 1]).total_seconds()
+        for i in range(1, len(response_times))
+    )
+    average_time = total_time / (len(response_times) - 1)
+
+    return timedelta(seconds=average_time)

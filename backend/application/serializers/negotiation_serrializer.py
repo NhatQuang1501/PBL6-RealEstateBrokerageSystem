@@ -24,11 +24,15 @@ class NegotiationSerializer(serializers.ModelSerializer):
             "is_considered",
             "is_accepted",
             "created_at",
+            "average_response_time",
             "highest_negotiation_price",
             "highest_negotiation_user",
             "proposals",
         ]
-        extra_kwargs = {"negotiation_id": {"read_only": True}}
+        extra_kwargs = {
+            "negotiation_id": {"read_only": True},
+            "average_response_time": {"read_only": True},
+        }
 
     def to_representation(self, instance):
         rep = super().to_representation(instance)

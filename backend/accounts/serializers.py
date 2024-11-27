@@ -5,6 +5,8 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.contrib import auth
 from .models import *
 from .enums import *
+from application.models import *
+from datetime import datetime, timedelta
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -37,6 +39,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "phone_number",
             "gender",
             "avatar",
+            "reputation_score",
+            "successful_transactions",
+            "response_rate",
+            "profile_completeness",
+            "negotiation_experience",
         ]
         extra_kwargs = {
             "user_id": {"read_only": True},
@@ -46,6 +53,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "phone_number": {"required": False},
             "gender": {"required": False},
             "avatar": {"required": False},
+            "reputation_score": {"read_only": True},
+            "successful_transactions": {"read_only": True},
+            "response_rate": {"read_only": True},
+            "profile_completeness": {"read_only": True},
+            "negotiation_experience": {"read_only": True},
         }
 
     def validate(self, data):
@@ -91,8 +103,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return user_profile
 
     def update(self, instance, validated_data):
-        # if "avatar" in validated_data:
-        #     validated_data.pop("avatar")
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
 
         instance.fullname = validated_data.get("fullname", instance.fullname)
         instance.city = validated_data.get("city", instance.city)
@@ -108,6 +120,55 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 avatar = avatar[0]
             instance.avatar = avatar
 
+        # Tính và cập nhật profile_completeness
+        instance.profile_completeness = self.calculate_profile_completeness(instance)
+        # Tính toán các chỉ số khác (nếu có logic)
+        instance.reputation_score = self.calculate_reputation_score(instance)
+        instance.successful_transactions = self.calculate_successful_transactions(
+            instance
+        )
+        instance.response_rate = self.calculate_response_rate(instance)
+        instance.negotiation_experience = self.calculate_negotiation_experience(
+            instance
+        )
+
         instance.save()
 
         return instance
+
+    def calculate_profile_completeness(self, instance):
+        required_fields = [
+            "fullname",
+            "city",
+            "birthdate",
+            "phone_number",
+            "gender",
+            "avatar",
+        ]
+        filled_fields = sum(1 for field in required_fields if getattr(instance, field))
+        completeness = (filled_fields / len(required_fields)) * 100
+
+        return round(completeness, 2)
+
+    def calculate_reputation_score(self, instance):
+        return instance.reputation_score
+
+    def calculate_successful_transactions(self, instance):
+        total_negotiations = Negotiation.objects.filter(user=instance.user).count()
+        successful_transactions = Negotiation.objects.filter(
+            user=instance.user, is_accepted=True
+        ).count()
+        return successful_transactions
+
+    def calculate_response_rate(self, instance):
+        total_negotiations = Negotiation.objects.filter(user=instance.user).count()
+        responded = Negotiation.objects.filter(
+            user=instance.user, average_response_time__lt=timedelta(hours=1)
+        ).count()
+        response_rate = (
+            (responded / total_negotiations) * 100 if total_negotiations > 0 else 0.0
+        )
+        return response_rate
+
+    def calculate_negotiation_experience(self, instance):
+        return instance.negotiation_experience
