@@ -84,3 +84,8 @@ class Payment_method(Enum):
     INSTALMENT = "trả góp", "Trả góp"
     UPFRONT = "trả trước", "Trả trước"
     OTHER = "khác", "Khác"
+
+class ReportType(Enum):
+    POST = 'post', 'Bài đăng'
+    COMMENT = 'comment', 'Bình luận'
+    USER = 'user', 'Người dùng'

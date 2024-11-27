@@ -197,3 +197,14 @@ class SavedPost(models.Model):
 
     def __str__(self):
         return f"{self.user.username} saved {self.post.title}"
+
+class Report (models.Model):
+    report_id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    report_type = models.CharField(choices=ReportType.choices, max_length=50)
+    description = models.TextField(blank=True, null=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE, null=True, blank=True)
+    reported_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reportee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reportee')
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)

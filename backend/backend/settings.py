@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "friends",
     "channels",
     "chatting",
+    "prediction",
 ]
 
 MIDDLEWARE = [

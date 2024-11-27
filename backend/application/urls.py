@@ -4,6 +4,7 @@ from application.views.post_view import *
 from application.views.enum_view import *
 from application.views.negotiation_view import *
 from application.views.ordered_post_view import *
+from application.views.report_view import *
 
 
 urlpatterns = [
@@ -104,4 +105,7 @@ urlpatterns = [
         AcceptNegotiationView.as_view(),
         name="accept_negotiation",
     ),
+    
+    path('report/', ReportView.as_view(), name='report'),
+    path('report/<str:pk>/', ReportView.as_view(), name='report-detail'),
 ]
