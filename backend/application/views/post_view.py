@@ -420,7 +420,7 @@ class PostReactionView(APIView):
 
         if not created:  # Đã tồn tại, nên hủy like
             reaction.delete()
-            return Response({"detail": "Unliked"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"detail": "Unliked"}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Liked"}, status=status.HTTP_201_CREATED)
 
