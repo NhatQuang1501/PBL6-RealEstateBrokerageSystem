@@ -26,6 +26,7 @@ import AddImage from "./AddImage";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
+import { FaSpinner, FaTimesCircle, FaCheckCircle } from "react-icons/fa";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -64,9 +65,9 @@ const BasicInformation = () => {
   // attribute for AI
   const [width, setWidth] = useState(null);
   const [length, setLength] = useState(null);
-  const [has_frontage, setHas_frontage] = useState(false);
-  const [has_car_lane, setHas_car_lane] = useState(false);
-  const [has_rear_expansion, setHas_rear_expansion] = useState(false);
+  const [has_frontage, setHas_frontage] = useState("");
+  const [has_car_lane, setHas_car_lane] = useState("");
+  const [has_rear_expansion, setHas_rear_expansion] = useState("");
 
   const [predictedPrice, setPredictedPrice] = useState(null);
   const [error, setError] = useState(null);
@@ -136,6 +137,8 @@ const BasicInformation = () => {
         (!legal_status && legal_status !== "Sổ đỏ/Sổ hồng") ||
         !orientation ||
         !frontage ||
+        !width ||
+        !length ||
         !title ||
         !floor ||
         !bedroom ||
@@ -159,6 +162,8 @@ const BasicInformation = () => {
         map_sheet_number === "Chưa có thông tin") &&
       orientation &&
       frontage &&
+      width &&
+      length &&
       title &&
       floor &&
       bedroom &&
@@ -217,7 +222,7 @@ const BasicInformation = () => {
           ward: ward,
           district: district,
           city: city,
-          price: price,
+          price: price.replace(/,/g, ""),
           area: area,
           legal_status: legal_status,
           land_lot: land_lot,
@@ -233,6 +238,8 @@ const BasicInformation = () => {
           sale_status: sale_status,
           longitude: longitude,
           latitude: latitude,
+          width: width,
+          length: length,
         }),
       });
 
@@ -296,12 +303,20 @@ const BasicInformation = () => {
       legal_status &&
       orientation &&
       frontage &&
+      width &&
+      length &&
       floor &&
       bedroom &&
       bathroom &&
       selectedProperty === "house"
     ) {
-      setPrice(e.target.value);
+      // format price
+      let value = e.target.value;
+      value = value.replace(/[^0-9,]/g, "");
+      const numericValue = value.replace(/,/g, "");
+      // reformat
+      const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setPrice(formattedValue);
     } else if (
       address &&
       ward &&
@@ -318,9 +333,32 @@ const BasicInformation = () => {
       has_rear_expansion &&
       selectedProperty === "land"
     ) {
-      setPrice(e.target.value);
+      // format price
+      let value = e.target.value;
+      value = value.replace(/[^0-9,]/g, "");
+      const numericValue = value.replace(/,/g, "");
+      // reformat
+      const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      setPrice(formattedValue);
     } else {
       e.preventDefault();
+      console.log("Thông tin còn thiếu: ", {
+        address,
+        ward,
+        district,
+        city,
+        area,
+        legal_status,
+        orientation,
+        frontage,
+        selectedProperty,
+        width,
+        length,
+        has_frontage,
+        has_car_lane,
+        has_rear_expansion,
+      });
       alert("Vui lòng nhập đầy đủ thông tin trước khi nhập giá.");
     }
   };
@@ -436,7 +474,7 @@ const BasicInformation = () => {
     };
   }, []);
 
-  // dùng AI để dự đoán giá đất khi người dùng nhập đủ các trường thông tin dưới
+  // dùng AI để dự đoán giá đất khi người dùng nhập đủ các trường thông tin
   useEffect(() => {
     const predictPrice = async () => {
       if (
@@ -450,7 +488,6 @@ const BasicInformation = () => {
         ward &&
         area
       ) {
-        // Đổi "Hòa" thành "Hoà" trong trường ward
         const sanitizedWard = ward.includes("Hòa")
           ? ward.replace(/Hòa/g, "Hoà")
           : ward;
@@ -474,7 +511,9 @@ const BasicInformation = () => {
           setError(null);
         } catch (err) {
           console.error("Error predicting price:", err);
-          setError("Đã xảy ra lỗi khi dự đoán. Vui lòng thử lại.");
+          setError(
+            "Đã xảy ra lỗi khi dự đoán giá đất. Có vẻ như vị trí bất động sản của bạn nằm ngoài khu vực tính toán của mô hình AI. Vui lòng thử lại với một vị trí khác."
+          );
           setPredictedPrice(null);
         } finally {
           setLoading(false);
@@ -950,6 +989,143 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
+                {/* Chiều rộng */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="width"
+                  >
+                    Chiều rộng (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="width"
+                      value={width}
+                      onChange={(e) => setWidth(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Chiều dài */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="length"
+                  >
+                    Chiều dài (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="length"
+                      value={length}
+                      onChange={(e) => setLength(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất mặt tiền */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_frontage"
+                  >
+                    Đất mặt tiền ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_frontage"
+                      value={has_frontage}
+                      onChange={(e) => setHas_frontage(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faHome}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+                {/* Đường ô tô vào */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_car_lane"
+                  >
+                    Đường ô tô có thể vào ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_car_lane"
+                      value={has_car_lane}
+                      onChange={(e) => setHas_car_lane(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất nở hậu */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_rear_expansion"
+                  >
+                    Đất nở hậu ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_rear_expansion"
+                      value={has_rear_expansion}
+                      onChange={(e) => setHas_rear_expansion(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
                 {/* Số phòng tắm */}
                 <div className="relative mb-6">
                   <label
@@ -987,12 +1163,11 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type="number"
+                        type="text"
                         required
-                        placeholder="vd: 5000000000"
+                        placeholder="vd: 5,000,000,000"
                         id="price"
                         value={price}
-                        // onChange={(e) => setPrice(e.target.value)}
                         onChange={handleEnterPrice}
                         className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -1569,12 +1744,11 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type="number"
+                        type="text"
                         required
-                        placeholder="vd: 5000000000"
+                        placeholder="vd: 5,000,000,000"
                         id="price"
                         value={price}
-                        // onChange={(e) => setPrice(e.target.value)}
                         onChange={handleEnterPrice}
                         className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -1583,17 +1757,36 @@ const BasicInformation = () => {
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                       />
                     </div>
+                    {/* Giá trị giá bán đề xuất */}
+                    <div className="prediction-result bg-blue-100 border border-green-300 p-6 rounded-lg shadow-lg flex items-center space-x-4 mt-5">
+                      {loading && (
+                        <div className="flex items-center text-blue-500">
+                          <FaSpinner className="animate-spin mr-2 text-xl" />
+                          <span>Đang dự đoán giá...</span>
+                        </div>
+                      )}
+                      {error && (
+                        <div className="flex items-center text-red-500">
+                          <FaTimesCircle className="mr-2 text-xl" />
+                          <span>{error}</span>
+                        </div>
+                      )}
+                      {predictedPrice && (
+                        <div className="flex items-center bg-green-100 border border-green-300 p-6 rounded-lg shadow-lg space-x-4">
+                          <FaCheckCircle className="text-4xl text-green-600" />
+                          <div>
+                            <p className="text-xl text-green-700">
+                              Giá bán đề xuất:
+                            </p>
+                            <p className="text-3xl font-bold text-green-900">
+                              {predictedPrice.toLocaleString()} VNĐ
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  {/* Giá trị giá bán đề xuất */}
-                  <div className="prediction-result">
-                    {loading && <p>Đang dự đoán giá...</p>}
-                    {error && <p className="error">{error}</p>}
-                    {predictedPrice && (
-                      <p className="success">
-                        Giá bán đề xuất: {predictedPrice.toLocaleString()} VND
-                      </p>
-                    )}
-                  </div>
+
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
                     htmlFor="title"

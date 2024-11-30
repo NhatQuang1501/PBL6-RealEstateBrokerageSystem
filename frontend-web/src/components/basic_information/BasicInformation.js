@@ -31,6 +31,8 @@ const BasicInformation = ({
   land_lot,
   land_parcel,
   map_sheet_number,
+  length,
+  width,
 }) => {
   const formatPrice = (price) => {
     if (price >= 1_000_000_000) {
@@ -53,6 +55,20 @@ const BasicInformation = ({
       icon: faRulerCombined,
       label: "Diện tích",
       value: area ? `${area} m²` : null,
+      imageUrl:
+        "https://uploads-ssl.webflow.com/5c9e5fc6215b2b288eb5937d/5ce35bac5960482835eb254f_enc-home-works-inspections-north-carolina-land-surveying.jpg",
+    },
+    {
+      icon: faRulerCombined,
+      label: "Chiều dài",
+      value: length ? `${length} m` : null,
+      imageUrl:
+        "https://uploads-ssl.webflow.com/5c9e5fc6215b2b288eb5937d/5ce35bac5960482835eb254f_enc-home-works-inspections-north-carolina-land-surveying.jpg",
+    },
+    {
+      icon: faRulerCombined,
+      label: "Chiều rộng",
+      value: width ? `${width} m` : null,
       imageUrl:
         "https://uploads-ssl.webflow.com/5c9e5fc6215b2b288eb5937d/5ce35bac5960482835eb254f_enc-home-works-inspections-north-carolina-land-surveying.jpg",
     },

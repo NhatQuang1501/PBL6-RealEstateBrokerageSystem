@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FaAd, FaComment } from "react-icons/fa";
+import { FaComment, FaFlag } from "react-icons/fa";
 import { useAppContext } from "../../AppProvider";
+import ReportPopup from "../report/ReportPopup ";
 
-const Comment = ({ id, sessionToken }) => {
+const Comment = ({ post_id, sessionToken }) => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
-  const { role } = useAppContext();
+  const { role, id } = useAppContext();
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const [isReportPopupOpen, setReportPopupOpen] = useState(false);
+  const [selectedUserCommentId, setSelectedUserCommentId] = useState(null);
 
   // Time
   const formatTime = (date) => {
@@ -53,7 +57,7 @@ const Comment = ({ id, sessionToken }) => {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/posts/${id}/comments/`
+          `http://127.0.0.1:8000/api/posts/${post_id}/comments/`
         );
         const data = await response.json();
 
@@ -93,7 +97,7 @@ const Comment = ({ id, sessionToken }) => {
     };
 
     fetchComments();
-  }, [id]);
+  }, [post_id]);
 
   const handleCommentChange = (e) => {
     setComment(e.target.value);
@@ -107,7 +111,7 @@ const Comment = ({ id, sessionToken }) => {
       e.preventDefault();
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/posts/${id}/comments/`,
+          `http://127.0.0.1:8000/api/posts/${post_id}/comments/`,
           {
             method: "POST",
             headers: {
@@ -131,6 +135,14 @@ const Comment = ({ id, sessionToken }) => {
     }
   };
 
+  const handleReport = (commentId, userID) => {
+    // Hiển thị modal hoặc thực hiện báo cáo
+    console.log(`Báo cáo bình luận với ID: ${commentId}`);
+    setSelectedCommentId(commentId); // Nếu cần hiển thị modal
+    setSelectedUserCommentId(userID); // Nếu cần hiển thị modal
+    setReportPopupOpen(true); // Nếu sử dụng popup
+  };
+
   return (
     <div className="flex flex-col justify-start items-center h-screen mr-5">
       <div className="flex flex-col items-center justify-between p-6 mt-5 mb-5 mr-5 h-full w-[32rem] mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
@@ -140,13 +152,13 @@ const Comment = ({ id, sessionToken }) => {
         </div>
 
         {/* List of Comments */}
-        <ul className="w-full flex flex-col items-start overflow-y-auto mt-4 ">
+        <ul className="w-full flex flex-col items-start overflow-y-auto mt-4">
           {comments.map((comment) => (
             <li
               key={comment.comment_id}
-              className="flex flex-col items-start mb-4 bg-gray-200 p-3 rounded-2xl"
+              className="flex flex-col items-start mb-4 bg-gray-200 p-3 rounded-2xl w-full"
             >
-              <div className="flex items-center">
+              <div className="flex items-center w-full">
                 <img
                   src={comment.avatar_url}
                   alt={comment.username}
@@ -156,12 +168,36 @@ const Comment = ({ id, sessionToken }) => {
                 <span className="text-gray-500 text-sm ml-2">
                   {formatTime(comment.created_at)}
                 </span>
+
+                {comment.user_id !== id && role !== "admin" && (
+                  <>
+                    <button
+                      className="ml-auto text-gray-500 hover:text-red-500 transition"
+                      onClick={() =>
+                        handleReport(comment.comment_id, comment.user_id)
+                      }
+                      title="Báo cáo bình luận"
+                    >
+                      <FaFlag className="w-6 h-6" />
+                    </button>
+                  </>
+                )}
               </div>
               <p className="ml-20 text-gray-700 bg-blue-300 p-3 rounded-md max-w-[20rem] break-words">
                 {comment.comment}
               </p>
             </li>
           ))}
+          {isReportPopupOpen && (
+            <ReportPopup
+              isOpen={isReportPopupOpen}
+              onClose={() => setReportPopupOpen(false)}
+              reportType="comment"
+              commentId={selectedCommentId}
+              reporteeId={selectedUserCommentId}
+              reportedUserId={id}
+            />
+          )}
         </ul>
 
         {role !== "admin" && (

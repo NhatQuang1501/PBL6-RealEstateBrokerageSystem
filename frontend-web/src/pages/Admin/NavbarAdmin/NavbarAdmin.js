@@ -7,6 +7,7 @@ import ArrowIcon from "../../../assets/image/Frame12.png";
 const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [postMenuOpen, setPostMenuOpen] = useState(false);
+  const [reportMenuOpen, setReportMenuOpen] = useState(false);
 
   useEffect(() => {
     const savedActiveMenu = localStorage.getItem("activeMenu");
@@ -21,6 +22,10 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
 
   const togglePostMenu = () => {
     setPostMenuOpen(!postMenuOpen);
+  };
+
+  const toggleReportMenu = () => {
+    setReportMenuOpen(!reportMenuOpen);
   };
 
   const handleMenuClickWithStorage = (menu) => {
@@ -84,6 +89,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
           </a>
         </li>
 
+        {/* Account */}
         <li>
           <button
             onClick={toggleAccountMenu}
@@ -131,6 +137,7 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
           )}
         </li>
 
+        {/* Post */}
         <li>
           <button
             onClick={togglePostMenu}
@@ -183,16 +190,54 @@ const Navbar = ({ isCollapsed, toggleNavbar, handleMenuClick, activeMenu }) => {
                   Duyệt bài đăng
                 </a>
               </li>
-              {/* <li onClick={() => handleMenuClickWithStorage("creatPost")}>
+            </ul>
+          )}
+        </li>
+
+        {/* Report */}
+        <li>
+          <button
+            onClick={toggleReportMenu}
+            className="flex justify-between items-center cursor-pointer w-full p-3 hover:bg-[#9EBBD8] rounded-xl transition-all duration-300 ease-in-out"
+          >
+            <img
+              onClick={() => handleMenuClickWithStorage("manageReports")}
+              src={Icon2}
+              className="w-[23px] h-[23px]"
+              alt=""
+            />
+
+            <span className={`block ${isCollapsed ? "hidden" : "block"}`}>
+              Quản lý báo cáo
+            </span>
+            <span>
+              {reportMenuOpen ? (
+                <div>
+                  <img
+                    src={ArrowIcon}
+                    className="w-[32px] scale-y-[-1]"
+                    alt=""
+                  />
+                </div>
+              ) : (
+                <div>
+                  <img src={ArrowIcon} className="w-[32px] " alt="" />
+                </div>
+              )}
+            </span>
+          </button>
+          {reportMenuOpen && (
+            <ul className="pl-4 mt-2 space-y-2 transition-all duration-300 ease-in-out">
+              <li onClick={() => handleMenuClickWithStorage("manageReports")}>
                 <a
                   href="#!"
                   className={`block p-3 hover:bg-[#9EBBD8] rounded-xl ${
                     isCollapsed ? "hidden" : "block"
                   }`}
                 >
-                  Tạo bài đăng
+                  Danh sách báo cáo
                 </a>
-              </li> */}
+              </li>
             </ul>
           )}
         </li>

@@ -27,9 +27,15 @@ const PredictLandPrice = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let updatedValue = value;
+
+    if (name === "ward") {
+      // Đổi "Hòa" thành "Hoà" trong trường ward
+      updatedValue = value.replace(/Hòa/g, "Hoà");
+    }
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : updatedValue,
     });
   };
 
@@ -83,7 +89,7 @@ const PredictLandPrice = () => {
             Diện tích (m²):
           </label>
           <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <div className="px-3 bg-gray-100">
+            <div className="px-3">
               <FaRulerCombined className="text-gray-400" />
             </div>
             <input
@@ -108,7 +114,7 @@ const PredictLandPrice = () => {
               Chiều rộng (m):
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              <div className="px-3 bg-gray-100">
+              <div className="px-3">
                 <FaRoad className="text-gray-400" />
               </div>
               <input
@@ -131,7 +137,7 @@ const PredictLandPrice = () => {
               Chiều dài (m):
             </label>
             <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-              <div className="px-3 bg-gray-100">
+              <div className="px-3">
                 <FaRoad className="text-gray-400" />
               </div>
               <input
@@ -192,7 +198,7 @@ const PredictLandPrice = () => {
             Hướng:
           </label>
           <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <div className="px-3 bg-gray-100">
+            <div className="px-3">
               <FaMapMarkerAlt className="text-gray-400" />
             </div>
             <input
@@ -216,7 +222,7 @@ const PredictLandPrice = () => {
             Phường:
           </label>
           <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-            <div className="px-3 bg-gray-100">
+            <div className="px-3">
               <FaMapMarkerAlt className="text-gray-400" />
             </div>
             <input

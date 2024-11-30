@@ -18,7 +18,14 @@ import {
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPen, FaRegFileAlt } from "react-icons/fa";
+import {
+  FaPen,
+  FaRegFileAlt,
+  FaDollarSign,
+  FaCreditCard,
+  FaCalendarAlt,
+  FaStickyNote,
+} from "react-icons/fa";
 
 import ProfileInformation from "../profile_information/ProfileInformation";
 import { useAppContext } from "../../AppProvider";
@@ -37,6 +44,9 @@ function Post({ post, type }) {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [price, setPrice] = useState("");
+  const [negotiationDate, setNegotiationDate] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [negotiationNote, setNegotiationNote] = useState("");
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -244,15 +254,32 @@ function Post({ post, type }) {
     }
   };
 
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
+  const handlePriceChange = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9,]/g, "");
+    const numericValue = value.replace(/,/g, "");
+    const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    setPrice(formattedValue);
   };
 
   const handleSubmit = async () => {
+    if (!price || !negotiationDate || !paymentMethod || !negotiationNote) {
+      alert("Vui lòng điền đầy đủ các trường bắt buộc.");
+      return;
+    }
+
+    const numericPrice = price.replace(/,/g, "");
+
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
-        { offer_price: price },
+        {
+          negotiation_price: parseInt(numericPrice, 10),
+          negotiation_date: negotiationDate,
+          payment_method: paymentMethod,
+          negotiation_note: negotiationNote,
+        },
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -263,16 +290,25 @@ function Post({ post, type }) {
       console.log("Negotiation response:", response.data);
       setIsPopupOpen(false);
       setPrice("");
+      setNegotiationDate("");
+      setPaymentMethod("");
+      setNegotiationNote("");
       alert("Đã gửi yêu cầu thương lượng thành công!");
       navigate(`/user/detail-post/${post.post_id}`);
     } catch (error) {
       console.error("Error submitting negotiation:", error);
+      alert(
+        "Mức giá thương lượng bạn đưa ra không phù hợp. Vui lòng hãy thử lại với mức giá khác."
+      );
     }
   };
 
   const handleClose = () => {
     setIsPopupOpen(false);
     setPrice("");
+    setNegotiationDate("");
+    setPaymentMethod("");
+    setNegotiationNote("");
   };
 
   return (
@@ -335,7 +371,8 @@ function Post({ post, type }) {
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Phường {post.ward}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district},
+                    Thành phố {post.city}
                   </p>
                   {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
                   <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
@@ -414,7 +451,8 @@ function Post({ post, type }) {
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district},
+                    Thành phố {post.city}
                   </p>
                 </div>
 
@@ -573,32 +611,129 @@ function Post({ post, type }) {
                 </button>
                 {isPopupOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
-                      <h2 className="text-xl font-bold text-gray-800 mb-4">
-                        Hãy nhập giá tiền bạn muốn thương lượng
+                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                        Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                       </h2>
-                      <p className="text-sm text-gray-600 mb-6">
+                      <p className="text-sm text-gray-600 mb-6 text-center">
                         <strong>Chú ý:</strong> Khi thương lượng, giá thương
                         lượng mà bạn đưa ra không được nhỏ hơn{" "}
                         <span className="text-red-500 font-semibold">70%</span>{" "}
                         giá tiền mà chủ bài viết đã đăng bán.
                       </p>
-                      <input
-                        type="number"
-                        value={price}
-                        min="0"
-                        onChange={handlePriceChange}
-                        className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        placeholder="Nhập giá tiền (VNĐ)"
-                      />
+
+                      {/* Trường Giá Thương Lượng */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="price"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Giá Thương Lượng (VNĐ)
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaDollarSign className="text-gray-500" />
+                          </div>
+                          <input
+                            type="text"
+                            id="price"
+                            value={price}
+                            onChange={handlePriceChange}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="Nhập giá tiền (VNĐ)"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {/* Trường Ngày Thương Lượng */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="negotiationDate"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Ngày Bắt Đầu Giao Dịch
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaCalendarAlt className="text-gray-500" />
+                          </div>
+                          <input
+                            type="date"
+                            id="negotiationDate"
+                            value={negotiationDate}
+                            onChange={(e) => setNegotiationDate(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {/* Trường Hình Thức Trả Tiền */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="paymentMethod"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Hình Thức Trả Tiền
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaCreditCard className="text-gray-500" />
+                          </div>
+                          <select
+                            id="paymentMethod"
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            required
+                          >
+                            <option value="" disabled>
+                              Chọn hình thức trả tiền
+                            </option>
+                            <option value="trả góp">Trả góp</option>
+                            <option value="trả trước">Trả trước</option>
+                            <option value="một lần">Thanh toán một lần</option>
+                            <option value="khác">Khác</option>
+                            {/* Thêm các lựa chọn khác nếu cần */}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Trường Ghi Chú Thêm */}
+                      <div className="mb-6">
+                        <label
+                          htmlFor="negotiationNote"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Ghi Chú Thêm
+                        </label>
+                        <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3 mt-2">
+                            <FaStickyNote className="text-gray-500" />
+                          </div>
+                          <textarea
+                            id="negotiationNote"
+                            value={negotiationNote}
+                            onChange={(e) => setNegotiationNote(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="Ghi chú thêm (tùy chọn)"
+                            rows="3"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      {/* Nút Xác Nhận và Hủy Bỏ */}
                       <div className="flex justify-center gap-4">
                         <button
+                          type="button"
                           className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
                           onClick={handleSubmit}
                         >
                           Xác nhận
                         </button>
                         <button
+                          type="button"
                           className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
                           onClick={handleClose}
                         >
@@ -650,6 +785,7 @@ function Post({ post, type }) {
           name={post.user.username}
           user_id={post.user.user_id}
           date={post.created_at}
+          post_id={post.post_id}
         />
         <div className="flex justify-end items-center">
           <div className=" pr-3">
