@@ -83,6 +83,7 @@ class PostNegotiationsView(APIView):
         params = {key.strip(): value for key, value in request.query_params.items()}
         sort_by = params.get("sort_by").strip()
         order = params.get("order", "desc").strip()
+        amount = params.get("amount", None)
 
         if post_id:
             post = get_object_or_404(Post, post_id=post_id)
@@ -110,11 +111,22 @@ class PostNegotiationsView(APIView):
                     f"{'-' if order == 'desc' else ''}{sort_by}"
                 )
 
+            if amount:
+                try:
+                    amount = int(amount)
+                    negotiations = negotiations[:amount]
+
+                except ValueError:
+                    return Response(
+                        {"error": "amount phải là một số nguyên dương"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
             serializer = NegotiationSerializer(negotiations, many=True)
 
             return Response(
                 {
-                    "message": f"Danh sách thương lượng của bài {post.post_id} được sắp xếp theo {sort_by} {'giảm dần' if order == 'desc' else 'tăng dần'}",
+                    "message": f"Danh sách {amount if amount else 'tất cả'} thương lượng của bài {post.post_id} được sắp xếp theo {sort_by} {'giảm dần' if order == 'desc' else 'tăng dần'}",
                     "count": negotiations.count(),
                     "negotiations": serializer.data,
                 },
