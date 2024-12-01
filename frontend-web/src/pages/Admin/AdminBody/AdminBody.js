@@ -7,7 +7,7 @@ import WaitingForApproval from "../ManagerUserPost/waitingForApproval";
 const AdminBody = ({ isCollapsed, activeMenu }) => {
   return (
     <div
-      className={`absolute top-28 right-2 h-[84vh] transition-width duration-300  ${
+      className={`absolute top-[6rem] right-2 h-[85vh] transition-width duration-300  ${
         isCollapsed ? "w-[92vw]" : "w-[76vw]"
       } `}
     >

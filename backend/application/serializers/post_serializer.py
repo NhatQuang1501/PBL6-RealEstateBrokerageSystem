@@ -189,10 +189,10 @@ class PostSerializer(serializers.ModelSerializer):
         length = data.get("length")
         width = data.get("width")
 
-        if area and length and width:
+        if area is not None and length is not None and width is not None:
             if abs(area - (length * width)) >= 10:
                 raise serializers.ValidationError(
-                    "Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số 10m2)"
+                    "Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số < 10m2)"
                 )
 
         return data

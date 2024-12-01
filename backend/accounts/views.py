@@ -72,7 +72,7 @@ class BaseView(APIView):
     def put(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
         instance = get_object_or_404(self.model, user=user)
-        serializer = self.serializer(instance, data=request.data)
+        serializer = self.serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -100,6 +100,13 @@ class BaseView(APIView):
         return Response(
             {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
         )
+
+
+class UserView(BaseView):
+    model = UserProfile
+    serializer = UserProfileSerializer
+    admin_serializer = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
 
 class RegisterView(APIView):
@@ -364,13 +371,6 @@ class ReverifyEmailView(APIView):
             return Response(
                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
-
-class UserView(BaseView):
-    model = UserProfile
-    serializer = UserProfileSerializer
-    admin_serializer = UserSerializer
-    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
 
 class AvatarView(APIView):

@@ -29,7 +29,7 @@ const Panel = ({
           />
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] min-h-[500vh] p-4 rounded-lg mb-4">
+        <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] min-h-auto p-4 rounded-lg mb-4">
           {children}
         </div>
       )}

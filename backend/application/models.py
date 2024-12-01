@@ -99,6 +99,9 @@ class Negotiation(models.Model):
     is_considered = models.BooleanField(default=False)  # Trạng thái xem xét đồng ý
     is_accepted = models.BooleanField(default=False)  # Trạng thái chấp nhận
 
+    # Tiêu chí đánh giá cho thương lượng
+    average_response_time = models.DurationField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -195,13 +198,18 @@ class SavedPost(models.Model):
     def __str__(self):
         return f"{self.user.username} saved {self.post.title}"
 
-class Report (models.Model):
+
+class Report(models.Model):
     report_id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     report_type = models.CharField(choices=ReportType.choices, max_length=50)
     description = models.TextField(blank=True, null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey(PostComment, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(
+        PostComment, on_delete=models.CASCADE, null=True, blank=True
+    )
     reported_user = models.ForeignKey(User, on_delete=models.CASCADE)
-    reportee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reportee')
+    reportee = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reportee"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     resolved = models.BooleanField(default=False)

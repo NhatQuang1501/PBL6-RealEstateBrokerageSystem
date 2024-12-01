@@ -75,53 +75,57 @@ function Post({ post, type }) {
     setIsSaved(false);
     // Check like
     const checkLiked = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/user-posts-like/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
-            },
+      if (role !== "admin" && role) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/user-posts-like/`,
+            {
+              headers: {
+                Authorization: `Bearer ${sessionToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.status === 200) {
+            const likedPosts = response.data.map((post) => post.post_id);
+            if (likedPosts.includes(post.post_id)) {
+              setIsClicked(true);
+            }
           }
-        );
-        if (response.status === 200) {
-          const likedPosts = response.data.map((post) => post.post_id);
-          if (likedPosts.includes(post.post_id)) {
-            setIsClicked(true);
-          }
+        } catch (error) {
+          console.error("Error checking liked posts:", error);
         }
-      } catch (error) {
-        console.error("Error checking liked posts:", error);
       }
     };
 
     // Check save
     const checkSaved = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/saved-posts/${id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
-            },
+      if (role !== "admin" && role) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/saved-posts/${id}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${sessionToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.status === 200) {
+            const savedPosts = response.data.map((post) => post.post_id);
+            if (savedPosts.includes(post.post_id)) {
+              setIsSaved(true);
+            }
           }
-        );
-        if (response.status === 200) {
-          const savedPosts = response.data.map((post) => post.post_id);
-          if (savedPosts.includes(post.post_id)) {
-            setIsSaved(true);
-          }
+        } catch (error) {
+          console.error("Error checking saved posts:", error);
         }
-      } catch (error) {
-        console.error("Error checking saved posts:", error);
       }
     };
 
     checkSaved();
     checkLiked();
-  }, [post.post_id, sessionToken, id]);
+  }, [post.post_id, sessionToken, id, role]);
 
   const handleClick = useCallback(async () => {
     if (!sessionToken) {

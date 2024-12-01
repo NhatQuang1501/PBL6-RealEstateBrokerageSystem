@@ -962,29 +962,28 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                {/* Mặt tiền */}
+                {/* Số phòng tắm */}
                 <div className="relative mb-6">
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="frontage"
+                    htmlFor="bathroom"
                   >
-                    Mặt tiền (m):
+                    Số phòng tắm:
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       required
-                      placeholder="vd: 5.5"
+                      placeholder="vd: 2"
                       min="0"
-                      step="any"
-                      id="frontage"
-                      value={frontage}
-                      onChange={(e) => setFrontage(e.target.value)}
+                      id="bathroom"
+                      value={bathroom}
+                      onChange={(e) => setBathroom(e.target.value)}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
-                      icon={faRulerHorizontal}
-                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      icon={faBath}
+                      className="absolute left-3 top-1/2 transform-translate-y-1/2 text-gray-500"
                     />
                   </div>
                 </div>
@@ -1126,28 +1125,29 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                {/* Số phòng tắm */}
+                {/* Mặt tiền */}
                 <div className="relative mb-6">
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="bathroom"
+                    htmlFor="frontage"
                   >
-                    Số phòng tắm:
+                    Mặt tiền (m):
                   </label>
                   <div className="relative">
                     <input
                       type="number"
                       required
-                      placeholder="vd: 2"
+                      placeholder="vd: 5.5"
                       min="0"
-                      id="bathroom"
-                      value={bathroom}
-                      onChange={(e) => setBathroom(e.target.value)}
+                      step="any"
+                      id="frontage"
+                      value={frontage}
+                      onChange={(e) => setFrontage(e.target.value)}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
-                      icon={faBath}
-                      className="absolute left-3 top-1/2 transform-translate-y-1/2 text-gray-500"
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                     />
                   </div>
                 </div>

@@ -34,7 +34,6 @@ const MainPageUser = ({
   );
 
   const handlePageChange = (page) => {
-
     setCurrentPage(page);
   };
 

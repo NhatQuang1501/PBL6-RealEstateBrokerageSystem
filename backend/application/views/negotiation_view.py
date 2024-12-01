@@ -80,13 +80,56 @@ class PostNegotiationsView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
     def get(self, request, post_id=None):
+        params = {key.strip(): value for key, value in request.query_params.items()}
+        sort_by = params.get("sort_by").strip()
+        order = params.get("order", "desc").strip()
+        amount = params.get("amount", None)
+
         if post_id:
             post = get_object_or_404(Post, post_id=post_id)
-            negotiations = Negotiation.objects.filter(post=post).order_by("-created_at")
+            negotiations = Negotiation.objects.filter(post=post).select_related(
+                "user__profile"
+            )
+
+            allowed_sort_fields = {
+                "average_response_time": "average_response_time",
+                "reputation_score": "user__profile__reputation_score",
+                "successful_transactions": "user__profile__successful_transactions",
+                "response_rate": "user__profile__response_rate",
+                "profile_completeness": "user__profile__profile_completeness",
+                "negotiation_experience": "user__profile__negotiation_experience",
+            }
+
+            if sort_by in allowed_sort_fields:
+                sort_field = allowed_sort_fields[sort_by]
+                if order == "desc":
+                    sort_field = f"-{sort_field}"
+                negotiations = negotiations.order_by(sort_field)
+
+            else:
+                negotiations = negotiations.order_by(
+                    f"{'-' if order == 'desc' else ''}{sort_by}"
+                )
+
+            if amount:
+                try:
+                    amount = int(amount)
+                    negotiations = negotiations[:amount]
+
+                except ValueError:
+                    return Response(
+                        {"error": "amount phải là một số nguyên dương"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
             serializer = NegotiationSerializer(negotiations, many=True)
 
             return Response(
-                {"count": negotiations.count(), "negotiations": serializer.data},
+                {
+                    "message": f"Danh sách {amount if amount else 'tất cả'} thương lượng của bài {post.post_id} được sắp xếp theo {sort_by} {'giảm dần' if order == 'desc' else 'tăng dần'}",
+                    "count": negotiations.count(),
+                    "negotiations": serializer.data,
+                },
                 status=status.HTTP_200_OK,
             )
 
@@ -194,6 +237,11 @@ class PostNegotiationsView(APIView):
                 post.sale_status = Sale_status.NEGOTIATING
                 post.save()
 
+            # Cập nhật kinh nghiệm người dùng
+            profile = get_object_or_404(UserProfile, user=negotiation.user)
+            profile.negotiation_experience += 1
+            profile.save()
+
         serializer = NegotiationSerializer(negotiation)
 
         return Response(
@@ -299,21 +347,23 @@ class ProposalView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Xóa đề nghị  cũ của người đăng cho thương lượng này nếu tồn tại
-        with transaction.atomic():
-            Proposal.objects.filter(negotiation=negotiation, user=request.user).delete()
+        # Tạo đề nghị mới
+        proposal = Proposal.objects.create(
+            negotiation=negotiation,
+            user=request.user,
+            proposal_price=request.data.get("proposal_price"),
+            proposal_date=request.data.get("proposal_date"),
+            proposal_method=request.data.get("proposal_method"),
+            proposal_note=request.data.get("proposal_note"),
+        )
 
-            # Tạo đề nghị mới
-            proposal = Proposal.objects.create(
-                negotiation=negotiation,
-                user=request.user,
-                proposal_price=request.data.get("proposal_price"),
-                proposal_date=request.data.get("proposal_date"),
-                proposal_method=request.data.get("proposal_method"),
-                proposal_note=request.data.get("proposal_note"),
-            )
+        # Đưa đề nghị mới lên đầu danh sách
+        proposals = list(
+            Proposal.objects.filter(negotiation=negotiation).order_by("-created_at")
+        )
+        proposals.insert(0, proposal)
 
-        serializer = ProposalSerializer(proposal)
+        serializer = ProposalSerializer(proposals, many=True)
 
         return Response(
             {
@@ -360,6 +410,13 @@ class AcceptProposalView(APIView):
             negotiation.negotiation_note = request.data.get(
                 "negotiation_note", negotiation.negotiation_note
             )
+            # Tính average_response_time của các thương lượng của người dùng này
+            response_times = Proposal.objects.filter(
+                user=request.user, is_accepted=True
+            ).values_list("created_at", flat=True)
+            average_response_time = calculate_average_response_time(response_times)
+            negotiation.average_response_time = average_response_time
+
             negotiation.save()
 
             if (
@@ -562,7 +619,7 @@ class AcceptNegotiationView(APIView):
         # Kiểm tra user có phải là người đăng bài không
         if post.user_id != request.user:
             return Response(
-                {"message": "Bạn không có quyền chấp nhận thương lượng này."},
+                {"message": "Bạn không có quyền chấp nhận thương lượng này"},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
@@ -582,6 +639,17 @@ class AcceptNegotiationView(APIView):
 
             negotiation.is_accepted = True
             negotiation.save()
+
+            # Cập nhật số lần thương lượng thành công cho người mua và người bán
+            seller_profile = UserProfile.objects.get(user=post.user_id)
+            seller_profile.successful_transactions += 1
+            seller_profile.reputation_score += 10
+            seller_profile.save()
+
+            buyer_profile = UserProfile.objects.get(user=negotiation.user)
+            buyer_profile.successful_transactions += 1
+            buyer_profile.reputation_score += 10
+            buyer_profile.save()
 
             Negotiation.objects.filter(post=post, is_accepted=False).update(
                 is_accepted=False
