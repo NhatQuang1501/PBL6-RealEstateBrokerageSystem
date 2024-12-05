@@ -444,3 +444,45 @@ class WelcomeView(APIView):
             {"message": "Welcome to Sweet Home!"},
             status=status.HTTP_200_OK,
         )
+
+
+class AdminPostCommentView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def put(self, request, pk):
+        comment = get_object_or_404(PostComment, comment_id=pk)
+        comment.is_report_removed = True
+        comment.save()
+        return Response(
+            {"message": "Ẩn bình luận thành công"},
+            status=status.HTTP_200_OK,
+        )
+    
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not user.check_password(old_password):
+            return Response(
+                {"message": "Mật khẩu không chính xác"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if old_password == new_password:
+            return Response(
+                {"message": "Mật khẩu mới không được giống mật khẩu cũ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new_password)
+        user.save()
+    
+        return Response(
+            {"message": "Đổi mật khẩu thành công"},
+            status=status.HTTP_200_OK,
+        )

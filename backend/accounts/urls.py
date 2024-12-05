@@ -15,4 +15,6 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("users-avatar/", AvatarView.as_view(), name="users-avatar"),
     path("users-avatar/<str:pk>/", AvatarView.as_view(), name="get-user-avatar"),
+    path("report-comment/<str:pk>/", AdminPostCommentView.as_view()),
+    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
 ]
