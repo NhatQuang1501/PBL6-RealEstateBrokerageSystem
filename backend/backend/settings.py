@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 import os
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
+    "django_celery_beat",
     "accounts",
     "application",
     "friends",
@@ -127,6 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Ho_Chi_Minh"
+USE_TZ = True
 
 USE_I18N = True
 
@@ -194,4 +197,21 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
         "LOCATION": "active_connections_cache",
     }
+}
+
+
+# Celery
+
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0"
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
+CELERY_ENABLE_UTC = True
+
+
+CELERY_BEAT_SCHEDULE = {
+    "unlock_user_accounts": {
+        "task": "accounts.tasks.unlock_user_account",
+        "schedule": crontab(minute=30),
+    },
 }

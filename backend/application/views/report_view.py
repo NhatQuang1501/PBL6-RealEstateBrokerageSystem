@@ -10,6 +10,7 @@ from application.serializers.report_serializer import ReportSerializer
 from accounts.models import User
 from accounts.enums import Status
 
+
 class ReportView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -26,10 +27,12 @@ class ReportView(APIView):
             reportee = User.objects.filter(user_id=pk).first()
             report = Report.objects.filter(report_id=pk).first()
             if reported_user:
-                reports = Report.objects.filter(reported_user=reported_user, resolved=False)
+                reports = Report.objects.filter(
+                    reported_user=reported_user, resolved=False
+                )
                 serializer = ReportSerializer(reports, many=True)
                 if reports:
-                   return Response(serializer.data)
+                    return Response(serializer.data)
             if reportee:
                 reports = Report.objects.filter(reportee=reportee, resolved=False)
                 serializer = ReportSerializer(reports, many=True)
@@ -52,5 +55,7 @@ class ReportView(APIView):
     def put(self, request, pk):
         report = get_object_or_404(Report, report_id=pk)
         report.resolved = True
+        reported_user = report.reported_user
+        reported_user.reputation_score -= 10
         report.save()
         return Response(status=status.HTTP_200_OK)

@@ -19,6 +19,8 @@ urlpatterns = [
     path("admin/posts/<str:pk>/", AdminPostView.as_view(), name="admin-posts-detail"),
     # Ordered Post Endpoints
     path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
+    # Recommended Post Endpoints
+    path("recommended-posts/", RecommendedPostView.as_view(), name="recommended-posts"),
     # Sold Post Endpoints
     path(
         "sold-posts/",
@@ -105,7 +107,6 @@ urlpatterns = [
         AcceptNegotiationView.as_view(),
         name="accept_negotiation",
     ),
-    
-    path('report/', ReportView.as_view(), name='report'),
-    path('report/<str:pk>/', ReportView.as_view(), name='report-detail'),
+    path("report/", ReportView.as_view(), name="report"),
+    path("report/<str:pk>/", ReportView.as_view(), name="report-detail"),
 ]

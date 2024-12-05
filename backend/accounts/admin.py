@@ -4,7 +4,7 @@ from accounts.models import *
 
 class UserAdmin(admin.ModelAdmin):
     list_editable = ["is_verified"]
-    list_display = ["username", "role", "is_verified"]
+    list_display = ["username", "role", "is_verified", "is_locked"]
 
 
 class UserProfileAdmin(admin.ModelAdmin):

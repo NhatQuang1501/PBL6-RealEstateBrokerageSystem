@@ -23,7 +23,7 @@ class NegotiationsView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, negotiation_id=None):
-        if negotiation_id is not None:
+        if negotiation_id:
             negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
             serializer = NegotiationSerializer(negotiation)
 
@@ -507,22 +507,22 @@ class ConsideredNegotiationsView(APIView):
             negotiation.save()
 
             # Tạo chatroom riêng tư nếu chưa tồn tại
-            if (
-                not ChatRoom.objects.filter(
-                    is_private=True, participants=negotiation.user
-                )
-                .filter(participants=post.user_id)
-                .exists()
-            ):
-                chatroom = ChatRoom.objects.create(
-                    created_by=post.user_id,
-                    is_private=True,
-                    chatroom_name=f"{post.user_id.username} & {negotiation.user.username}",
-                    negotiation=negotiation,
-                )
-                chatroom.participants.set([post.user_id, negotiation.user])
-                chatroom.save()
-                chatroom_serializer = ChatRoomSerializer(chatroom)
+            # if (
+            #     not ChatRoom.objects.filter(
+            #         is_private=True, participants=negotiation.user
+            #     )
+            #     .filter(participants=post.user_id)
+            #     .exists()
+            # ):
+            chatroom = ChatRoom.objects.create(
+                created_by=post.user_id,
+                is_private=True,
+                chatroom_name=f"{post.user_id.username} & {negotiation.user.username}",
+                negotiation=negotiation,
+            )
+            chatroom.participants.set([post.user_id, negotiation.user])
+            chatroom.save()
+            chatroom_serializer = ChatRoomSerializer(chatroom)
 
             serializer = NegotiationSerializer(negotiation)
 

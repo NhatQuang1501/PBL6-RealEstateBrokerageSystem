@@ -53,8 +53,13 @@ class AdminPostView(APIView):
 
     def delete(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+        post_id = post.post_id
+        post_title = post.title
         post.delete()
 
         return Response(
-            {"message": "Xóa bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {
+                "message": f"Xóa bài đăng {'đang chờ duyệt' if post.status==Status.PENDING_APPROVAL else 'đã duyệt'} {post_id} - {post_title} thành công"
+            },
+            status=status.HTTP_204_NO_CONTENT,
         )

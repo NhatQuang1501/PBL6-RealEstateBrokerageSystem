@@ -18,6 +18,7 @@ class UserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         user.is_verified = False
+        user.is_locked = False
         user.save()
 
         print(user)
@@ -96,6 +97,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop("user")
         user = User.objects.create_user(**user_data)
         user.is_verified = False
+        user.is_locked = False
         user.save()
 
         user_profile = UserProfile.objects.create(user=user, **validated_data)
