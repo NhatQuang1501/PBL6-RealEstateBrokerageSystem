@@ -3,20 +3,29 @@ import DetailDescription from "../../../components/detail_description/DetailDesc
 import BasicInformation from "../../../components/basic_information/BasicInformation";
 import ProfileInformation from "../../../components/profile_information/ProfileInformation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useAppContext } from "../../../AppProvider";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Comment from "../../../components/comment/Comment";
 import NegotiationList from "../../../components/neogotiation/NegotiationList";
 import MapView from "../../../components/map_api/Mapbox";
-
 
 const PostDetailAdmin = () => {
   const { sessionToken } = useAppContext();
   const { postId } = useParams();
   const [post, setPost] = useState();
+
+  //Cmt_id location
+  const location = useLocation();
+  const getQueryParams = (query) => {
+    return new URLSearchParams(query);
+  };
+
+  const queryParams = getQueryParams(location.search);
+  const commentId = queryParams.get("comment_id");
+  console.log("Comment ID=>>>>>>:", commentId);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -65,20 +74,12 @@ const PostDetailAdmin = () => {
   }, [postId, sessionToken]);
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
-      <button
-        className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-8 self-start flex items-center"
-        onClick={() => window.history.back()}
-      >
-        <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-        Quay lại
-      </button>
-
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
+    <div className="flex flex-col items-center font-montserrat">
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl shadow-lg">
         <h3 className="text-2xl font-bold text-white flex items-center gap-3">
           <FontAwesomeIcon
             icon={faListAlt}
-            className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+            className="text-blue-400 bg-white p-3 w-8 h-8 rounded-full shadow-md"
           />
           Chi tiết bài đăng
         </h3>
@@ -149,7 +150,11 @@ const PostDetailAdmin = () => {
         </div>
         <div className="flex flex-col">
           {/* Comment */}
-          <Comment id={postId} sessionToken={sessionToken} />
+          <Comment
+            post_id={postId}
+            sessionToken={sessionToken}
+            reportedCmtId={commentId}
+          />
 
           {/* Neogotiation */}
           {post && (

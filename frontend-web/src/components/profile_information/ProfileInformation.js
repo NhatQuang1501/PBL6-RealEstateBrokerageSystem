@@ -130,7 +130,7 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
 
       <div className="flex items-center mt-1">
         <img
-          className="w-10 h-10 rounded-full mr-3 object-contain bg-gray-500"
+          className="w-10 h-10 rounded-full mr-3 object-cover bg-gray-500"
           src={ava}
           alt="avatar"
         />

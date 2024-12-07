@@ -95,24 +95,24 @@ const SideBar = ({
 
   return (
     <div className="flex w-[25%] p-4">
-      <div className="bg-white border-2 border-gray-300 border-solid w-full max-h-[75vh] mt-2 pb-5 p-5 rounded-lg shadow-lg text-left sticky top-[7rem] overflow-y-auto">
-        <h1 className="text-xl font-bold text-white bg-blue-500 p-3 rounded-2xl shadow-xl mb-6 text-center">
+      <div className="bg-white border-2 border-gray-300 border-solid w-full max-h-[75vh] mt-2 pb-5 p-5 rounded-xl shadow-lg text-left sticky top-[7rem] overflow-y-auto">
+        <h1 className="text-xl font-bold text-white bg-gray-500 p-3 rounded-lg shadow-xl mb-6 text-center">
           Bộ lọc tìm kiếm
         </h1>
 
         {/* Legal Filter */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#3CA9F9] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faBook} />
             Tình trạng pháp lý
           </h2>
           <ul className="text-black border-gray-300 border-[1px] border-solid rounded-lg">
-            {["Sổ đỏ", "Sổ hồng", "Chưa có", "Khác"].map((legal, index) => (
+            {["Sổ đỏ/Sổ hồng", "Chưa có", "Khác"].map((legal, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
                   selectedLegals.includes(legal)
-                    ? "bg-[#3CA9F9] text-white"
+                    ? "bg-gray-500 text-white"
                     : ""
                 }`}
                 onClick={() => handleFilterLegal(legal)}
@@ -128,7 +128,7 @@ const SideBar = ({
 
         {/* Orientation Filter */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#3CA9F9] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faCompass} />
             Lọc theo hướng
           </h2>
@@ -145,9 +145,9 @@ const SideBar = ({
             ].map((orientation, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
                   selectedOrientations.includes(orientation)
-                    ? "bg-[#3CA9F9] text-white"
+                    ? "bg-gray-500 text-white"
                     : ""
                 }`}
                 onClick={() => handleFilterOrientation(orientation)}
@@ -163,7 +163,7 @@ const SideBar = ({
 
         {/* Bedroom Filter */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#3CA9F9] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faBed} />
             Lọc theo số phòng ngủ
           </h2>
@@ -171,9 +171,9 @@ const SideBar = ({
             {["1", "2", "3", "4", "5", "Nhiều hơn 5"].map((bedroom, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
                   selectedBedrooms.includes(bedroom)
-                    ? "bg-[#3CA9F9] text-white"
+                    ? "bg-gray-500 text-white"
                     : ""
                 }`}
                 onClick={() => handleFilterBedroom(bedroom)}
@@ -189,7 +189,7 @@ const SideBar = ({
 
         {/* Bathroom Filter */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#3CA9F9] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faBath} />
             Lọc theo số phòng tắm
           </h2>
@@ -197,9 +197,9 @@ const SideBar = ({
             {["1", "2", "3", "4", "5", "Nhiều hơn 5"].map((bathroom, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
                   selectedBathrooms.includes(bathroom)
-                    ? "bg-[#3CA9F9] text-white"
+                    ? "bg-gray-500 text-white"
                     : ""
                 }`}
                 onClick={() => handleFilterBathroom(bathroom)}
@@ -215,7 +215,7 @@ const SideBar = ({
 
         {/* Disctrict Filter */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-[#3CA9F9] mb-3 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-gray-500 mb-3 flex items-center gap-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} />
             Lọc theo Quận/Huyện
           </h2>
@@ -231,9 +231,9 @@ const SideBar = ({
             ].map((district, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
                   selectedDistricts.includes(district)
-                    ? "bg-[#3CA9F9] text-white"
+                    ? "bg-gray-500 text-white"
                     : ""
                 }`}
                 onClick={() => handleFilterDistrict(district)}
@@ -243,7 +243,7 @@ const SideBar = ({
             ))}
           </ul>
         </div>
-        <div className="mb-8 p-4 bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-gray-600 rounded-md">
+        <div className="mb-8 p-4 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 text-white rounded-md">
           <h2 className="text-lg font-semibold flex items-center gap-3 italic">
             <FontAwesomeIcon icon={faLightbulb} />
             Hãy kết hợp lọc nhiều điều kiện để tìm kiếm chính xác hơn !

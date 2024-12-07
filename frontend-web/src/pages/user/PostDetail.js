@@ -15,8 +15,13 @@ import {
   faHandshake,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useCallback } from "react";
-import { FaPen, FaDollarSign, FaCalendarAlt, FaCreditCard, FaStickyNote } from "react-icons/fa";
-import { MdArrowBack } from "react-icons/md";
+import {
+  FaPen,
+  FaDollarSign,
+  FaCalendarAlt,
+  FaCreditCard,
+  FaStickyNote,
+} from "react-icons/fa";
 import { useParams } from "react-router-dom";
 import Comment from "../../components/comment/Comment";
 import { useAppContext } from "../../AppProvider";
@@ -261,19 +266,12 @@ const DetailPost = () => {
   };
 
   return (
-    <div className="flex flex-col items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] font-montserrat">
-      <button
-        className="bg-[#3CA9F9] text-white px-3 py-3 rounded-full mt-5 ml-8 self-start flex items-center"
-        onClick={() => window.history.back()}
-      >
-        <MdArrowBack className="text-2xl" />
-      </button>
-
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
+    <div className="flex flex-col items-center font-montserrat">
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-gray-400 to-gray-600 rounded-3xl shadow-lg">
         <h3 className="text-2xl font-bold text-white flex items-center gap-3">
           <FontAwesomeIcon
             icon={faListAlt}
-            className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+            className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
           />
           Chi tiết bài đăng
         </h3>
@@ -282,7 +280,7 @@ const DetailPost = () => {
           post.user.user_id === id &&
           post.sale_status === "Đang bán" && (
             <button
-              className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
+              className="bg-white text-black font-semibold hover:bg-gray-500 hover:text-white transition duration-300 ease-in-out px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
               onClick={handleUploadImage}
             >
               <FontAwesomeIcon icon={faUpload} className="mr-2" />
@@ -324,12 +322,15 @@ const DetailPost = () => {
                   {isPopupOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                       <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
                           Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                         </h2>
                         <p className="text-sm text-gray-600 mb-6 text-center">
-                          <strong>Chú ý:</strong> Khi thương lượng, giá thương
-                          lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                          <strong className="font-bold text-red-500">
+                            Chú ý:
+                          </strong>{" "}
+                          Khi thương lượng, giá thương lượng mà bạn đưa ra không
+                          được nhỏ hơn{" "}
                           <span className="text-red-500 font-semibold">
                             70%
                           </span>{" "}
@@ -530,7 +531,7 @@ const DetailPost = () => {
                   {/* Share */}
                   <div className="flex items-end text-gray-500 space-x-1">
                     <FontAwesomeIcon icon={faShareAlt} className="w-8 h-8" />
-                    <span>124</span>
+                    <span>5</span>
                   </div>
                   {/* Save */}
                   <div className="flex items-end text-gray-500 space-x-1">

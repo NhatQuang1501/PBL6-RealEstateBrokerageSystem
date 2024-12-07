@@ -61,14 +61,14 @@ function Post({ post, type }) {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setReactionsCount(post.reactions_count);
-      setSavesCount(post.save_count);
-    }, 2000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setReactionsCount(post.reactions_count);
+  //     setSavesCount(post.save_count);
+  //   }, 2000);
 
-    return () => clearInterval(interval);
-  }, [post.reactions_count, post.save_count]);
+  //   return () => clearInterval(interval);
+  // }, [post.reactions_count, post.save_count]);
 
   useEffect(() => {
     setIsClicked(false);
@@ -154,14 +154,14 @@ function Post({ post, type }) {
       }
     }
 
-    const interval = setInterval(() => {
-      setReactionsCount(post.reactions_count);
-      setSavesCount(post.save_count);
-    }, 2000);
+    // const interval = setInterval(() => {
+    //   setReactionsCount(post.reactions_count);
+    //   setSavesCount(post.save_count);
+    // }, 2000);
 
     // Dọn dẹp interval khi component bị unmount
-    return () => clearInterval(interval);
-  }, [sessionToken, post.post_id, post.reactions_count, post.save_count]);
+    // return () => clearInterval(interval);
+  }, [sessionToken, post.post_id]);
 
   const handleSaveClick = useCallback(async () => {
     if (!sessionToken) {
@@ -352,7 +352,7 @@ function Post({ post, type }) {
                 <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-medium">Giá bán:</p>
+                    <p className="text-lg font-extrabold">Giá bán:</p>
                   </div>
                   <p className="text-2xl font-bold mt-1 ml-4">
                     {formatPrice(post.price)}
@@ -369,8 +369,8 @@ function Post({ post, type }) {
 
               {/* Thông tin chung */}
               <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
                     Địa chỉ:
                   </p>
@@ -382,32 +382,32 @@ function Post({ post, type }) {
                   <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
                     Diện tích:
                   </p>
                   <p className="text-center mt-1">{post.area}m²</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faBed} className="mr-2" />
                     Số phòng ngủ:
                   </p>
                   <p className="text-center mt-1">{post.bedroom} phòng ngủ</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faBath} className="mr-2" />
                     Số phòng tắm:
                   </p>
                   <p className="text-center mt-1">{post.bathroom} phòng tắm</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faCompass} className="mr-2" />
                     Hướng nhà:
                   </p>
@@ -415,7 +415,7 @@ function Post({ post, type }) {
                 </div>
 
                 <div
-                  className="bg-blue-100 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                   onClick={handleDetailClick}
                 >
                   <p className="text-black font-bold text-center italic">
@@ -432,7 +432,7 @@ function Post({ post, type }) {
                 <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-medium">Giá bán:</p>
+                    <p className="text-lg font-extrabold">Giá bán:</p>
                   </div>
                   <p className="text-2xl font-bold mt-1 ml-4">
                     {formatPrice(post.price)}
@@ -449,8 +449,8 @@ function Post({ post, type }) {
 
               {/* Thông tin chung */}
               <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
                     Địa chỉ:
                   </p>
@@ -460,41 +460,32 @@ function Post({ post, type }) {
                   </p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
                     Diện tích:
                   </p>
                   <p className="text-center mt-1">{post.area}m²</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRoad} className="mr-2" />
                     Mặt tiền (m):
                   </p>
                   <p className="text-center mt-1">{post.frontage} m</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faCompass} className="mr-2" />
                     Hướng đất:
                   </p>
                   <p className="text-center mt-1">{post.orientation}</p>
                 </div>
 
-                {/* <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
-                    Tọa độ
-                  </p>
-                  <p className="text-center mt-1">KĐ: {post.longitude}</p>
-                  <p className="text-center mt-1">VĐ: {post.latitude}</p>
-                </div> */}
-
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
                     <FaRegFileAlt className="mr-2" />
                     Tình trạng pháp lý:
                   </p>
@@ -502,7 +493,7 @@ function Post({ post, type }) {
                 </div>
 
                 <div
-                  className="bg-blue-100 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                   onClick={handleDetailClick}
                 >
                   <p className="text-black font-bold text-center italic">
@@ -514,7 +505,7 @@ function Post({ post, type }) {
           )}
 
           <div className="flex justify-center ">
-            <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-[#b2ebf2] border-solid pt-5 pl-5 pr-5 rounded-t-xl">
+            <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-gray-200 border-solid pt-5 pl-5 pr-5">
               {role !== "admin" && (
                 <>
                   {/* Heart */}
@@ -616,12 +607,15 @@ function Post({ post, type }) {
                 {isPopupOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-                      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
                         Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                       </h2>
                       <p className="text-sm text-gray-600 mb-6 text-center">
-                        <strong>Chú ý:</strong> Khi thương lượng, giá thương
-                        lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                        <strong className="font-bold text-red-500">
+                          Chú ý:
+                        </strong>{" "}
+                        Khi thương lượng, giá thương lượng mà bạn đưa ra không
+                        được nhỏ hơn{" "}
                         <span className="text-red-500 font-semibold">70%</span>{" "}
                         giá tiền mà chủ bài viết đã đăng bán.
                       </p>

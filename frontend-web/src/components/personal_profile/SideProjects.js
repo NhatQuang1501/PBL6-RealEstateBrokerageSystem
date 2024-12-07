@@ -4,11 +4,11 @@ import axios from "axios";
 import { useAppContext } from "../../AppProvider";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPlus,
   faUserPlus,
   faUser,
   faComment,
   faFlag,
+  faEdit,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function SideProjects() {
@@ -279,7 +279,7 @@ export default function SideProjects() {
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg w-[20rem]">
+    <div className="bg-gray-600 text-white p-6 rounded-lg shadow-lg w-[20rem]">
       <div>
         {/* FriendList */}
         <h2 className="text-lg mb-4 font-bold">
@@ -333,7 +333,7 @@ export default function SideProjects() {
                       handlePersonalProfileClick(friend.user_id);
                     }}
                   >
-                    <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                    <FontAwesomeIcon icon={faUser} className="text-gray-500" />
                     <span className="text-gray-700">Thông tin cá nhân</span>
                   </button>
                   <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
@@ -404,7 +404,7 @@ export default function SideProjects() {
                   </div>
                   <div className="flex justify-between mt-4">
                     <button
-                      className="bg-gradient-to-r from-blue-400 to-blue-500 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-400 hover:to-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105"
+                      className="bg-gradient-to-r from-gray-400 to-gray-500 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-gray-400 hover:to-gray-600 transition-all duration-300 ease-in-out transform hover:scale-105"
                       onClick={() =>
                         handleAcceptFriendRequest(receive.friendrequest_id)
                       }
@@ -472,11 +472,11 @@ export default function SideProjects() {
       {/* Fixed Contact Icon */}
       <div
         onClick={handleCreatePostClick}
-        className="fixed bottom-4 right-4 bg-[#3CA9F9] text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
+        className="fixed bottom-4 right-4 bg-gray-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
         style={{ zIndex: 1000 }}
         title="Tạo bài đăng"
       >
-        <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
+        <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
       </div>
     </div>
   );

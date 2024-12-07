@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from application.models import *
 from application.serializers.post_serializer import *
 from application.utils import PostGetter
+from application.recommendation.hybrid_filtering import hybrid_filtering
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from accounts.permission import *
@@ -580,3 +581,23 @@ class MarkPostAsSoldView(APIView):
     #     return Response(
     #         {"message": "Mở bài đăng thành công"}, status=status.HTTP_200_OK
     #     )
+
+
+class RecommendedPostView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_id = request.user.user_id
+        num_recommendations = int(request.query_params.get("num_recommendations", 5))
+
+        recommended_posts = hybrid_filtering(user_id, num_recommendations)
+        serializer = PostSerializer(recommended_posts, many=True)
+
+        return Response(
+            {
+                "message": "Danh sách bài đăng được đề xuất",
+                "count": len(recommended_posts),
+                "data": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )

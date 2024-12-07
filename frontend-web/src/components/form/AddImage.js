@@ -16,7 +16,7 @@ const AddImage = ({ onClose, onConfirm, compulsory }) => {
             </button>
             <button
               onClick={onConfirm}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg"
             >
               Thêm ảnh
             </button>
@@ -37,7 +37,7 @@ const AddImage = ({ onClose, onConfirm, compulsory }) => {
           <div className="flex justify-center">
             <button
               onClick={onConfirm}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+              className="bg-gray-500 text-white px-4 py-2 rounded-lg"
             >
               Tiếp tục
             </button>

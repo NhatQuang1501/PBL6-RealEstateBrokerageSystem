@@ -139,7 +139,7 @@ const BasicInformation = ({
   ].filter((item) => item.value);
 
   return (
-    <div className="space-y-16 my-12 px-6 bg-blue-100 p-10 rounded-2xl">
+    <div className="space-y-16 my-12 px-6 bg-gray-200 p-10 rounded-2xl">
       {/* Giá */}
       <div className="flex justify-center">
         <div className="relative p-12 w-full sm:w-3/4 lg:w-4/5 rounded-2xl overflow-hidden bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-2xl hover:scale-105 transform transition-all duration-300">
@@ -157,11 +157,11 @@ const BasicInformation = ({
         {infoItems.map((item, index) => (
           <div
             key={index}
-            className="relative flex flex-col items-center p-8 rounded-2xl bg-cover bg-center text-[#b2ebf2] shadow-lg transform transition-all duration-350 hover:-translate-y-2 hover:scale-105 hover:text-white"
+            className="relative flex flex-col items-center p-8 rounded-2xl bg-cover bg-center text-gray-200 shadow-lg transform transition-all duration-350 hover:-translate-y-2 hover:scale-105 hover:text-white"
             style={{ backgroundImage: `url(${item.imageUrl})` }}
           >
             {/* Overlay layer */}
-            <div className="absolute inset-0 bg-black opacity-70 rounded-2xl transition-opacity duration-300 hover:opacity-50"></div>
+            <div className="absolute inset-0 bg-black opacity-70 rounded-2xl transition-opacity duration-300 hover:opacity-20"></div>
 
             <div className="relative z-10 text-center transition-colors duration-300 ">
               <FontAwesomeIcon icon={item.icon} className="text-4xl mb-4 " />

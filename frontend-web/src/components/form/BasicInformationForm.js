@@ -46,7 +46,7 @@ const BasicInformation = () => {
   const [district, setDistrict] = useState("");
   const [city, setCity] = useState("Đà Nẵng");
   const [price, setPrice] = useState("");
-  const [area, setArea] = useState("");
+  const [area, setArea] = useState();
   const [legal_status, setLegal_status] = useState("");
   const [orientation, setOrientation] = useState("");
   const [floor, setFloor] = useState(null);
@@ -63,8 +63,8 @@ const BasicInformation = () => {
   const [map_sheet_number, setMap_sheet_number] = useState("Chưa có thông tin");
 
   // attribute for AI
-  const [width, setWidth] = useState(null);
-  const [length, setLength] = useState(null);
+  const [width, setWidth] = useState();
+  const [length, setLength] = useState();
   const [has_frontage, setHas_frontage] = useState("");
   const [has_car_lane, setHas_car_lane] = useState("");
   const [has_rear_expansion, setHas_rear_expansion] = useState("");
@@ -533,24 +533,55 @@ const BasicInformation = () => {
     area,
   ]);
 
+  // W-L to num
+  const handleWidthChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setWidth(numericValue);
+    } else {
+      setWidth("");
+    }
+  };
+
+  const handleLengthChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setLength(numericValue);
+    } else {
+      setLength("");
+    }
+  };
+
+  const handleAreaChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setArea(numericValue);
+    } else {
+      setArea("");
+    }
+  };
+
   return (
     <div className="mt-5 mb-[10rem] justify-center font-montserrat">
-      <div className="flex items-center p-3 space-x-2 w-[20rem] shadow-lg shadow-[#E4FFFC] rounded-[3rem]">
+      <div className="flex items-center p-3 space-x-2 w-[20rem]">
         <FontAwesomeIcon
           icon={faPlus}
-          className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
+          className="text-white bg-gray-500 p-3 w-5 h-5 rounded-full"
         />
-        <h3 className="text-2xl font-bold text-[#3CA9F9] underline">
+        <h3 className="text-2xl font-bold text-gray-500 underline">
           Tạo bài đăng
         </h3>
       </div>
 
-      <div className="w-full p-8 mt-8 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl">
+      <div className="w-full p-8 mt-8 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-gray-200">
         <button
           className="block text-left"
           onClick={() => (window.location.href = "/user/create-post")}
         >
-          <h2 className="text-black font-extrabold p-3">
+          {/* <h2 className="text-black font-extrabold">
+            Chọn loại hình bất động sản:
+          </h2> */}
+          <h2 className="text-xl font-bold text-gray-500 mb-10">
             Chọn loại hình bất động sản:
           </h2>
         </button>
@@ -618,16 +649,13 @@ const BasicInformation = () => {
         {/* Handle select */}
         {showForm && selectedProperty === "house" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-black mb-10">
+            <h2 className="text-xl font-bold text-gray-500 mb-10">
               Thông tin cơ bản
             </h2>
-            <form
-              className="p-8 rounded-lg shadow-xl bg-white"
-              onSubmit={handleSubmit}
-            >
+            <form className="p-8 rounded-lg shadow-xl" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -744,7 +772,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tình trạng pháp lý */}
                   <div className="relative mb-6">
                     <label
@@ -866,7 +894,8 @@ const BasicInformation = () => {
                       min="0"
                       id="area"
                       value={area}
-                      onChange={(e) => setArea(e.target.value)}
+                      // onChange={(e) => setArea(e.target.value)}
+                      onChange={handleAreaChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1005,7 +1034,8 @@ const BasicInformation = () => {
                       step="any"
                       id="width"
                       value={width}
-                      onChange={(e) => setWidth(e.target.value)}
+                      // onChange={(e) => setWidth(e.target.value)}
+                      onChange={handleWidthChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1032,7 +1062,8 @@ const BasicInformation = () => {
                       step="any"
                       id="length"
                       value={length}
-                      onChange={(e) => setLength(e.target.value)}
+                      // onChange={(e) => setLength(e.target.value)}
+                      onChange={handleLengthChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1264,7 +1295,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >
@@ -1277,16 +1308,13 @@ const BasicInformation = () => {
 
         {showForm && selectedProperty === "land" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-[#3CA9F9]">
+            <h2 className="text-xl font-bold text-gray-500 mb-10">
               Thông tin cơ bản
             </h2>
-            <form
-              className="p-6 rounded-lg shadow-lg bg-white"
-              onSubmit={handleSubmit}
-            >
+            <form className="p-6 rounded-lg" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -1403,7 +1431,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tình trạng pháp lý */}
                   <div className="relative mb-6">
                     <label
@@ -1414,7 +1442,7 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <select
-                        className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         id="legal_status"
                         value={legal_status}
                         onChange={(e) => setLegal_status(e.target.value)}
@@ -1525,7 +1553,8 @@ const BasicInformation = () => {
                       min="0"
                       id="area"
                       value={area}
-                      onChange={(e) => setArea(e.target.value)}
+                      // onChange={(e) => setArea(e.target.value)}
+                      onChange={handleAreaChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1613,7 +1642,8 @@ const BasicInformation = () => {
                       step="any"
                       id="width"
                       value={width}
-                      onChange={(e) => setWidth(e.target.value)}
+                      // onChange={(e) => setWidth(e.target.value)}
+                      onChange={handleWidthChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1640,7 +1670,8 @@ const BasicInformation = () => {
                       step="any"
                       id="length"
                       value={length}
-                      onChange={(e) => setLength(e.target.value)}
+                      // onChange={(e) => setLength(e.target.value)}
+                      onChange={handleLengthChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1758,7 +1789,7 @@ const BasicInformation = () => {
                       />
                     </div>
                     {/* Giá trị giá bán đề xuất */}
-                    <div className="prediction-result bg-blue-100 border border-green-300 p-6 rounded-lg shadow-lg flex items-center space-x-4 mt-5">
+                    <div className="prediction-result  border border-green-300 p-6 rounded-lg shadow-lg flex items-center space-x-4 mt-5">
                       {loading && (
                         <div className="flex items-center text-blue-500">
                           <FaSpinner className="animate-spin mr-2 text-xl" />
@@ -1873,7 +1904,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >

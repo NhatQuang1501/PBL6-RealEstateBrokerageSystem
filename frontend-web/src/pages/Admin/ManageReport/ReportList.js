@@ -7,6 +7,12 @@ const ReportList = () => {
   const [error, setError] = useState(null);
   const { sessionToken } = useAppContext();
 
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   // Gọi API để lấy danh sách báo cáo
   useEffect(() => {
     const fetchReports = async () => {
@@ -29,6 +35,10 @@ const ReportList = () => {
 
     fetchReports();
   }, [sessionToken]);
+
+  const handleViewPost = (postId, commentId) => {
+    window.location.href = `/admin/detail-post/${postId}?comment_id=${commentId}`;
+  };
 
   // Hiển thị dữ liệu khi đang tải hoặc khi có lỗi
   if (loading) return <div className="text-center text-xl">Đang tải...</div>;
@@ -93,20 +103,42 @@ const ReportList = () => {
               </div>
 
               {/* Mô tả báo cáo */}
-              <div className="mb-4">
-                <p className="text-md text-red-500 font-semibold ">
+              <div className="mb-4 p-4 bg-white shadow-md rounded-lg">
+                <p className="text-md text-red-500 font-semibold mb-2">
                   Mô tả báo cáo:
                 </p>
-                <br />
                 <p
-                  dangerouslySetInnerHTML={{ __html: report.description }}
-                  className="text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: isExpanded
+                      ? report.description
+                      : `${report.description.substring(0, 100)}...`,
+                  }}
+                  className="text-sm text-gray-700"
                 ></p>
+                <button
+                  onClick={toggleExpand}
+                  className="text-blue-500 hover:underline mt-2 focus:outline-none"
+                >
+                  {isExpanded ? "Thu gọn" : "Xem thêm"}
+                </button>
               </div>
 
               {/* Thời gian tạo báo cáo và trạng thái */}
-              <div className="flex justify-between items-center text-sm text-gray-500">
+              <div className="flex justify-start gap-5 items-center text-sm text-gray-500">
                 <span>{new Date(report.created_at).toLocaleString()}</span>
+                {report.report_type === "Bài đăng" ||
+                report.report_type === "Bình luận" ? (
+                  <button
+                    className="px-4 py-2 rounded-full text-white bg-blue-500"
+                    onClick={() => handleViewPost(report.post_id, report.comment_id)}
+                  >
+                    Đến bài đăng
+                  </button>
+                ) : (
+                  <button className="px-4 py-2 rounded-full text-white bg-blue-500">
+                    Xem thông tin người dùng
+                  </button>
+                )}
                 <button
                   className={`px-4 py-2 rounded-full text-white ${
                     report.resolved ? "bg-green-500" : "bg-yellow-500"

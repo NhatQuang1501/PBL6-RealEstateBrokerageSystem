@@ -18,8 +18,6 @@ import Error from "./components/error/error";
 
 import PersonalProfile from "./pages/user/PersonalProfile";
 
-import ChatPage from "./components/ChatBox/ChatPage";
-
 import UpdatePost from "./pages/user/UpdatePost";
 import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
@@ -37,7 +35,7 @@ function App() {
 
   return (
     <AppProvider>
-      <div className="flex flex-col min-h-screen bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]">
+      <div className="flex flex-col min-h-screen">
         <Router>
           <Routes>
             {/* User */}
