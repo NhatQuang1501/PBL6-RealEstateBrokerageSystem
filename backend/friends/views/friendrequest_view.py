@@ -352,7 +352,13 @@ class NegotiationChatRoomListView(APIView):
 
     def get(self, request):
         params = {key.strip(): value for key, value in request.query_params.items()}
-        user_id = params.get("user_id").strip()
+        user_id = request.query_params.get("user_id", "").strip()
+
+        if not user_id:
+            return Response(
+                {"message": "Thiếu user_id trong request."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         user = get_object_or_404(User, user_id=user_id)
 
@@ -363,12 +369,12 @@ class NegotiationChatRoomListView(APIView):
         data = []
         for chatroom in chatrooms:
             other_participants = chatroom.participants.exclude(user_id=user_id)
-
             for participant in other_participants:
                 data.append(
                     {
                         "chatroom_id": chatroom.chatroom_id,
                         "chatroom_name": chatroom.chatroom_name,
+                        "negotiation_id": chatroom.negotiation.negotiation_id,
                         "other_participant": {
                             "user_id": participant.user_id,
                             "username": participant.username,
@@ -381,11 +387,11 @@ class NegotiationChatRoomListView(APIView):
                     }
                 )
 
-            return Response(
-                {
-                    "message": f"Danh sách các chatroom của {user.username} và người khác",
-                    "count": len(data),
-                    "data": data,
-                },
-                status=status.HTTP_200_OK,
-            )
+        return Response(
+            {
+                "message": f"Danh sách các chatroom của {user.username} và người khác",
+                "count": len(data),
+                "data": data,
+            },
+            status=status.HTTP_200_OK,
+        )
