@@ -12,11 +12,10 @@ def get_tokens_for_user(user):
     refresh["role"] = user.role
 
     access_token = refresh.access_token
-    access_token = refresh.access_token
     access_token["role"] = user.role
     return {
         "refresh": str(refresh),
-        "access": str(refresh.access_token),
+        "access": str(access_token),
     }
 
 
@@ -27,26 +26,30 @@ def send_email_verification(user, request):
 
     current_site = get_current_site(request).domain
     relativeLink = reverse("email-verify")
-    absurl = f"http://{current_site}{relativeLink}?token={str(token)}"
+    verification_url = f"http://{current_site}{relativeLink}?token={str(token)}"
 
     # absurl = (
     #     f"{request.scheme}://{request.get_host()}/auth/email-verify/?token={str(token)}"
     # )
 
-    subject = "Xác thực tài khoản bạn đã đăng ký tại website SweetHome"
+    subject = "Xác thực tài khoản bạn đã đăng ký tại website Sweet Home"
 
-    # Chỉnh sửa cách xây dựng body
     body = (
-        f"Xin chào {user.username},\n\n"
-        f"Nhấn vào link bên dưới để xác thực tài khoản của bạn:\n{absurl}\n"
-        "Cảm ơn vì đã sử dụng website của chúng tôi!"
+        f"Kính gửi {user.username},\n\n"
+        f"Cảm ơn bạn đã đăng ký tài khoản tại Sweet Home. Để hoàn tất việc đăng ký, vui lòng xác thực tài khoản của bạn bằng cách nhấn vào liên kết dưới đây:\n\n"
+        f"{verification_url}\n\n"
+        "Liên kết này có hiệu lực trong vòng 10 phút. Nếu liên kết hết hạn, vui lòng yêu cầu gửi lại email xác thực từ hệ thống.\n\n"
+        "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.\n\n"
+        "Xin cảm ơn vì đã tin tưởng và sử dụng dịch vụ của Sweet Home.\n\n"
+        "Trân trọng,\n"
+        "Ban Quản Trị Sweet Home"
     )
 
     # Tạo đối tượng EmailMultiAlternatives
     email = EmailMultiAlternatives(
         subject=subject,
         body=body,
-        from_email=settings.EMAIL_HOST_USER,  # Đảm bảo rằng bạn đã bật dòng này
+        from_email=settings.EMAIL_HOST_USER,
         to=[user.email],
     )
 
@@ -70,3 +73,56 @@ def token_blacklisted(token):
         return True
     except Exception as e:
         return False
+
+
+def send_email_account_lock(user, locked_reason, locked_date, unlocked_date):
+    subject = "Thông báo: Tài khoản của bạn trên Sweet Home đã bị khóa"
+
+    body = (
+        f"Kính gửi {user.username},\n\n"
+        f"Chúng tôi xin thông báo rằng tài khoản của bạn trên hệ thống Sweet Home đã bị khóa với lý do sau:\n"
+        f"  - {locked_reason}\n\n"
+        f"Tài khoản của bạn bị khoá từ {locked_date.strftime('%H:%M:%S ngày %d/%m/%Y')} và sẽ được mở khóa vào lúc {unlocked_date.strftime('%H:%M:%S ngày %d/%m/%Y')}.\n\n"
+        "Trong thời gian tài khoản bị khóa, bạn sẽ không thể đăng nhập hoặc sử dụng các chức năng của hệ thống. "
+        "Nếu bạn cần hỗ trợ hoặc muốn khiếu nại về quyết định này, vui lòng liên hệ với chúng tôi qua email hoặc hotline dưới đây:\n\n"
+        "  - Email hỗ trợ: quangpbl1@gmail.com\n"
+        "  - Hotline: 0123 456 789\n\n"
+        "Chúng tôi chân thành xin lỗi nếu điều này gây bất tiện cho bạn và cảm ơn bạn đã đồng hành cùng Sweet Home.\n\n"
+        "Trân trọng,\n"
+        "Ban Quản Trị Sweet Home"
+    )
+
+    # Tạo đối tượng EmailMultiAlternatives
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=body,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user.email],
+    )
+
+    email.send()
+
+
+def send_email_account_unlock(user, unlocked_date):
+    subject = "Thông báo: Tài khoản của bạn trên Sweet Home đã được mở khóa"
+
+    body = (
+        f"Kính gửi {user.username},\n\n"
+        f"Chúng tôi xin thông báo rằng tài khoản của bạn trên hệ thống Sweet Home đã được mở khóa từ {unlocked_date.strftime('%H:%M:%S ngày %d/%m/%Y')}.\n\n"
+        "Bạn có thể đăng nhập và sử dụng các chức năng của hệ thống như bình thường. "
+        "Nếu bạn có bất kỳ câu hỏi hoặc cần hỗ trợ, vui lòng liên hệ với chúng tôi qua email hoặc hotline dưới đây:\n\n"
+        "  - Email hỗ trợ: quangpbl1@gmail.com\n"
+        "  - Hotline: 0123 456 789\n\n"
+        "Cảm ơn bạn đã đồng hành cùng Sweet Home.\n\n"
+        "Trân trọng,\n"
+        "Ban Quản Trị Sweet Home"
+    )
+
+    email = EmailMultiAlternatives(
+        subject=subject,
+        body=body,
+        from_email=settings.EMAIL_HOST_USER,
+        to=[user.email],
+    )
+
+    email.send()
