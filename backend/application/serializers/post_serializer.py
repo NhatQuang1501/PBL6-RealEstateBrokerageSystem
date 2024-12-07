@@ -234,11 +234,13 @@ class PostCommentSerializer(serializers.ModelSerializer):
             "fullname",
             "comment",
             "created_at",
+            "is_report_removed",
         ]
         extra_kwargs = {
             "comment_id": {"read_only": True},
             "created_at": {"read_only": True},
             "comment": {"required": True},
+            "is_report_removed": {"read_only": True},
         }
 
     def create(self, validated_data):
