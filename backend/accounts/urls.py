@@ -22,4 +22,6 @@ urlpatterns = [
     path("lock-users/", LockUserView.as_view(), name="lock-user-list"),
     path("lock-users/<str:user_id>/", LockUserView.as_view(), name="lock-user"),
     path("unlock-users/<str:user_id>/", UnlockUserView.as_view(), name="unlock-user"),
+    path("report-comment/<str:pk>/", AdminPostCommentView.as_view()),
+    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
 ]

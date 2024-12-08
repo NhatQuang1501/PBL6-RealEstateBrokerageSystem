@@ -169,6 +169,8 @@ class PostComment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    is_report_removed = models.BooleanField(default=False)
+
     def __str__(self):
         return str(self.comment_id)
 

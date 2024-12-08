@@ -575,3 +575,167 @@ class UnlockUserView(APIView):
             {"message": f"Tài khoản của người dùng {user.username} đã được mở khóa"},
             status=status.HTTP_200_OK,
         )
+
+
+class LockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        locked_users = (
+            User.objects.filter(is_locked=True)
+            .select_related("profile")
+            .order_by("-created_at")
+        )
+        results = []
+
+        for user in locked_users:
+            user_data = UserSerializer(user).data
+            user_profile_data = (
+                UserProfileSerializer(user.profile).data
+                if hasattr(user, "profile")
+                else {}
+            )
+
+            # Thêm thông tin về khóa tài khoản
+            lock_info = {
+                "is_locked": user.is_locked,
+                "locked_reason": user.locked_reason,
+                "locked_date": user.locked_date,
+                "unlocked_date": user.unlocked_date,
+            }
+
+            # Kết hợp tất cả thông tin
+            combined_data = {
+                **user_data,
+                "profile": user_profile_data,
+                "lock_info": lock_info,
+            }
+            results.append(combined_data)
+
+        return Response(
+            {"count": len(results), "data": results},
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+        locked_date = datetime.now()
+        unlock_date_str = request.data.get("unlocked_date")
+        locked_reason = request.data.get("locked_reason", None)
+
+        if not unlock_date_str:
+            unlocked_date = timezone.now() + timedelta(days=100)
+        else:
+            try:
+                unlocked_date = datetime.strptime(unlock_date_str, "%Y-%m-%d %H:%M:%S")
+                unlocked_date = timezone.make_aware(
+                    unlocked_date, timezone.get_current_timezone()
+                )
+            except ValueError:
+                return Response(
+                    {
+                        "error": "Thời gian khóa không đúng định dạng. Định dạng đúng là YYYY-MM-DD HH:MM:SS"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if unlocked_date < timezone.now():
+            return Response(
+                {"error": "Thời gian mở khóa phải sau thời điểm hiện tại"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not locked_reason:
+            return Response(
+                {"error": "Hãy cung cấp lý do khóa tài khoản"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user.is_locked:
+            return Response(
+                {"error": "Tài khoản này đã bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_locked = True
+        user.locked_date = locked_date
+        user.unlocked_date = unlocked_date
+        user.locked_reason = locked_reason
+        user.save()
+
+        send_email_account_lock(user, locked_reason, locked_date, unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã bị khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class UnlockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+
+        if not user.is_locked:
+            return Response(
+                {"error": "Tài khoản này chưa bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        early_unlocked_date = datetime.now()
+
+        user.is_locked = False
+        user.locked_date = None
+        user.unlocked_date = None
+        user.locked_reason = None
+        user.save()
+
+        send_email_account_unlock(user, early_unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã được mở khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class AdminPostCommentView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def put(self, request, pk):
+        comment = get_object_or_404(PostComment, comment_id=pk)
+        comment.is_report_removed = True
+        comment.save()
+        return Response(
+            {"message": "Ẩn bình luận thành công"},
+            status=status.HTTP_200_OK,
+        )
+    
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not user.check_password(old_password):
+            return Response(
+                {"message": "Mật khẩu không chính xác"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if old_password == new_password:
+            return Response(
+                {"message": "Mật khẩu mới không được giống mật khẩu cũ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new_password)
+        user.save()
+    
+        return Response(
+            {"message": "Đổi mật khẩu thành công"},
+            status=status.HTTP_200_OK,
+        )
