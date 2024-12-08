@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import logout
 from rest_framework import status, serializers, views
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,11 +9,10 @@ from .models import *
 from .utils import *
 import logging
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from .permission import *
 from rest_framework.permissions import IsAuthenticated
 from django.views.generic import View
-from django.shortcuts import render
 from django.utils import timezone
 from datetime import datetime, timedelta
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
@@ -448,7 +448,9 @@ class WelcomeView(APIView):
 
     def get(self, request):
         return Response(
-            {"message": "Welcome to Sweet Home!"},
+            {
+                "message": "Chào mừng bạn đến với Sweet Home! - Hệ thống mạng xã hội và môi giới bất động sản"
+            },
             status=status.HTTP_200_OK,
         )
 

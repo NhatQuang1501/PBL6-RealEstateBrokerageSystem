@@ -201,13 +201,11 @@ CACHES = {
 
 
 # Celery
-
 CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Ho_Chi_Minh"
 CELERY_ENABLE_UTC = True
-
 
 CELERY_BEAT_SCHEDULE = {
     "unlock_user_accounts": {
