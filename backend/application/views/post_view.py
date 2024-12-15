@@ -18,6 +18,7 @@ from django.db.models import Q, Count, F
 import unicodedata
 import re
 from datetime import timedelta
+from notification.notification_service import NotificationService
 
 
 class PostView(APIView):
@@ -139,6 +140,7 @@ class PostView(APIView):
     def post(self, request):
         post_data = request.data.copy()
         post_data["user_id"] = request.user.user_id
+        author = request.user
 
         # Kiểm tra và xử lý giá trị null cho các trường DecimalField
         decimal_fields = [
@@ -159,6 +161,23 @@ class PostView(APIView):
         if post_serializer.is_valid():
             post_serializer.save()
 
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã tạo bài đăng mới"
+                author_id = author.user_id
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
+                additional_info = {
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = "Bạn đã tạo bài đăng thành công, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti, additional_info)
+
             return Response(
                 {"message": "Tạo bài đăng thành công", "data": post_serializer.data},
                 status=status.HTTP_201_CREATED,
@@ -171,6 +190,7 @@ class PostView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+        author = request.user
 
         # Kiểm tra user hiện tại không phải là người đăng
         if post.user_id != request.user:
@@ -211,6 +231,23 @@ class PostView(APIView):
 
         if post_serializer.is_valid():
             post_serializer.save()
+
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã chỉnh sửa 1 bài đăng"
+                author_id = author.user_id
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
+                additional_info = {
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = f"Bạn đã chỉnh sửa 1 bài đăng, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti)
 
             return Response(
                 {

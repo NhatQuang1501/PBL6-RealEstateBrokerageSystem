@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "friends",
     "channels",
     "chatting",
+    "notification",
     "prediction",
 ]
 

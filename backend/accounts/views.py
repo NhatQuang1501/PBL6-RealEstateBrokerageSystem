@@ -260,11 +260,13 @@ class LoginView(APIView):
                     serializer = UserProfileSerializer(user_profile)
                 elif role == "admin":
                     serializer = UserSerializer(user)
+                    serializer.data["user_id"] = str(user.user_id)
 
                 # Trả về thông tin đăng nhập thành công cùng với token
                 return Response(
                     {
                         "message": "Đăng nhập thành công",
+                        "user_id": str(user.user_id) if role == "admin" else None,
                         "data": serializer.data,
                         "role": role,
                         "tokens": token,
@@ -710,7 +712,7 @@ class AdminPostCommentView(APIView):
             {"message": "Ẩn bình luận thành công"},
             status=status.HTTP_200_OK,
         )
-    
+
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
@@ -734,7 +736,7 @@ class ChangePasswordView(APIView):
 
         user.set_password(new_password)
         user.save()
-    
+
         return Response(
             {"message": "Đổi mật khẩu thành công"},
             status=status.HTTP_200_OK,
