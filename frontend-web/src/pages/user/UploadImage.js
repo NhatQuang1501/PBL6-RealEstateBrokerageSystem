@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 function UploadImage() {
   const [images, setImages] = useState([]);
@@ -59,13 +57,6 @@ function UploadImage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-blue-200 p-6 font-montserrat">
       <div className="bg-white shadow-lg rounded-lg p-8 w-[60rem] h-[25rem] mb-[10rem]">
-        <button
-          className="bg-[#3CA9F9] text-white px-5 py-3 rounded-full mt-5 self-start flex items-center"
-          onClick={() => window.history.back()}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} className="mr-2" />
-          Quay lại
-        </button>
         <h2 className="text-2xl font-bold text-center text-[#3CA9F9] mb-4">
           Tải Ảnh Lên
         </h2>

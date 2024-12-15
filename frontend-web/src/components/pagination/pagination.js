@@ -47,8 +47,17 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     }
   };
 
+  const updatePage = (page) => {
+    // Lưu `currentPage` vào `localStorage`
+    localStorage.setItem("currentPage", page);
+    onPageChange(page);
+
+    // Reload trang
+    window.location.reload();
+  };
+
   return (
-    <div className="flex justify-between items-center mt-4 bg-gray-200 p-2 rounded-lg w-full border-2 border-black">
+    <div className="flex justify-between items-center mt-2 bg-gray-200 p-2 rounded-lg w-full border-2 border-black">
       <button
         className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-lg font-bold"
         onClick={handlePreviousPage}
@@ -64,10 +73,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             key={index}
             className={`w-12 h-10 flex items-center justify-center rounded-full ${
               currentPage === page
-                ? "bg-[#3CA9F9] text-white"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-300 text-gray-800"
             } ${page === "..." ? "cursor-default" : ""}`}
-            onClick={() => page !== "..." && onPageChange(page)}
+            onClick={() => page !== "..." && updatePage(page)}
             disabled={page === "..."}
           >
             {page}

@@ -82,12 +82,12 @@ export default function Portfolio() {
   }, [sessionToken, id, filterStatus, userId]);
 
   return (
-    <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] p-6 rounded-lg">
+    <div className=" p-6 rounded-lg">
       <div className="flex flex-row justify-between gap-10 border-b-[2px] border-solid border-gray-400 ">
         <h2 className="text-lg font-bold mb-4">
           <button
             className={`text-black ${
-              filterStatus === "Đã duyệt" ? "underline text-blue-500" : ""
+              filterStatus === "Đã duyệt" ? "underline text-gray-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã duyệt")}
           >
@@ -97,7 +97,7 @@ export default function Portfolio() {
         <h2 className="text-lg font-bold mb-4">
           <button
             className={`text-black ${
-              filterStatus === "Đã lưu" ? "underline text-blue-500" : ""
+              filterStatus === "Đã lưu" ? "underline text-gray-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã lưu")}
           >
@@ -109,7 +109,7 @@ export default function Portfolio() {
             <button
               className={`text-black ${
                 filterStatus === "Đang chờ duyệt"
-                  ? "underline text-blue-500"
+                  ? "underline text-gray-500"
                   : ""
               }`}
               onClick={() => handleFilterChange("Đang chờ duyệt")}

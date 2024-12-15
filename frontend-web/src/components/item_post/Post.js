@@ -18,7 +18,14 @@ import {
   faEdit,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaPen, FaRegFileAlt } from "react-icons/fa";
+import {
+  FaPen,
+  FaRegFileAlt,
+  FaDollarSign,
+  FaCreditCard,
+  FaCalendarAlt,
+  FaStickyNote,
+} from "react-icons/fa";
 
 import ProfileInformation from "../profile_information/ProfileInformation";
 import { useAppContext } from "../../AppProvider";
@@ -37,6 +44,9 @@ function Post({ post, type }) {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [price, setPrice] = useState("");
+  const [negotiationDate, setNegotiationDate] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [negotiationNote, setNegotiationNote] = useState("");
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -51,67 +61,71 @@ function Post({ post, type }) {
     }
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setReactionsCount(post.reactions_count);
-      setSavesCount(post.save_count);
-    }, 2000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setReactionsCount(post.reactions_count);
+  //     setSavesCount(post.save_count);
+  //   }, 2000);
 
-    return () => clearInterval(interval);
-  }, [post.reactions_count, post.save_count]);
+  //   return () => clearInterval(interval);
+  // }, [post.reactions_count, post.save_count]);
 
   useEffect(() => {
     setIsClicked(false);
     setIsSaved(false);
     // Check like
     const checkLiked = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/user-posts-like/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
-            },
+      if (role !== "admin" && role) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/user-posts-like/`,
+            {
+              headers: {
+                Authorization: `Bearer ${sessionToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.status === 200) {
+            const likedPosts = response.data.map((post) => post.post_id);
+            if (likedPosts.includes(post.post_id)) {
+              setIsClicked(true);
+            }
           }
-        );
-        if (response.status === 200) {
-          const likedPosts = response.data.map((post) => post.post_id);
-          if (likedPosts.includes(post.post_id)) {
-            setIsClicked(true);
-          }
+        } catch (error) {
+          console.error("Error checking liked posts:", error);
         }
-      } catch (error) {
-        console.error("Error checking liked posts:", error);
       }
     };
 
     // Check save
     const checkSaved = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/saved-posts/${id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-              "Content-Type": "application/json",
-            },
+      if (role !== "admin" && role) {
+        try {
+          const response = await axios.get(
+            `http://127.0.0.1:8000/api/saved-posts/${id}/`,
+            {
+              headers: {
+                Authorization: `Bearer ${sessionToken}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (response.status === 200) {
+            const savedPosts = response.data.map((post) => post.post_id);
+            if (savedPosts.includes(post.post_id)) {
+              setIsSaved(true);
+            }
           }
-        );
-        if (response.status === 200) {
-          const savedPosts = response.data.map((post) => post.post_id);
-          if (savedPosts.includes(post.post_id)) {
-            setIsSaved(true);
-          }
+        } catch (error) {
+          console.error("Error checking saved posts:", error);
         }
-      } catch (error) {
-        console.error("Error checking saved posts:", error);
       }
     };
 
     checkSaved();
     checkLiked();
-  }, [post.post_id, sessionToken, id]);
+  }, [post.post_id, sessionToken, id, role]);
 
   const handleClick = useCallback(async () => {
     if (!sessionToken) {
@@ -140,14 +154,14 @@ function Post({ post, type }) {
       }
     }
 
-    const interval = setInterval(() => {
-      setReactionsCount(post.reactions_count);
-      setSavesCount(post.save_count);
-    }, 2000);
+    // const interval = setInterval(() => {
+    //   setReactionsCount(post.reactions_count);
+    //   setSavesCount(post.save_count);
+    // }, 2000);
 
     // Dọn dẹp interval khi component bị unmount
-    return () => clearInterval(interval);
-  }, [sessionToken, post.post_id, post.reactions_count, post.save_count]);
+    // return () => clearInterval(interval);
+  }, [sessionToken, post.post_id]);
 
   const handleSaveClick = useCallback(async () => {
     if (!sessionToken) {
@@ -244,15 +258,32 @@ function Post({ post, type }) {
     }
   };
 
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
+  const handlePriceChange = (e) => {
+    let value = e.target.value;
+    value = value.replace(/[^0-9,]/g, "");
+    const numericValue = value.replace(/,/g, "");
+    const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+    setPrice(formattedValue);
   };
 
   const handleSubmit = async () => {
+    if (!price || !negotiationDate || !paymentMethod || !negotiationNote) {
+      alert("Vui lòng điền đầy đủ các trường bắt buộc.");
+      return;
+    }
+
+    const numericPrice = price.replace(/,/g, "");
+
     try {
       const response = await axios.post(
         `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
-        { offer_price: price },
+        {
+          negotiation_price: parseInt(numericPrice, 10),
+          negotiation_date: negotiationDate,
+          payment_method: paymentMethod,
+          negotiation_note: negotiationNote,
+        },
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -263,16 +294,25 @@ function Post({ post, type }) {
       console.log("Negotiation response:", response.data);
       setIsPopupOpen(false);
       setPrice("");
+      setNegotiationDate("");
+      setPaymentMethod("");
+      setNegotiationNote("");
       alert("Đã gửi yêu cầu thương lượng thành công!");
       navigate(`/user/detail-post/${post.post_id}`);
     } catch (error) {
       console.error("Error submitting negotiation:", error);
+      alert(
+        "Mức giá thương lượng bạn đưa ra không phù hợp. Vui lòng hãy thử lại với mức giá khác."
+      );
     }
   };
 
   const handleClose = () => {
     setIsPopupOpen(false);
     setPrice("");
+    setNegotiationDate("");
+    setPaymentMethod("");
+    setNegotiationNote("");
   };
 
   return (
@@ -312,7 +352,7 @@ function Post({ post, type }) {
                 <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-medium">Giá bán:</p>
+                    <p className="text-lg font-extrabold">Giá bán:</p>
                   </div>
                   <p className="text-2xl font-bold mt-1 ml-4">
                     {formatPrice(post.price)}
@@ -329,44 +369,45 @@ function Post({ post, type }) {
 
               {/* Thông tin chung */}
               <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Phường {post.ward}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district},
+                    Thành phố {post.city}
                   </p>
                   {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
                   <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
                     Diện tích:
                   </p>
                   <p className="text-center mt-1">{post.area}m²</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faBed} className="mr-2" />
                     Số phòng ngủ:
                   </p>
                   <p className="text-center mt-1">{post.bedroom} phòng ngủ</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faBath} className="mr-2" />
                     Số phòng tắm:
                   </p>
                   <p className="text-center mt-1">{post.bathroom} phòng tắm</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faCompass} className="mr-2" />
                     Hướng nhà:
                   </p>
@@ -374,7 +415,7 @@ function Post({ post, type }) {
                 </div>
 
                 <div
-                  className="bg-blue-100 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                   onClick={handleDetailClick}
                 >
                   <p className="text-black font-bold text-center italic">
@@ -391,7 +432,7 @@ function Post({ post, type }) {
                 <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-medium">Giá bán:</p>
+                    <p className="text-lg font-extrabold">Giá bán:</p>
                   </div>
                   <p className="text-2xl font-bold mt-1 ml-4">
                     {formatPrice(post.price)}
@@ -408,51 +449,43 @@ function Post({ post, type }) {
 
               {/* Thông tin chung */}
               <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
                     Địa chỉ:
                   </p>
                   <p className="text-center mt-1">
-                    {post.address}, Quận {post.district}, Thành phố {post.city}
+                    {post.address}, Phường {post.ward}, Quận {post.district},
+                    Thành phố {post.city}
                   </p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
                     Diện tích:
                   </p>
                   <p className="text-center mt-1">{post.area}m²</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faRoad} className="mr-2" />
                     Mặt tiền (m):
                   </p>
                   <p className="text-center mt-1">{post.frontage} m</p>
                 </div>
 
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
                     <FontAwesomeIcon icon={faCompass} className="mr-2" />
                     Hướng đất:
                   </p>
                   <p className="text-center mt-1">{post.orientation}</p>
                 </div>
 
-                {/* <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-medium text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
-                    Tọa độ
-                  </p>
-                  <p className="text-center mt-1">KĐ: {post.longitude}</p>
-                  <p className="text-center mt-1">VĐ: {post.latitude}</p>
-                </div> */}
-
-                <div className="bg-blue-100 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-medium text-center flex items-center justify-center">
+                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
+                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
                     <FaRegFileAlt className="mr-2" />
                     Tình trạng pháp lý:
                   </p>
@@ -460,7 +493,7 @@ function Post({ post, type }) {
                 </div>
 
                 <div
-                  className="bg-blue-100 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
                   onClick={handleDetailClick}
                 >
                   <p className="text-black font-bold text-center italic">
@@ -472,7 +505,7 @@ function Post({ post, type }) {
           )}
 
           <div className="flex justify-center ">
-            <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-[#b2ebf2] border-solid pt-5 pl-5 pr-5 rounded-t-xl">
+            <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-gray-200 border-solid pt-5 pl-5 pr-5">
               {role !== "admin" && (
                 <>
                   {/* Heart */}
@@ -573,32 +606,132 @@ function Post({ post, type }) {
                 </button>
                 {isPopupOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-8 rounded-xl shadow-2xl text-center max-w-lg">
-                      <h2 className="text-xl font-bold text-gray-800 mb-4">
-                        Hãy nhập giá tiền bạn muốn thương lượng
+                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                      <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                        Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                       </h2>
-                      <p className="text-sm text-gray-600 mb-6">
-                        <strong>Chú ý:</strong> Khi thương lượng, giá thương
-                        lượng mà bạn đưa ra không được nhỏ hơn{" "}
+                      <p className="text-sm text-gray-600 mb-6 text-center">
+                        <strong className="font-bold text-red-500">
+                          Chú ý:
+                        </strong>{" "}
+                        Khi thương lượng, giá thương lượng mà bạn đưa ra không
+                        được nhỏ hơn{" "}
                         <span className="text-red-500 font-semibold">70%</span>{" "}
                         giá tiền mà chủ bài viết đã đăng bán.
                       </p>
-                      <input
-                        type="number"
-                        value={price}
-                        min="0"
-                        onChange={handlePriceChange}
-                        className="border border-gray-300 p-3 rounded-lg w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                        placeholder="Nhập giá tiền (VNĐ)"
-                      />
+
+                      {/* Trường Giá Thương Lượng */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="price"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Giá Thương Lượng (VNĐ)
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaDollarSign className="text-gray-500" />
+                          </div>
+                          <input
+                            type="text"
+                            id="price"
+                            value={price}
+                            onChange={handlePriceChange}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="Nhập giá tiền (VNĐ)"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {/* Trường Ngày Thương Lượng */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="negotiationDate"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Ngày Bắt Đầu Giao Dịch
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaCalendarAlt className="text-gray-500" />
+                          </div>
+                          <input
+                            type="date"
+                            id="negotiationDate"
+                            value={negotiationDate}
+                            onChange={(e) => setNegotiationDate(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      {/* Trường Hình Thức Trả Tiền */}
+                      <div className="mb-4">
+                        <label
+                          htmlFor="paymentMethod"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Hình Thức Trả Tiền
+                        </label>
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3">
+                            <FaCreditCard className="text-gray-500" />
+                          </div>
+                          <select
+                            id="paymentMethod"
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            required
+                          >
+                            <option value="" disabled>
+                              Chọn hình thức trả tiền
+                            </option>
+                            <option value="trả góp">Trả góp</option>
+                            <option value="trả trước">Trả trước</option>
+                            <option value="một lần">Thanh toán một lần</option>
+                            <option value="khác">Khác</option>
+                            {/* Thêm các lựa chọn khác nếu cần */}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* Trường Ghi Chú Thêm */}
+                      <div className="mb-6">
+                        <label
+                          htmlFor="negotiationNote"
+                          className="block text-gray-800 font-bold mb-2"
+                        >
+                          Ghi Chú Thêm
+                        </label>
+                        <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
+                          <div className="px-3 mt-2">
+                            <FaStickyNote className="text-gray-500" />
+                          </div>
+                          <textarea
+                            id="negotiationNote"
+                            value={negotiationNote}
+                            onChange={(e) => setNegotiationNote(e.target.value)}
+                            className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                            placeholder="Ghi chú thêm (tùy chọn)"
+                            rows="3"
+                          ></textarea>
+                        </div>
+                      </div>
+
+                      {/* Nút Xác Nhận và Hủy Bỏ */}
                       <div className="flex justify-center gap-4">
                         <button
+                          type="button"
                           className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
                           onClick={handleSubmit}
                         >
                           Xác nhận
                         </button>
                         <button
+                          type="button"
                           className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
                           onClick={handleClose}
                         >
@@ -650,6 +783,7 @@ function Post({ post, type }) {
           name={post.user.username}
           user_id={post.user.user_id}
           date={post.created_at}
+          post_id={post.post_id}
         />
         <div className="flex justify-end items-center">
           <div className=" pr-3">

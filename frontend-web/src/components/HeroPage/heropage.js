@@ -73,9 +73,9 @@ const HeroSection = ({
   }, [type, setTypePost]);
 
   return (
-    <section className="h-[78vh] overflow-hidden font-montserrat">
-      <div className="container mx-auto w-full h-full">
-        <div className="relative rounded-lg w-[88%] h-full m-auto overflow-hidden">
+    <section className="h-[78vh] overflow-hidden font-montserrat ">
+      <div className="container w-full h-[80vh]">
+        <div className="relative w-screen h-full m-auto overflow-hidden">
           <div
             className="flex transition-transform duration-1000 ease-in-out "
             style={{
@@ -87,13 +87,13 @@ const HeroSection = ({
                 <img
                   src={image.url}
                   alt={image.alt}
-                  className="w-full h-full object-cover rounded-2xl"
+                  className="w-full h-[70vh] object-cover"
                 />
               </div>
             ))}
           </div>
 
-          <div className="main-content h-[400px] flex justify-center flex-col absolute top-0 left-0 right-0 z-10">
+          <div className="main-content h-[400px] flex justify-center items-center flex-col absolute top-0 left-0 right-0 z-10">
             <h1 className="text-4xl font-bold text-transparent text-white drop-shadow-2xl">
               <span>Chào mừng đến với</span>
             </h1>
@@ -103,14 +103,14 @@ const HeroSection = ({
           </div>
         </div>
 
-        <div className="w-full absolute inset-x-0 bottom-[7rem]">
-          <div className="rounded-lg mt-10 p-6 w-[70%] m-auto">
-            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-[#3CA9F9] border-double">
+        <div className="w-full absolute bottom-[7rem]">
+          <div className="rounded-lg w-[70%] m-auto">
+            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-500 border-double">
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "house"
-                    ? "bg-[#3CA9F9] text-white scale-105"
-                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                    ? "bg-gray-500 text-white scale-105"
+                    : "text-black hover:bg-gray-500 hover:text-white"
                 }`}
                 onClick={() => setType("house")}
               >
@@ -119,8 +119,8 @@ const HeroSection = ({
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "land"
-                    ? "bg-[#3CA9F9] text-white scale-105"
-                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                    ? "bg-gray-500 text-white scale-105"
+                    : "text-black hover:bg-gray-500 hover:text-white"
                 }`}
                 onClick={() => setType("land")}
               >
@@ -129,8 +129,8 @@ const HeroSection = ({
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "news"
-                    ? "bg-[#3CA9F9] text-white scale-105"
-                    : "text-black hover:bg-[#3CA9F9] hover:text-white"
+                    ? "bg-gray-500 text-white scale-105"
+                    : "text-black hover:bg-gray-500 hover:text-white"
                 }`}
                 onClick={() => setType("news")}
               >
@@ -138,7 +138,7 @@ const HeroSection = ({
               </button>
             </div>
 
-            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-[#3CA9F9] border-double">
+            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-gray-500 border-double">
               <div className="grid grid-cols-4 gap-6">
                 <div>
                   <label
@@ -154,7 +154,7 @@ const HeroSection = ({
                     placeholder="Tìm kiếm ..."
                     value={inputValue}
                     onClick={handleInputClick}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-[#3CA9F9]"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-gray-500"
                     readOnly
                   />
 
@@ -175,7 +175,7 @@ const HeroSection = ({
                         </button>
 
                         <h2 className="text-lg font-semibold text-gray-700 mb-4 flex items-center justify-center">
-                          <FaSearch className="mr-2 text-[#3CA9F9]" /> Tìm kiếm
+                          <FaSearch className="mr-2 text-gray-500" /> Tìm kiếm
                           nội dung
                         </h2>
 
@@ -188,11 +188,11 @@ const HeroSection = ({
                             value={popupValue}
                             onChange={handlePopupChange}
                             placeholder="Nhập nội dung tìm kiếm..."
-                            className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3CA9F9] transition-shadow"
+                            className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-shadow"
                           />
                         </div>
 
-                        <div className="mt-4 text-sm text-[#3CA9F9] italic flex items-center">
+                        <div className="mt-4 text-sm text-gray-500 italic flex items-center">
                           <FaLightbulb className="mr-2" />
                           <p>
                             Bạn có thể tìm kiếm các bài đăng có liên quan đến
@@ -214,7 +214,7 @@ const HeroSection = ({
                     id="category"
                     name="category"
                     onChange={handleFilterStatusChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="Đang bán">Đang bán</option>
@@ -234,7 +234,7 @@ const HeroSection = ({
                     id="price"
                     name="price"
                     onChange={handleFilterPriceChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="<=500">Dưới 500 triệu</option>
@@ -258,7 +258,7 @@ const HeroSection = ({
                     id="area"
                     name="area"
                     onChange={handleFilterAreaChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:[#3CA9F9] focus:border-[#3CA9F9]"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="<=50">Dưới 50m2</option>
@@ -275,7 +275,7 @@ const HeroSection = ({
 
               <button
                 onClick={handleSearchSubmit}
-                className="w-1/4 py-2 bg-[#3CA9F9] text-white font-semibold rounded-md mt-3"
+                className="w-1/4 py-2 bg-gray-500 text-white font-semibold rounded-md mt-3"
               >
                 Tìm kiếm
               </button>

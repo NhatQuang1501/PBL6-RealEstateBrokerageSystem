@@ -33,7 +33,7 @@ const HeaderAdmin = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`absolute top-3 flex justify-between items-center right-2 h-[88px] p-3 rounded-xl transition-width duration-300 bg-white ${
+      className={`absolute top-3 flex justify-between items-center right-2 h-[58px] p-3 rounded-xl transition-width duration-300 bg-white ${
         isCollapsed ? "w-[92vw]" : "w-[76vw]"
       }`}
     >

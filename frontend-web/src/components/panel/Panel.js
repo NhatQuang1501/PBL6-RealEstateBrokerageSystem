@@ -16,7 +16,7 @@ const Panel = ({
       {type !== "personal-page" ? (
         <div className="flex">
           <div className="flex-1 p-6">
-            <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] min-h-[500vh] p-4 rounded-lg mb-4">
+            <div className="min-h-[500vh] rounded-lg mb-4">
               {children}
             </div>
           </div>
@@ -29,7 +29,7 @@ const Panel = ({
           />
         </div>
       ) : (
-        <div className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] min-h-[500vh] p-4 rounded-lg mb-4">
+        <div className=" min-h-auto p-4 rounded-lg mb-4">
           {children}
         </div>
       )}

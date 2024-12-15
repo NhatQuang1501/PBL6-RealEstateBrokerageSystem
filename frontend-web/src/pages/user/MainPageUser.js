@@ -3,7 +3,7 @@ import Post from "../../components/item_post/Post";
 import Pagination from "../../components/pagination/pagination";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faListAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,12 @@ const MainPageUser = ({
 
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
+  }, []);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(posts.length / itemsPerPage);
 
@@ -34,7 +40,6 @@ const MainPageUser = ({
   );
 
   const handlePageChange = (page) => {
-
     setCurrentPage(page);
   };
 
@@ -235,12 +240,12 @@ const MainPageUser = ({
 
   return (
     <div className="font-montserrat main-content">
-      <div className="flex items-center justify-between w-[72%] ml-10 mt-6 mb-4 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-600 rounded-3xl shadow-lg">
+      <div className="flex items-center justify-between w-[72%] ml-5 mt-6 mb-4 px-6 py-2 bg-gradient-to-r from-gray-400 to-gray-600 rounded-lg shadow-lg">
         {!searchValue ? (
           <h3 className="text-2xl font-bold text-white flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-gray-500 bg-white p-3 w-8 h-8 rounded-full shadow-md"
             />
             Danh sách bài đăng
           </h3>
@@ -248,7 +253,7 @@ const MainPageUser = ({
           <h3 className="text-2xl font-bold text-white flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-blue-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
             />
             Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
           </h3>
@@ -320,11 +325,11 @@ const MainPageUser = ({
       </Panel>
       <div
         onClick={handleCreatePostClick}
-        className="fixed bottom-4 right-4 bg-[#3CA9F9] text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
+        className="fixed bottom-4 right-4 bg-gray-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
         style={{ zIndex: 1000 }}
         title="Tạo bài đăng"
       >
-        <FontAwesomeIcon icon={faPlus} className="w-5 h-5" />
+        <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
       </div>
     </div>
   );

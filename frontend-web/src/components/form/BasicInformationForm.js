@@ -25,6 +25,8 @@ import { useAppContext } from "../../AppProvider";
 import AddImage from "./AddImage";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import axios from "axios";
+import { FaSpinner, FaTimesCircle, FaCheckCircle } from "react-icons/fa";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -44,7 +46,7 @@ const BasicInformation = () => {
   const [district, setDistrict] = useState("");
   const [city, setCity] = useState("Đà Nẵng");
   const [price, setPrice] = useState("");
-  const [area, setArea] = useState("");
+  const [area, setArea] = useState();
   const [legal_status, setLegal_status] = useState("");
   const [orientation, setOrientation] = useState("");
   const [floor, setFloor] = useState(null);
@@ -59,6 +61,17 @@ const BasicInformation = () => {
   const [land_lot, setLand_lot] = useState("Chưa có thông tin");
   const [land_parcel, setLand_parcel] = useState("Chưa có thông tin");
   const [map_sheet_number, setMap_sheet_number] = useState("Chưa có thông tin");
+
+  // attribute for AI
+  const [width, setWidth] = useState();
+  const [length, setLength] = useState();
+  const [has_frontage, setHas_frontage] = useState("");
+  const [has_car_lane, setHas_car_lane] = useState("");
+  const [has_rear_expansion, setHas_rear_expansion] = useState("");
+
+  const [predictedPrice, setPredictedPrice] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const [filteredWards, setFilteredWards] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -102,6 +115,11 @@ const BasicInformation = () => {
         (!legal_status && legal_status !== "Sổ đỏ/Sổ hồng") ||
         !orientation ||
         !frontage ||
+        !width ||
+        !length ||
+        !has_frontage ||
+        !has_car_lane ||
+        !has_rear_expansion ||
         !title ||
         !longitude ||
         !latitude) &&
@@ -119,6 +137,8 @@ const BasicInformation = () => {
         (!legal_status && legal_status !== "Sổ đỏ/Sổ hồng") ||
         !orientation ||
         !frontage ||
+        !width ||
+        !length ||
         !title ||
         !floor ||
         !bedroom ||
@@ -142,6 +162,8 @@ const BasicInformation = () => {
         map_sheet_number === "Chưa có thông tin") &&
       orientation &&
       frontage &&
+      width &&
+      length &&
       title &&
       floor &&
       bedroom &&
@@ -165,6 +187,11 @@ const BasicInformation = () => {
         map_sheet_number === "Chưa có thông tin") &&
       orientation &&
       frontage &&
+      width &&
+      length &&
+      has_frontage &&
+      has_car_lane &&
+      has_rear_expansion &&
       title &&
       longitude &&
       latitude &&
@@ -195,7 +222,7 @@ const BasicInformation = () => {
           ward: ward,
           district: district,
           city: city,
-          price: price,
+          price: price.replace(/,/g, ""),
           area: area,
           legal_status: legal_status,
           land_lot: land_lot,
@@ -211,6 +238,8 @@ const BasicInformation = () => {
           sale_status: sale_status,
           longitude: longitude,
           latitude: latitude,
+          width: width,
+          length: length,
         }),
       });
 
@@ -274,12 +303,20 @@ const BasicInformation = () => {
       legal_status &&
       orientation &&
       frontage &&
+      width &&
+      length &&
       floor &&
       bedroom &&
       bathroom &&
       selectedProperty === "house"
     ) {
-      setPrice(e.target.value);
+      // format price
+      let value = e.target.value;
+      value = value.replace(/[^0-9,]/g, "");
+      const numericValue = value.replace(/,/g, "");
+      // reformat
+      const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setPrice(formattedValue);
     } else if (
       address &&
       ward &&
@@ -289,11 +326,39 @@ const BasicInformation = () => {
       legal_status &&
       orientation &&
       frontage &&
+      width &&
+      length &&
+      has_frontage &&
+      has_car_lane &&
+      has_rear_expansion &&
       selectedProperty === "land"
     ) {
-      setPrice(e.target.value);
+      // format price
+      let value = e.target.value;
+      value = value.replace(/[^0-9,]/g, "");
+      const numericValue = value.replace(/,/g, "");
+      // reformat
+      const formattedValue = numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+      setPrice(formattedValue);
     } else {
       e.preventDefault();
+      console.log("Thông tin còn thiếu: ", {
+        address,
+        ward,
+        district,
+        city,
+        area,
+        legal_status,
+        orientation,
+        frontage,
+        selectedProperty,
+        width,
+        length,
+        has_frontage,
+        has_car_lane,
+        has_rear_expansion,
+      });
       alert("Vui lòng nhập đầy đủ thông tin trước khi nhập giá.");
     }
   };
@@ -409,24 +474,114 @@ const BasicInformation = () => {
     };
   }, []);
 
+  // dùng AI để dự đoán giá đất khi người dùng nhập đủ các trường thông tin
+  useEffect(() => {
+    const predictPrice = async () => {
+      if (
+        selectedProperty === "land" &&
+        width &&
+        length &&
+        has_frontage &&
+        has_car_lane &&
+        has_rear_expansion &&
+        orientation &&
+        ward &&
+        area
+      ) {
+        const sanitizedWard = ward.includes("Hòa")
+          ? ward.replace(/Hòa/g, "Hoà")
+          : ward;
+
+        setLoading(true);
+        try {
+          const response = await axios.post(
+            "http://127.0.0.1:8000/api/predict-price/",
+            {
+              width,
+              length,
+              has_frontage: has_frontage ? 1 : 0,
+              has_car_lane: has_car_lane ? 1 : 0,
+              has_rear_expansion: has_rear_expansion ? 1 : 0,
+              orientation,
+              ward: sanitizedWard,
+              area,
+            }
+          );
+          setPredictedPrice(response.data.predicted_price);
+          setError(null);
+        } catch (err) {
+          console.error("Error predicting price:", err);
+          setError(
+            "Đã xảy ra lỗi khi dự đoán giá đất. Có vẻ như vị trí bất động sản của bạn nằm ngoài khu vực tính toán của mô hình AI. Vui lòng thử lại với một vị trí khác."
+          );
+          setPredictedPrice(null);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    predictPrice();
+  }, [
+    selectedProperty,
+    width,
+    length,
+    has_frontage,
+    has_car_lane,
+    has_rear_expansion,
+    orientation,
+    ward,
+    area,
+  ]);
+
+  // W-L to num
+  const handleWidthChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setWidth(numericValue);
+    } else {
+      setWidth("");
+    }
+  };
+
+  const handleLengthChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setLength(numericValue);
+    } else {
+      setLength("");
+    }
+  };
+
+  const handleAreaChange = (e) => {
+    const numericValue = parseFloat(e.target.value);
+    if (!isNaN(numericValue)) {
+      setArea(numericValue);
+    } else {
+      setArea("");
+    }
+  };
+
   return (
     <div className="mt-5 mb-[10rem] justify-center font-montserrat">
-      <div className="flex items-center p-3 space-x-2 w-[20rem] shadow-lg shadow-[#E4FFFC] rounded-[3rem]">
+      <div className="flex items-center p-3 space-x-2 w-[20rem]">
         <FontAwesomeIcon
           icon={faPlus}
-          className="text-white bg-[#3CA9F9] p-3 w-5 h-5 rounded-full"
+          className="text-white bg-gray-500 p-3 w-5 h-5 rounded-full"
         />
-        <h3 className="text-2xl font-bold text-[#3CA9F9] underline">
+        <h3 className="text-2xl font-bold text-gray-500 underline">
           Tạo bài đăng
         </h3>
       </div>
 
-      <div className="w-full p-8 mt-8 bg-gradient-to-r from-[#E4FFFC] via-blue-200 to-blue-400 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl">
+      <div className="w-full p-8 mt-8 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-gray-200">
         <button
           className="block text-left"
           onClick={() => (window.location.href = "/user/create-post")}
         >
-          <h2 className="text-black font-extrabold p-3">
+          {/* <h2 className="text-black font-extrabold">
+            Chọn loại hình bất động sản:
+          </h2> */}
+          <h2 className="text-xl font-bold text-gray-500 mb-10">
             Chọn loại hình bất động sản:
           </h2>
         </button>
@@ -494,16 +649,13 @@ const BasicInformation = () => {
         {/* Handle select */}
         {showForm && selectedProperty === "house" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-black mb-10">
+            <h2 className="text-xl font-bold text-gray-500 mb-10">
               Thông tin cơ bản
             </h2>
-            <form
-              className="p-8 rounded-lg shadow-xl bg-white"
-              onSubmit={handleSubmit}
-            >
+            <form className="p-8 rounded-lg shadow-xl" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -620,7 +772,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tình trạng pháp lý */}
                   <div className="relative mb-6">
                     <label
@@ -742,7 +894,8 @@ const BasicInformation = () => {
                       min="0"
                       id="area"
                       value={area}
-                      onChange={(e) => setArea(e.target.value)}
+                      // onChange={(e) => setArea(e.target.value)}
+                      onChange={handleAreaChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -838,6 +991,171 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
+                {/* Số phòng tắm */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="bathroom"
+                  >
+                    Số phòng tắm:
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 2"
+                      min="0"
+                      id="bathroom"
+                      value={bathroom}
+                      onChange={(e) => setBathroom(e.target.value)}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faBath}
+                      className="absolute left-3 top-1/2 transform-translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Chiều rộng */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="width"
+                  >
+                    Chiều rộng (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="width"
+                      value={width}
+                      // onChange={(e) => setWidth(e.target.value)}
+                      onChange={handleWidthChange}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Chiều dài */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="length"
+                  >
+                    Chiều dài (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="length"
+                      value={length}
+                      // onChange={(e) => setLength(e.target.value)}
+                      onChange={handleLengthChange}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất mặt tiền */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_frontage"
+                  >
+                    Đất mặt tiền ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_frontage"
+                      value={has_frontage}
+                      onChange={(e) => setHas_frontage(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faHome}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+                {/* Đường ô tô vào */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_car_lane"
+                  >
+                    Đường ô tô có thể vào ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_car_lane"
+                      value={has_car_lane}
+                      onChange={(e) => setHas_car_lane(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất nở hậu */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_rear_expansion"
+                  >
+                    Đất nở hậu ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_rear_expansion"
+                      value={has_rear_expansion}
+                      onChange={(e) => setHas_rear_expansion(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
                 {/* Mặt tiền */}
                 <div className="relative mb-6">
                   <label
@@ -865,32 +1183,6 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                {/* Số phòng tắm */}
-                <div className="relative mb-6">
-                  <label
-                    className="block mb-2 text-gray-800 font-semibold"
-                    htmlFor="bathroom"
-                  >
-                    Số phòng tắm:
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      required
-                      placeholder="vd: 2"
-                      min="0"
-                      id="bathroom"
-                      value={bathroom}
-                      onChange={(e) => setBathroom(e.target.value)}
-                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    <FontAwesomeIcon
-                      icon={faBath}
-                      className="absolute left-3 top-1/2 transform-translate-y-1/2 text-gray-500"
-                    />
-                  </div>
-                </div>
-
                 {/* Tiêu đề bài đăng */}
                 <div className="relative mb-6 md:col-span-2">
                   <div className="relative mb-6">
@@ -902,12 +1194,11 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type="number"
+                        type="text"
                         required
-                        placeholder="vd: 5000000000"
+                        placeholder="vd: 5,000,000,000"
                         id="price"
                         value={price}
-                        // onChange={(e) => setPrice(e.target.value)}
                         onChange={handleEnterPrice}
                         className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -917,6 +1208,7 @@ const BasicInformation = () => {
                       />
                     </div>
                   </div>
+
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
                     htmlFor="title"
@@ -1003,7 +1295,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >
@@ -1016,16 +1308,13 @@ const BasicInformation = () => {
 
         {showForm && selectedProperty === "land" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-[#3CA9F9]">
+            <h2 className="text-xl font-bold text-gray-500 mb-10">
               Thông tin cơ bản
             </h2>
-            <form
-              className="p-6 rounded-lg shadow-lg bg-white"
-              onSubmit={handleSubmit}
-            >
+            <form className="p-6 rounded-lg" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tên đường */}
                   <div className="relative mb-6">
                     <label
@@ -1142,7 +1431,7 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
-                <div className="bg-blue-100 p-3 rounded-xl">
+                <div className="">
                   {/* Tình trạng pháp lý */}
                   <div className="relative mb-6">
                     <label
@@ -1153,7 +1442,7 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <select
-                        className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         id="legal_status"
                         value={legal_status}
                         onChange={(e) => setLegal_status(e.target.value)}
@@ -1264,7 +1553,8 @@ const BasicInformation = () => {
                       min="0"
                       id="area"
                       value={area}
-                      onChange={(e) => setArea(e.target.value)}
+                      // onChange={(e) => setArea(e.target.value)}
+                      onChange={handleAreaChange}
                       className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <FontAwesomeIcon
@@ -1335,6 +1625,145 @@ const BasicInformation = () => {
                   </div>
                 </div>
 
+                {/* Chiều rộng */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="width"
+                  >
+                    Chiều rộng (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="width"
+                      value={width}
+                      // onChange={(e) => setWidth(e.target.value)}
+                      onChange={handleWidthChange}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Chiều dài */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="length"
+                  >
+                    Chiều dài (m):
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      required
+                      placeholder="vd: 5"
+                      min="0"
+                      step="any"
+                      id="length"
+                      value={length}
+                      // onChange={(e) => setLength(e.target.value)}
+                      onChange={handleLengthChange}
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <FontAwesomeIcon
+                      icon={faRulerHorizontal}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất mặt tiền */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_frontage"
+                  >
+                    Đất mặt tiền ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_frontage"
+                      value={has_frontage}
+                      onChange={(e) => setHas_frontage(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faHome}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+                {/* Đường ô tô vào */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_car_lane"
+                  >
+                    Đường ô tô có thể vào ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_car_lane"
+                      value={has_car_lane}
+                      onChange={(e) => setHas_car_lane(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
+                {/* Đất nở hậu */}
+                <div className="relative mb-6">
+                  <label
+                    className="block mb-2 text-gray-800 font-semibold"
+                    htmlFor="has_rear_expansion"
+                  >
+                    Đất nở hậu ?
+                  </label>
+                  <div className="relative">
+                    <select
+                      className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      id="has_rear_expansion"
+                      value={has_rear_expansion}
+                      onChange={(e) => setHas_rear_expansion(e.target.value)}
+                    >
+                      <option value="" disabled hidden>
+                        Chọn
+                      </option>
+                      <option value="1">Có</option>
+                      <option value="0">Không</option>
+                    </select>
+                    <FontAwesomeIcon
+                      icon={faRoad}
+                      className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                    />
+                  </div>
+                </div>
+
                 {/* Tiêu đề bài đăng */}
                 <div className="relative mb-6 md:col-span-2">
                   <div className="relative mb-6">
@@ -1346,12 +1775,11 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <input
-                        type="number"
+                        type="text"
                         required
-                        placeholder="vd: 5000000000"
+                        placeholder="vd: 5,000,000,000"
                         id="price"
                         value={price}
-                        // onChange={(e) => setPrice(e.target.value)}
                         onChange={handleEnterPrice}
                         className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
@@ -1360,7 +1788,36 @@ const BasicInformation = () => {
                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                       />
                     </div>
+                    {/* Giá trị giá bán đề xuất */}
+                    <div className="prediction-result  border border-green-300 p-6 rounded-lg shadow-lg flex items-center space-x-4 mt-5">
+                      {loading && (
+                        <div className="flex items-center text-blue-500">
+                          <FaSpinner className="animate-spin mr-2 text-xl" />
+                          <span>Đang dự đoán giá...</span>
+                        </div>
+                      )}
+                      {error && (
+                        <div className="flex items-center text-red-500">
+                          <FaTimesCircle className="mr-2 text-xl" />
+                          <span>{error}</span>
+                        </div>
+                      )}
+                      {predictedPrice && (
+                        <div className="flex items-center bg-green-100 border border-green-300 p-6 rounded-lg shadow-lg space-x-4">
+                          <FaCheckCircle className="text-4xl text-green-600" />
+                          <div>
+                            <p className="text-xl text-green-700">
+                              Giá bán đề xuất:
+                            </p>
+                            <p className="text-3xl font-bold text-green-900">
+                              {predictedPrice.toLocaleString()} VNĐ
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
+
                   <label
                     className="block mb-2 text-gray-800 font-semibold"
                     htmlFor="title"
@@ -1447,7 +1904,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >

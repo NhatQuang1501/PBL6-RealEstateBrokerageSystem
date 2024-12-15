@@ -245,7 +245,7 @@ const ProfileCard = () => {
 
 
   return (
-    <div className="bg-gradient-to-r from-blue-400 to-blue-600 text-white p-6 rounded-lg shadow-lg">
+    <div className="bg-gradient-to-r from-gray-400 to-gray-600 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
@@ -253,7 +253,7 @@ const ProfileCard = () => {
             <img
               src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300 border-[3px] border-[#b2ebf2] border-solid shadow-lg"
+              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300 border-[3px] border-gray-200 border-solid shadow-lg"
             />
           ) : (
             <img
@@ -267,7 +267,7 @@ const ProfileCard = () => {
           {!userId || userId === id ? (
             <>
               <button
-                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-blue-200 flex items-center gap-2"
+                className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-gray-200 flex items-center gap-2"
                 onClick={() => fileInputRef.current.click()}
               >
                 <FontAwesomeIcon icon={faCamera} className="ml-2" />{" "}
@@ -284,23 +284,23 @@ const ProfileCard = () => {
             </>
           ) : isFriend ? (
             // Trường hợp bạn bè
-            <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200 p-1">
-              <div className="text-sm font-bold text-blue-600">Bạn bè</div>
-              <FaUserFriends className="text-2xl text-blue-600 ml-2" />
+            <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
+              <div className="text-sm font-bold text-gray-600">Bạn bè</div>
+              <FaUserFriends className="text-2xl text-gray-600 ml-2" />
             </div>
           ) : (
             // Trường hợp người lạ
             <>
             {!isSend ? (              <button
-                className="p-1 text-sm bg-white font-bold text-blue-600 rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200"
+                className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200"
                 onClick={handleSendFriendRequest(user.user.username)}
               >
                 Kết bạn
                 <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
               </button>
             ) : (
-              <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-blue-200 p-1">
-                <div className="text-sm font-bold text-blue-600">Đã gửi yêu cầu</div>
+              <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
+                <div className="text-sm font-bold text-gray-600">Đã gửi yêu cầu</div>
               </div>
             )}
             </>
@@ -311,7 +311,7 @@ const ProfileCard = () => {
         <>
           {/* Contact Button */}
           <button
-            className="bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 hover:text-white border-[1px] border-white border-solid transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2"
+            className="bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-gray-500 hover:to-gray-600 hover:text-white border-[1px] border-white border-solid transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2"
             onClick={() => handleUpdateProfile()}
           >
             <FontAwesomeIcon icon={faUserEdit} /> {/* Thêm biểu tượng */}
@@ -323,7 +323,7 @@ const ProfileCard = () => {
         <>
           {/* Contact Button */}
           <button
-            className="bg-gradient-to-r from-purple-300 to-purple-400 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2 border-[1px] border-solid border-white"
+            className="bg-gradient-to-r from-purple-300 to-purple-400 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-gray-500 hover:to-gray-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2 border-[1px] border-solid border-white"
             // onClick={() => handleUpdateProfile()}
           >
             <FontAwesomeIcon icon={faCommentDots} />
@@ -334,7 +334,7 @@ const ProfileCard = () => {
         <>
           {/* Contact Button */}
           {/* <button
-            className="bg-blue-500 px-4 py-2 rounded-lg w-full mb-4"
+            className="bg-gray-500 px-4 py-2 rounded-lg w-full mb-4"
             // onClick={() => handleUpdateProfile()}
           >
             Nhắn tin
@@ -349,31 +349,31 @@ const ProfileCard = () => {
         </p>
         <div className="flex flex-col space-y-4">
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faUser} className="text-blue-500 mr-2" />
+            <FontAwesomeIcon icon={faUser} className="text-gray-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.user.username)}
             </label>
           </div>
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faEnvelope} className="text-blue-500 mr-2" />
+            <FontAwesomeIcon icon={faEnvelope} className="text-gray-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.user.email)}
             </label>
           </div>
           <div className="flex items-center">
-            <FaAddressCard className="text-blue-500 mr-2" />
+            <FaAddressCard className="text-gray-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.fullname)}
             </label>
           </div>
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faPhone} className="text-blue-500 mr-2" />
+            <FontAwesomeIcon icon={faPhone} className="text-gray-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.phone_number)}
             </label>
           </div>
           <div className="flex items-center">
-            <FontAwesomeIcon icon={faCity} className="text-blue-500 mr-2" />
+            <FontAwesomeIcon icon={faCity} className="text-gray-500 mr-2" />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.city)}
             </label>
@@ -381,7 +381,7 @@ const ProfileCard = () => {
           <div className="flex items-center">
             <FontAwesomeIcon
               icon={faBirthdayCake}
-              className="text-blue-500 mr-2"
+              className="text-gray-500 mr-2"
             />
             <label className="flex items-center text-gray-700">
               {getDisplayValue(user.birthdate)}

@@ -3,6 +3,15 @@ import { useAppContext } from "../../AppProvider";
 import Logo from "../../assets/image/Logo.png";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faHome,
+  faNewspaper,
+  faChartLine,
+  faEnvelope,
+  faEdit,
+  faComments,
+} from "@fortawesome/free-solid-svg-icons";
 
 function Header() {
   let navigate = useNavigate();
@@ -67,13 +76,13 @@ function Header() {
   }, [location]);
 
   const linkStyle =
-    "text-oxford-blue font-semibold hover:text-[#3CA9F9] transition duration-300"; // Hiệu ứng transition
+    "text-oxford-blue font-semibold hover:text-gray-400 transition duration-300";
 
   return (
     <>
       {!sessionToken && role !== "user" ? (
-        <div className="sticky top-0 h-[10vh] bg-white font-montserrat z-50 shadow-md shadow-blue-100 mb-5 rounded-b-[10rem]">
-          <div className="main-content h-[10vh] w-screen px-3 flex items-center justify-between">
+        <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
+          <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
             <div id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
               <strong className="font-extrabold text-base ml-2">
@@ -81,67 +90,82 @@ function Header() {
               </strong>
             </div>
             <nav className="flex items-center w-[60%] px-6">
-              <ul className="flex space-x-6 gap-10">
-                <li>
+              <ul className="flex space-x-6 gap-20">
+                <li className="relative group">
                   <Link
                     to="/"
                     className={`${linkStyle} ${
-                      activeLink === "/" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/")}
                   >
-                    Trang chủ
+                    <FontAwesomeIcon icon={faHome} className="w-5 h-5" />
                   </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Trang chủ
+                  </span>
                 </li>
-                <li>
-                  <a
-                    href="#!"
+                <li className="relative group">
+                  <Link
+                    to="/news"
                     className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/news" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/news")}
                   >
+                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     Tin tức
-                  </a>
+                  </span>
                 </li>
-                <li>
-                  <a
-                    href="#!"
+                <li className="relative group">
+                  <Link
+                    to="/user/predict"
                     className={`${linkStyle} ${
-                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/predict" ? "text-gray-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/guide")}
+                    onClick={() => setActiveLink("/user/predict")}
                   >
+                    <FontAwesomeIcon icon={faChartLine} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     Dự đoán giá BĐS
-                  </a>
+                  </span>
                 </li>
-                <li>
-                  <a
-                    href="#!"
+                <li className="relative group">
+                  <Link
+                    to="/contact"
                     className={`${linkStyle} ${
-                      activeLink === "/contact" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/contact" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/contact")}
                   >
+                    <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     Liên hệ
-                  </a>
+                  </span>
                 </li>
-                <li>
+                <li className="relative group">
                   <Link
                     to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/authen/login" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/authen/login" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/authen/login")}
                   >
-                    Đăng tin
+                    <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
                   </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Đăng tin
+                  </span>
                 </li>
               </ul>
             </nav>
             <div>
               <button
-                className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white"
+                className="bg-gray-600 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
                 onClick={() => navigate("/authen/login")}
               >
                 Đăng nhập
@@ -149,71 +173,109 @@ function Header() {
             </div>
           </div>
         </div>
-      ) : (
-        <div className="sticky top-0 h-[10vh] bg-white font-montserrat z-50 shadow-md shadow-blue-100 mb-5 rounded-b-[10rem]">
-          <div className="main-content h-[10vh] w-screen px-3 flex items-center justify-between">
+      ) : role !== "admin" ? (
+        <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
+          <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
             <Link to="/" id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
               <strong className="font-bold text-base ml-2">SweetHome</strong>
             </Link>
-            <nav className="flex items-center w-[60%] px-6">
-              <ul className="flex space-x-6 gap-10">
-                <li>
+            <nav className="flex items-center justify-center w-full md:w-3/4 lg:w-2/3 xl:w-1/2">
+              <ul className="flex space-x-4 gap-4 md:gap-6 lg:gap-12 xl:gap-20">
+                <li className="relative group">
                   <Link
                     to="/user/main-page-user"
                     className={`${linkStyle} ${
                       activeLink === "/user/main-page-user"
-                        ? "text-[#3CA9F9]"
+                        ? "text-gray-400"
                         : ""
                     }`}
                     onClick={() => setActiveLink("/user/main-page-user")}
                   >
-                    Bài đăng
+                    <FontAwesomeIcon icon={faHome} className="w-5 h-5" />
+                    {/* Fix sau */}
                   </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Trang chủ
+                  </span>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     href="#!"
                     className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/news" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/news")}
                   >
                     Tin tức
                   </a>
-                </li>
-                <li>
-                  <a
-                    href="#!"
+                </li> */}
+                <li className="relative group">
+                  <Link
+                    to="/news"
                     className={`${linkStyle} ${
-                      activeLink === "/guide" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/news" ? "text-gray-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/guide")}
+                    onClick={() => setActiveLink("/news")}
                   >
-                    Dự đoán giá BĐS
-                  </a>
+                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Tin tức
+                  </span>
                 </li>
-                <li>
+                <li className="relative group">
+                  <Link
+                    to="/user/predict"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/predict" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/predict")}
+                  >
+                    <FontAwesomeIcon icon={faChartLine} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Dự đoán giá BĐS
+                  </span>
+                </li>
+                <li className="relative group">
                   <Link
                     to="/user/chat"
                     className={`${linkStyle} ${
-                      activeLink === "/user/chat" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/chat" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/chat")}
                   >
-                    Nhắn tin
+                    <FontAwesomeIcon icon={faComments} className="w-5 h-5" />
                   </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Nhắn tin
+                  </span>
                 </li>
-                <li>
+                {/* <li>
                   <Link
                     to="/user/create-post"
                     className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-[#3CA9F9]" : ""
+                      activeLink === "/user/create-post" ? "text-gray-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/create-post")}
                   >
                     Đăng tin
                   </Link>
+                </li> */}
+                <li className="relative group">
+                  <Link
+                    to="/user/create-post"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/create-post" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/create-post")}
+                  >
+                    <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Đăng tin
+                  </span>
                 </li>
               </ul>
             </nav>
@@ -226,14 +288,14 @@ function Header() {
                       : `https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain`
                   }
                   alt="avatar"
-                  className="w-[2.5rem] h-[2.5rem] rounded-full border-2 border-[#3CA9F9]  object-contain bg-gray-500"
+                  className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover bg-gray-500"
                 />
                 <Link to="/user/personal-page">
-                  <p className="text-[#3CA9F9] font-semibold">{name}</p>
+                  <p className="text-gray-400 font-semibold">{name}</p>
                 </Link>
               </div>
               <button
-                className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-[#3CA9F9] text-white"
+                className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-gray-400 text-white"
                 onClick={handleLogout}
               >
                 Đăng xuất
@@ -241,10 +303,9 @@ function Header() {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }
 
 export default Header;
-

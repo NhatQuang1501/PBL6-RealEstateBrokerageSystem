@@ -18,14 +18,13 @@ import Error from "./components/error/error";
 
 import PersonalProfile from "./pages/user/PersonalProfile";
 
-import ChatPage from "./components/ChatBox/ChatPage";
-
 import UpdatePost from "./pages/user/UpdatePost";
 import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
 import { useState } from "react";
 import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
 import Chat from "./pages/user/Chat";
+import Predict from "./pages/user/Predict";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -36,7 +35,7 @@ function App() {
 
   return (
     <AppProvider>
-      <div className="flex flex-col min-h-screen bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]">
+      <div className="flex flex-col min-h-screen">
         <Router>
           <Routes>
             {/* User */}
@@ -172,14 +171,14 @@ function App() {
               }
             />
 
-            <Route
+            {/* <Route
               path="user/chat-box"
               element={
                 <>
                   <ChatPage />
                 </>
               }
-            />
+            /> */}
 
             <Route
               path="/user/chat"
@@ -198,6 +197,15 @@ function App() {
                   <Header />
                   <PersonalProfile />
                   <Footer />
+                </>
+              }
+            />
+
+            <Route
+              path="user/predict"
+              element={
+                <>
+                  <Predict />
                 </>
               }
             />

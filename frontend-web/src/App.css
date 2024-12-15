@@ -16,7 +16,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3CA9F9; /* Màu của thanh cuộn */
+  background: gray; /* Màu của thanh cuộn */
   border-radius: 10px; /* Bo góc cho thanh cuộn */
 }
 
