@@ -23,9 +23,11 @@ def content_based_filtering(user_id, num_recommendations=5):
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
     # Lấy các bài đăng mà người dùng đã tương tác
-    user_interactions = PostReaction.objects.filter(user_id=user_id).values_list(
-        "post_id", flat=True
-    )
+    user_interactions = (
+        []
+    )  # Thay thế bằng danh sách các post_id mà người dùng đã tương tác
+
+    # Chuyển đổi các chỉ số thành số nguyên
     user_interactions_indices = [
         list(all_posts).index(Post.objects.get(post_id=post_id))
         for post_id in user_interactions
@@ -36,6 +38,9 @@ def content_based_filtering(user_id, num_recommendations=5):
 
     # Lấy các bài đăng chưa tương tác
     recommendations = np.argsort(user_ratings)[::-1]
+
+    # Chuyển đổi các chỉ số thành số nguyên
+    recommendations = [int(i) for i in recommendations]
 
     # Trả về danh sách các bài đăng được đề xuất
     recommended_posts = [all_posts[i] for i in recommendations[:num_recommendations]]

@@ -3,51 +3,6 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 
 
-# class IsAdmin(BasePermission):
-#     def has_permission(self, request, view):
-#         if not request.user.is_authenticated:
-#             return False
-
-#         try:
-#             role = get_role(request)
-#             if role == "admin":
-#                 return True
-#             else:
-#                 return False
-#         except AuthenticationFailed:
-#             return super().has_permission(request, view)
-
-
-# class IsUser(BasePermission):
-#     def has_permission(self, request, view):
-#         if not request.user.is_authenticated:
-#             return False
-
-#         try:
-#             user_role = get_role(request)
-#             if user_role == "user":
-#                 return True
-#             else:
-#                 return False
-#         except AuthenticationFailed:
-#             return super().has_permission(request, view)
-
-
-# class IsAdminOrUser(BasePermission):
-#     def has_permission(self, request, view):
-#         if not request.user.is_authenticated:
-#             return False
-
-#         try:
-#             role = get_role(request)
-#             if role == "admin" or role == "user":
-#                 return True
-#             else:
-#                 return False
-#         except AuthenticationFailed:
-#             return super().has_permission(request, view)
-
-
 class RoleBasedPermission(BasePermission):
     allowed_roles = []
 
