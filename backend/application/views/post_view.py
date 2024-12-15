@@ -626,7 +626,6 @@ class RecommendedPostView(APIView):
     def get(self, request):
         user_id = request.user.user_id
 
-        # Lấy số lượng bài đề xuất
         try:
             num_recommendations = int(
                 request.query_params.get("num_recommendations", 10)
@@ -637,7 +636,6 @@ class RecommendedPostView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Kiểm tra giá trị hợp lệ
         if num_recommendations <= 0:
             return Response(
                 {"message": "num_recommendations phải lớn hơn 0"},
