@@ -8,3 +8,4 @@ backend/**/*.pyc
 
 compare.py
 client_secret_780550455191-l0d1d0g7mh2ootb6cdhtqmv71jp8kfch.apps.googleusercontent.com.json
+/backend/celerybeat-schedule.dat
