@@ -2,12 +2,13 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from accounts.models import *
+from accounts.enums import *
 from application.models import *
 
 
-def content_based_filtering(user_id, num_recommendations=5):
-    # Lấy tất cả các bài đăng
-    all_posts = Post.objects.all()
+def content_based_filtering(user_id, num_recommendations=10):
+    # Lấy tất cả các bài đăng đã duyệt
+    all_posts = Post.objects.filter(status=Status.APPROVED)
 
     # Tạo ma trận đặc trưng cho các bài đăng
     post_features = []

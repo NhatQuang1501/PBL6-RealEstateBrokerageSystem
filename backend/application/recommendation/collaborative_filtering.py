@@ -6,7 +6,7 @@ from application.models import *
 
 def collaborative_filtering(user_id, num_recommendations=5):
     # Lấy tất cả các bài đăng và người dùng
-    all_posts = Post.objects.all()
+    all_posts = Post.objects.filter(status=Status.APPROVED)
     all_users = User.objects.all()
 
     # Tạo ma trận tương tác giữa người dùng và bài đăng
