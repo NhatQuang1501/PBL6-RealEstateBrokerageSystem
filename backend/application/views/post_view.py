@@ -18,6 +18,7 @@ from django.db.models import Q, Count, F
 import unicodedata
 import re
 from datetime import timedelta
+from notification.notification_service import NotificationService
 
 
 class PostView(APIView):
@@ -116,7 +117,7 @@ class PostView(APIView):
                             0.3 * Count("postreaction")  # Trọng số cho reactions
                             + 0.7 * Count("postcomment")  # Trọng số cho comments
                             + 0.1 * F("view_count")  # Trọng số cho view_count
-                            + 0.5 * F("save_count")  # Trọng số cho save_count
+                            + 1.0 * F("save_count")  # Trọng số cho save_count
                         )
                     )
                     .order_by("-popular_score", "-created_at")
@@ -139,6 +140,7 @@ class PostView(APIView):
     def post(self, request):
         post_data = request.data.copy()
         post_data["user_id"] = request.user.user_id
+        author = request.user
 
         # Kiểm tra và xử lý giá trị null cho các trường DecimalField
         decimal_fields = [
@@ -159,6 +161,23 @@ class PostView(APIView):
         if post_serializer.is_valid():
             post_serializer.save()
 
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã tạo bài đăng mới"
+                author_id = author.user_id
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
+                additional_info = {
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = "Bạn đã tạo bài đăng thành công, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti, additional_info)
+
             return Response(
                 {"message": "Tạo bài đăng thành công", "data": post_serializer.data},
                 status=status.HTTP_201_CREATED,
@@ -171,6 +190,7 @@ class PostView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+        author = request.user
 
         # Kiểm tra user hiện tại không phải là người đăng
         if post.user_id != request.user:
@@ -211,6 +231,23 @@ class PostView(APIView):
 
         if post_serializer.is_valid():
             post_serializer.save()
+
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã chỉnh sửa 1 bài đăng"
+                author_id = author.user_id
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
+                additional_info = {
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = f"Bạn đã chỉnh sửa 1 bài đăng, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti)
 
             return Response(
                 {
@@ -584,12 +621,30 @@ class MarkPostAsSoldView(APIView):
 
 
 class RecommendedPostView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsUser]
 
     def get(self, request):
         user_id = request.user.user_id
-        num_recommendations = int(request.query_params.get("num_recommendations", 5))
 
+        # Lấy số lượng bài đề xuất
+        try:
+            num_recommendations = int(
+                request.query_params.get("num_recommendations", 10)
+            )
+        except ValueError:
+            return Response(
+                {"message": "num_recommendations phải là một số nguyên"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Kiểm tra giá trị hợp lệ
+        if num_recommendations <= 0:
+            return Response(
+                {"message": "num_recommendations phải lớn hơn 0"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Gọi hàm lọc đề xuất
         recommended_posts = hybrid_filtering(user_id, num_recommendations)
         serializer = PostSerializer(recommended_posts, many=True)
 

@@ -31,10 +31,4 @@ urlpatterns = [
         FriendListView.as_view(),
         name="unfriend",
     ),
-    # Negotiation Chatroom Endpoints
-    path(
-        "negotiation-chatrooms/",
-        NegotiationChatRoomListView.as_view(),
-        name="negotiation-chatrooms",
-    ),
 ]

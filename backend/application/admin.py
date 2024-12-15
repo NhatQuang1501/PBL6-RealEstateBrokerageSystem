@@ -34,6 +34,17 @@ class SavedPostAdmin(admin.ModelAdmin):
     list_display = ["post", "user"]
 
 
+class ReportAdmin(admin.ModelAdmin):
+    list_display = [
+        "reportee",
+        "reported_user",
+        "report_type",
+        "description",
+        "resolved",
+    ]
+    list_editable = ["resolved"]
+
+
 admin.site.register(Post, PostAdmin)
 admin.site.register(Negotiation, NegotiationAdmin)
 admin.site.register(Proposal, ProposalAdmin)
@@ -41,4 +52,4 @@ admin.site.register(PostComment)
 admin.site.register(PostReaction)
 admin.site.register(PostImage)
 admin.site.register(SavedPost, SavedPostAdmin)
-admin.site.register(Report)
+admin.site.register(Report, ReportAdmin)

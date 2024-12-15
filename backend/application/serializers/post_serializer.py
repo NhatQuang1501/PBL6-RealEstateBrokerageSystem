@@ -10,10 +10,15 @@ class PostSerializer(serializers.ModelSerializer):
     reactions_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
 
+    # username = serializers.SerializerMethodField()
+    # avatar = serializers.SerializerMethodField()
+
     class Meta:
         model = Post
         fields = [
             "user",
+            # "username",
+            # "avatar",
             "post_id",
             "title",
             "estate_type",
@@ -212,6 +217,16 @@ class PostSerializer(serializers.ModelSerializer):
     def get_username(self, obj):
         username = obj.user_id.username
         return username
+
+    # def get_avatar(self, obj):
+    #     try:
+    #         user = UserProfile.objects.get(user=obj.user_id)
+    #         if user.avatar:
+    #             return user.avatar.url
+    #         else:
+    #             return None
+    #     except:
+    #         return None
 
     def get_reactions_count(self, obj):
         return PostReaction.objects.filter(post_id=obj).count()

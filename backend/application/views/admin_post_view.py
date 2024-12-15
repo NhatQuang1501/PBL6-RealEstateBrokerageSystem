@@ -13,6 +13,7 @@ from application.serializers.negotiation_serrializer import *
 from application.serializers.post_serializer import *
 from application.utils import *
 from django.shortcuts import get_object_or_404
+from notification.notification_service import NotificationService
 
 
 class AdminPostView(APIView):
@@ -44,6 +45,13 @@ class AdminPostView(APIView):
         post.status = post_status
         post.save()
 
+        author = post.user_id
+        author_noti = f"Bài đăng của bạn {post_status}"
+        additional_info = {
+            "post_id": str(post_id),
+        }
+        NotificationService.add_notification(author, author_noti, additional_info)
+
         return Response(
             {
                 "message": "Duyệt bài đăng thành công",
@@ -56,6 +64,13 @@ class AdminPostView(APIView):
         post_id = post.post_id
         post_title = post.title
         post.delete()
+
+        author = post.user_id
+        author_noti = f"Bài đăng của bạn đã bị xóa bởi admin"
+        # additional_info = {
+        #     "post_id": str(post_id),
+        # }
+        NotificationService.add_notification(author, author_noti)
 
         return Response(
             {

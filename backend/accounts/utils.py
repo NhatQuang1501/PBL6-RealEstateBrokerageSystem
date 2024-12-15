@@ -141,8 +141,11 @@ from rest_framework.exceptions import AuthenticationFailed
 from accounts.serializers import *
 from accounts.models import *
 from threading import Thread
- 
- 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     refresh["role"] = user.role
@@ -153,12 +156,21 @@ def get_tokens_for_user(user):
         "refresh": str(refresh),
         "access": str(access_token),
     }
- 
- 
-def send_email_thread(email):
-    Thread(target=email.send).start()
- 
- 
+
+
+def send_email_async(user, subject, body):
+    def send():
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=body,
+            from_email=settings.EMAIL_HOST_USER,
+            to=[user.email],
+        )
+        email.send()
+
+    Thread(target=send).start()
+
+
 def send_email_verification(user, request):
     token = RefreshToken.for_user(user)
     token = token.access_token
@@ -167,7 +179,7 @@ def send_email_verification(user, request):
     current_site = get_current_site(request).domain
     relativeLink = reverse("email-verify")
     verification_url = f"http://{current_site}{relativeLink}?token={str(token)}"
- 
+
     subject = "Xác thực tài khoản bạn đã đăng ký tại website Sweet Home"
  
     body = (
@@ -180,24 +192,25 @@ def send_email_verification(user, request):
         "Trân trọng,\n"
         "Ban Quản Trị Sweet Home"
     )
- 
+
     email = EmailMultiAlternatives(
         subject=subject,
         body=body,
         from_email=settings.EMAIL_HOST_USER,
         to=[user.email],
     )
- 
-    send_email_thread(email)
- 
- 
+
+    send_email_async(email)
+
+
 def decode_token(token):
     try:
         jwt_auth = JWTAuthentication()
         validated_token = jwt_auth.get_validated_token(token)
-        user_id = validated_token.get("user_id")
-        return user_id
+        return validated_token.get("user_id")
+
     except Exception as e:
+        logger.error(f"Token decode error: {str(e)}")
         return None
  
  
@@ -216,7 +229,7 @@ def send_email_account_lock(user, locked_reason, locked_date, unlocked_date):
     body = (
         f"Kính gửi {user.username},\n\n"
         f"Chúng tôi xin thông báo rằng tài khoản của bạn trên hệ thống Sweet Home đã bị khóa với lý do sau: {locked_reason}\n\n"
-        f"Tài khoản của bạn bị khoá từ {locked_date.strftime('%H:%M:%S ngày %d/%m/%Y')} và sẽ được mở khóa vào lúc {unlocked_date.strftime('%H:%M:%S ngày %d/%m/%Y')}.\n\n"
+        f"Tài khoản của bạn bị khoá trong khoảng thời gian: {locked_date.strftime('%H:%M:%S ngày %d/%m/%Y')} - {unlocked_date.strftime('%H:%M:%S ngày %d/%m/%Y')}.\n\n"
         "Trong thời gian tài khoản bị khóa, bạn sẽ không thể đăng nhập hoặc sử dụng các chức năng của hệ thống. "
         "Nếu bạn cần hỗ trợ hoặc muốn khiếu nại về quyết định này, vui lòng liên hệ với chúng tôi qua email hoặc hotline dưới đây:\n\n"
         "  - Email hỗ trợ: quangpbl1@gmail.com\n"
@@ -225,17 +238,10 @@ def send_email_account_lock(user, locked_reason, locked_date, unlocked_date):
         "Trân trọng,\n"
         "Ban Quản Trị Sweet Home"
     )
- 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=body,
-        from_email=settings.EMAIL_HOST_USER,
-        to=[user.email],
-    )
- 
-    send_email_thread(email)
- 
- 
+
+    send_email_async(user, subject, body)
+
+
 def send_email_account_unlock(user, unlocked_date):
     subject = "Thông báo: Tài khoản của bạn trên Sweet Home đã được mở khóa"
  
@@ -250,12 +256,5 @@ def send_email_account_unlock(user, unlocked_date):
         "Trân trọng,\n"
         "Ban Quản Trị Sweet Home"
     )
- 
-    email = EmailMultiAlternatives(
-        subject=subject,
-        body=body,
-        from_email=settings.EMAIL_HOST_USER,
-        to=[user.email],
-    )
- 
-    send_email_thread(email)
+
+    send_email_async(user, subject, body)

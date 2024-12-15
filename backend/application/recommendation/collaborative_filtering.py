@@ -30,6 +30,8 @@ def collaborative_filtering(user_id, num_recommendations=5):
     user_interactions = interaction_matrix[user_index]
     recommendations = np.argsort(user_ratings - user_interactions)[::-1]
 
+    recommendations = [int(i) for i in recommendations]
+
     # Trả về danh sách các bài đăng được đề xuất
     recommended_posts = [all_posts[i] for i in recommendations[:num_recommendations]]
     return recommended_posts

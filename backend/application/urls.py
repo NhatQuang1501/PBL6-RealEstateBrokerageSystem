@@ -20,7 +20,7 @@ urlpatterns = [
     # Ordered Post Endpoints
     path("saved-posts/<str:pk>/", SavePostView.as_view(), name="saved-posts"),
     # Recommended Post Endpoints
-    path("recommended-posts/", RecommendedPostView.as_view(), name="recommended-posts"),
+    path("posts-recommendation/", RecommendedPostView.as_view(), name="recommendation"),
     # Sold Post Endpoints
     path(
         "sold-posts/",

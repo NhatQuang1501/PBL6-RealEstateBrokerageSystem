@@ -14,9 +14,7 @@ class ChatRoom(models.Model):
     is_private = models.BooleanField(
         default=False
     )  # Xác định phòng chat riêng tư hay nhóm
-    chatroom_name = models.CharField(
-        max_length=255, blank=True, null=True
-    )  # Tên nhóm, nếu là phòng nhóm
+    chatroom_name = models.CharField(max_length=255, blank=True, null=True)
     created_by = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="created_chatrooms", null=True
     )

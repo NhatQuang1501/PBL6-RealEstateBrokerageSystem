@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth import logout
 from rest_framework import status, serializers, views
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,11 +9,10 @@ from .models import *
 from .utils import *
 import logging
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from .permission import *
 from rest_framework.permissions import IsAuthenticated
 from django.views.generic import View
-from django.shortcuts import render
 from django.utils import timezone
 from datetime import datetime, timedelta
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
@@ -260,11 +260,13 @@ class LoginView(APIView):
                     serializer = UserProfileSerializer(user_profile)
                 elif role == "admin":
                     serializer = UserSerializer(user)
+                    serializer.data["user_id"] = str(user.user_id)
 
                 # Trả về thông tin đăng nhập thành công cùng với token
                 return Response(
                     {
                         "message": "Đăng nhập thành công",
+                        "user_id": str(user.user_id) if role == "admin" else None,
                         "data": serializer.data,
                         "role": role,
                         "tokens": token,
@@ -448,7 +450,9 @@ class WelcomeView(APIView):
 
     def get(self, request):
         return Response(
-            {"message": "Welcome to Sweet Home!"},
+            {
+                "message": "Chào mừng bạn đến với Sweet Home! - Hệ thống mạng xã hội và môi giới bất động sản"
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -708,7 +712,7 @@ class AdminPostCommentView(APIView):
             {"message": "Ẩn bình luận thành công"},
             status=status.HTTP_200_OK,
         )
-    
+
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
@@ -732,7 +736,7 @@ class ChangePasswordView(APIView):
 
         user.set_password(new_password)
         user.save()
-    
+
         return Response(
             {"message": "Đổi mật khẩu thành công"},
             status=status.HTTP_200_OK,

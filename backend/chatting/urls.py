@@ -11,4 +11,10 @@ urlpatterns = [
         MessageView.as_view(),
         name="chatroom-messages",
     ),
+    # Negotiation Chatroom Endpoints
+    path(
+        "negotiation-chatrooms/",
+        NegotiationChatRoomListView.as_view(),
+        name="negotiation-chatrooms",
+    ),
 ]
