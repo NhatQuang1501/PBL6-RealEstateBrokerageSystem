@@ -264,7 +264,7 @@ const ImageCard = ({ postId, type, auth }) => {
                     <img
                       src={`http://127.0.0.1:8000${images[currentImageIndex].image}`}
                       alt={`Ảnh của bài đăng: ${images[currentImageIndex].post_id}`}
-                      className="rounded-lg w-full h-[20rem] object-contain shadow-2xl bg-black"
+                      className="rounded-lg w-auto h-[20rem] object-contain shadow-2xl bg-black"
                     />
                   </div>
                   {images.length > 1 && (

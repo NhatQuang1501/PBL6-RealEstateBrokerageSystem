@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { FaComment, FaFlag } from "react-icons/fa";
+import {
+  FaComment,
+  FaFlag,
+  FaExclamationTriangle,
+  FaAdjust,
+  FaTimesCircle,
+} from "react-icons/fa";
 import { useAppContext } from "../../AppProvider";
 import ReportPopup from "../report/ReportPopup ";
 
@@ -218,30 +224,54 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
                   {formatTime(comment.created_at)}
                 </span>
 
-                {comment.user_id !== id && role !== "admin" && (
-                  <button
-                    className="ml-auto text-gray-500 hover:text-red-500 transition"
-                    onClick={() =>
-                      handleReport(comment.comment_id, comment.user_id)
-                    }
-                    title="Báo cáo bình luận"
-                  >
-                    <FaFlag className="w-6 h-6" />
-                  </button>
-                )}
-                {role === "admin" && comment.comment_id === reportedCmtId && (
+                {comment.user_id !== id &&
+                  role !== "admin" &&
+                  !comment.is_report_removed && (
+                    <button
+                      className="ml-auto text-gray-500 hover:text-red-500 transition"
+                      onClick={() =>
+                        handleReport(comment.comment_id, comment.user_id)
+                      }
+                      title="Báo cáo bình luận"
+                    >
+                      <FaFlag className="w-6 h-6" />
+                    </button>
+                  )}
+                {role === "admin" &&
+                  comment.comment_id === reportedCmtId &&
+                  !comment.is_report_removed && (
+                    <span
+                      className="ml-auto text-red-500 cursor-pointer hover:text-red-600 hover:scale-105 transition"
+                      onClick={() => handleDeleteComment(comment.comment_id)}
+                      title="Bình luận bị báo cáo"
+                    >
+                      <FaFlag className="w-6 h-6" />
+                    </span>
+                  )}
+                {role === "admin" && !comment.is_report_removed && (
                   <span
                     className="ml-auto text-red-500 cursor-pointer hover:text-red-600 hover:scale-105 transition"
                     onClick={() => handleDeleteComment(comment.comment_id)}
-                    title="Bình luận bị báo cáo"
+                    title="Xóa bình luận"
                   >
-                    <FaFlag className="w-6 h-6" />
+                    <FaTimesCircle className="w-6 h-6" />
                   </span>
                 )}
               </div>
-              <p className="ml-20 text-gray-700 bg-blue-300 p-3 rounded-md max-w-[20rem] break-words">
-                {comment.comment}
-              </p>
+              {!comment.is_report_removed ? (
+                <p className="ml-20 text-gray-700 bg-blue-300 p-3 rounded-md max-w-[20rem] break-words">
+                  {comment.comment}
+                </p>
+              ) : (
+                <div className="ml-20 text-gray-700 bg-red-100 p-3 rounded-md max-w-[23rem] break-words border-[1px] border-red-500 border-solid">
+                  <div className="flex items-center">
+                    <FaExclamationTriangle className="text-red-500 mr-2 w-7 h-7 " />
+                    <p className="font-semibold">
+                      Bình luận này đã bị xóa vì vi phạm quy định của SWEETHOME.
+                    </p>
+                  </div>
+                </div>
+              )}
             </li>
           ))}
           {isReportPopupOpen && (

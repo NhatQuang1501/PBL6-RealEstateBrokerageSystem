@@ -17,9 +17,9 @@ const DetailDescription = ({
 
   return (
     <div className="border-[1px] border-double border-gray-200 rounded-lg p-4 space-y-2 shadow-md">
-      <div className="mb-6 flex text-xl">
+      <div className="mb-3 flex text-lg">
         <FaQuoteLeft className="text-2xl text-blue-500" />{" "}
-        <h2 className="text-gray-600 underline text-lg mb-2 ml-5 font-extrabold">
+        <h2 className="text-gray-600 underline text-lg mb-1 ml-5 font-extrabold">
           {" "}
           Thông tin chi tiết :{" "}
         </h2>
@@ -29,8 +29,8 @@ const DetailDescription = ({
         dangerouslySetInnerHTML={{ __html: truncatedText }}
       />
       {safeDescription.length > maxLength && !enableToggle && (
-        <a href={moreLink} className="text-blue-500">
-          xem thêm
+        <a href={moreLink} className="text-blue-500 text-sm italic">
+          xem thêm...
         </a>
       )}
     </div>

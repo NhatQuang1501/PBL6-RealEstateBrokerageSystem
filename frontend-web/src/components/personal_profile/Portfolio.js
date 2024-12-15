@@ -82,8 +82,8 @@ export default function Portfolio() {
   }, [sessionToken, id, filterStatus, userId]);
 
   return (
-    <div className=" p-6 rounded-lg">
-      <div className="flex flex-row justify-between gap-10 border-b-[2px] border-solid border-gray-400 ">
+    <div className=" p-1 rounded-lg">
+      <div className="flex flex-row justify-start gap-10 border-b-[2px] border-solid border-gray-400 ">
         <h2 className="text-lg font-bold mb-4">
           <button
             className={`text-black ${
@@ -125,7 +125,7 @@ export default function Portfolio() {
           {currentPosts.map((post, index) => (
             <div
               key={index}
-              className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white p-4"
+              className=""
             >
               <Post post={post} type="personal-page" />
             </div>

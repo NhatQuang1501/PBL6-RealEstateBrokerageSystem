@@ -17,6 +17,8 @@ import {
   faHandshake,
   faEdit,
   faTrash,
+  faBuilding,
+  faFileContract,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   FaPen,
@@ -337,264 +339,17 @@ function Post({ post, type }) {
       </div>
 
       {/* main_container */}
-      <div className="flex flex-col justify-center py-2">
+      <div className="flex flex-row justify-center gap-2">
         {/* Left (45%) */}
-        <div className="w-full">
+        <div className="w-[45%]">
           {/* Img */}
           <ImageCard postId={post.post_id} />
-        </div>
-
-        {/* Right column (55%) */}
-        <div className="flex flex-col gap-2 justify-center w-full">
-          {post.estate_type === "Nhà" && (
-            <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white rounded-lg shadow-md">
-              <div className="flex flex-row gap-7">
-                <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-extrabold">Giá bán:</p>
-                  </div>
-                  <p className="text-2xl font-bold mt-1 ml-4">
-                    {formatPrice(post.price)}
-                  </p>
-                </div>
-
-                <DetailDescription
-                  description={post.description}
-                  maxLength={20}
-                  moreLink={`/user/detail-post/${post.post_id}`}
-                  onClick={handleDetailClick}
-                />
-              </div>
-
-              {/* Thông tin chung */}
-              <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                    Địa chỉ:
-                  </p>
-                  <p className="text-center mt-1">
-                    {post.address}, Phường {post.ward}, Quận {post.district},
-                    Thành phố {post.city}
-                  </p>
-                  {/* <p className="text-center mt-1">KĐ: {post.longitude}</p>
-                  <p className="text-center mt-1">VĐ: {post.latitude}</p> */}
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
-                    Diện tích:
-                  </p>
-                  <p className="text-center mt-1">{post.area}m²</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faBed} className="mr-2" />
-                    Số phòng ngủ:
-                  </p>
-                  <p className="text-center mt-1">{post.bedroom} phòng ngủ</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faBath} className="mr-2" />
-                    Số phòng tắm:
-                  </p>
-                  <p className="text-center mt-1">{post.bathroom} phòng tắm</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
-                    Hướng nhà:
-                  </p>
-                  <p className="text-center mt-1">{post.orientation}</p>
-                </div>
-
-                <div
-                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                  onClick={handleDetailClick}
-                >
-                  <p className="text-black font-bold text-center italic">
-                    Xem thêm ...
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-          {post.estate_type === "Đất" && (
-            <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white rounded-lg shadow-md">
-              {/* Giá + Detail */}
-              <div className="flex flex-row gap-7">
-                <div className="flex flex-row items-center justify-start bg-gradient-to-br from-red-400 to-pink-500 text-white rounded-lg p-4 shadow-md mb-3 border-2 border-white max-w-sm transform hover:scale-105 transition-transform duration-200 ease-out">
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
-                    <p className="text-lg font-extrabold">Giá bán:</p>
-                  </div>
-                  <p className="text-2xl font-bold mt-1 ml-4">
-                    {formatPrice(post.price)}
-                  </p>
-                </div>
-
-                <DetailDescription
-                  description={post.description}
-                  maxLength={20}
-                  moreLink={`/user/detail-post/${post.post_id}`}
-                  onClick={handleDetailClick}
-                />
-              </div>
-
-              {/* Thông tin chung */}
-              <div className="grid grid-cols-3 gap-4 border-t-[2px] border-gray-200 border-solid pt-4">
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-red-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faMapMarkerAlt} className="mr-2" />
-                    Địa chỉ:
-                  </p>
-                  <p className="text-center mt-1">
-                    {post.address}, Phường {post.ward}, Quận {post.district},
-                    Thành phố {post.city}
-                  </p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faRulerCombined} className="mr-2" />
-                    Diện tích:
-                  </p>
-                  <p className="text-center mt-1">{post.area}m²</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-blue-400 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faRoad} className="mr-2" />
-                    Mặt tiền (m):
-                  </p>
-                  <p className="text-center mt-1">{post.frontage} m</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-gray-600 font-extrabold text-center flex items-center justify-center">
-                    <FontAwesomeIcon icon={faCompass} className="mr-2" />
-                    Hướng đất:
-                  </p>
-                  <p className="text-center mt-1">{post.orientation}</p>
-                </div>
-
-                <div className="bg-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <p className="text-yellow-600 font-extrabold text-center flex items-center justify-center">
-                    <FaRegFileAlt className="mr-2" />
-                    Tình trạng pháp lý:
-                  </p>
-                  <p className="text-center mt-1">{post.legal_status}</p>
-                </div>
-
-                <div
-                  className="bg-gray-200 rounded-lg p-3 flex justify-center items-center shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                  onClick={handleDetailClick}
-                >
-                  <p className="text-black font-bold text-center italic">
-                    Xem thêm ...
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex justify-center ">
-            <div className="flex space-x-8 mt-5 justify-between w-[70%] border-t-[3px] border-gray-200 border-solid pt-5 pl-5 pr-5">
-              {role !== "admin" && (
-                <>
-                  {/* Heart */}
-                  <div className="flex flex-col items-center text-gray-500 gap-2">
-                    <button
-                      onClick={handleClick}
-                      className="focus:outline-none"
-                      title="Yêu thích"
-                    >
-                      <div className="flex gap-2 items-center space-x-1">
-                        <FontAwesomeIcon
-                          icon={faHeart}
-                          className={`w-6 h-6 transition duration-100 ${
-                            isClicked ? "text-red-400" : "text-gray-500"
-                          }`}
-                        />
-                        <span>
-                          {/* {isClicked && reactionsCount === 0
-                        ? reactionsCount + 1
-                        : reactionsCount} */}
-                          {reactionsCount}
-                        </span>
-                      </div>
-                    </button>
-                    <span className="text-xs">Yêu thích</span>
-                  </div>
-                  {/* Chat */}
-                  <div
-                    className="flex flex-col items-center text-gray-500 gap-2 cursor-pointer"
-                    onClick={handleDetailClick}
-                    title="Bình luận"
-                  >
-                    <div className="flex gap-2 items-center space-x-1">
-                      <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
-                      <span>{post.comments_count}</span>
-                    </div>
-                    <span className="text-xs">Bình luận</span>
-                  </div>
-                  {/* Share */}
-                  <div
-                    className="flex flex-col items-center text-gray-500 gap-2"
-                    title="Chia sẻ"
-                  >
-                    <div className="flex gap-2 items-center space-x-1">
-                      <FontAwesomeIcon icon={faShareAlt} className="w-6 h-6" />
-                      <span>124</span>
-                    </div>
-                    <span className="text-xs">Chia sẻ</span>
-                  </div>
-                </>
-              )}
-
-              {/* Save */}
-              {type !== "personal-page" && (
-                <div
-                  className="flex flex-col items-center text-gray-500 gap-2"
-                  title="Lưu bài"
-                >
-                  <button
-                    onClick={handleSaveClick}
-                    className="focus:outline-none"
-                  >
-                    <div className="flex gap-2 items-center space-x-1">
-                      <FontAwesomeIcon
-                        icon={faBookmark}
-                        className={`w-6 h-6 transition duration-100 ${
-                          isSaved ? "text-yellow-400" : "text-gray-500"
-                        }`}
-                      />
-                      <span>
-                        {/* {isSaved && savesCount === 0
-                          ? savesCount + 1
-                          : savesCount} */}
-                        {savesCount}
-                      </span>
-                    </div>
-                  </button>
-                  <span className="text-xs">Lưu bài</span>
-                </div>
-              )}
-            </div>
-          </div>
-
           {/* Neo_btn */}
           {id !== post.user.user_id &&
             role !== "admin" &&
             (post.sale_status === "Đang bán" ||
               post.sale_status === "Đang thương lượng") && (
-              <div className="mt-5 flex justify-center items-center">
+              <div className="pt-3 flex justify-center items-center">
                 <button
                   className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
                   onClick={() => {
@@ -746,11 +501,11 @@ function Post({ post, type }) {
 
           {/* Check post đang thương lượng thì không được sửa */}
 
-          <div className="mt-4 flex justify-center items-center gap-10">
+          <div className="pt-3 pb-7 flex justify-center items-center gap-7">
             {id === post.user.user_id && post.sale_status === "Đang bán" && (
               <>
                 <button
-                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={() => {
                     handleUpdate(post.post_id);
                   }}
@@ -763,7 +518,7 @@ function Post({ post, type }) {
             {id === post.user.user_id && (
               <>
                 <button
-                  className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                   onClick={() => {
                     handleDelete(post.post_id);
                   }}
@@ -773,6 +528,507 @@ function Post({ post, type }) {
                 </button>
               </>
             )}
+          </div>
+        </div>
+
+        {/* Right column (55%) */}
+        <div className="flex flex-col bg-white gap-2 justify-center w-full mt-2">
+          {post.estate_type === "Nhà" && (
+            <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white ">
+              <div className="flex flex-row justify-between items-center gap-4 w-full">
+                {/* DetailDescription */}
+                <div className="flex-1">
+                  <DetailDescription
+                    description={post.description}
+                    maxLength={32}
+                    moreLink={`/user/detail-post/${post.post_id}`}
+                    onClick={handleDetailClick}
+                  />
+                </div>
+
+                {/* Price */}
+                <div
+                  className="flex items-center justify-start bg-gradient-to-br from-red-100 to-red-300 text-red-600 
+                  rounded-lg p-4 shadow-lg shadow-red-200 mb-3 border-2 border-white 
+                  max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
+                >
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
+                    <p className="text-lg font-extrabold">Giá bán:</p>
+                  </div>
+                  <p className="text-lg font-extrabold ml-4">
+                    {formatPrice(post.price)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Giao diện tối ưu */}
+              <div className="flex flex-col gap-1 items-start justify-center">
+                {/* Địa chỉ */}
+                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-2">
+                  {/* Biểu tượng */}
+                  <div className="w-8 h-8 flex items-center justify-center bg-red-100 rounded-full">
+                    <FontAwesomeIcon
+                      icon={faMapMarkerAlt}
+                      className="text-red-500 text-lg"
+                    />
+                  </div>
+
+                  {/* Label và Nội dung */}
+                  <div className="flex items-center gap-2">
+                    <p className="text-red-500 font-bold text-sm whitespace-nowrap">
+                      Địa chỉ:
+                    </p>
+                    <p className="text-gray-700 text-sm bg-red-50 p-2 rounded-xl">
+                      {post.address}, Phường {post.ward}, Quận {post.district},
+                      Thành phố {post.city}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faRulerCombined}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Diện tích:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.area} m²
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faCompass}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">Hướng:</p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.orientation}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Mặt tiền */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faRoad}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Mặt tiền:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.frontage} m
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      {/* <FontAwesomeIcon
+                        icon={faRulerCombined}
+                        className="text-blue-500 text-lg"
+                      /> */}
+                      <FaRegFileAlt className="text-gray-500 text-lg" />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Tình trạng pháp lý:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.legal_status}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faBuilding}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Số tầng:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.floor}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faBed}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Số phòng ngủ:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.bedroom}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faBath}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Số phòng tắm:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.bathroom}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="ml-[3rem] flex items-center">
+                    <button
+                      className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                      onClick={() => {
+                        handleDetailClick();
+                      }}
+                    >
+                      Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {post.estate_type === "Đất" && (
+            <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white ">
+              <div className="flex flex-row justify-between items-center gap-4 w-full">
+                {/* DetailDescription */}
+                <div className="flex-1">
+                  <DetailDescription
+                    description={post.description}
+                    maxLength={32}
+                    moreLink={`/user/detail-post/${post.post_id}`}
+                    onClick={handleDetailClick}
+                  />
+                </div>
+
+                {/* Price */}
+                <div
+                  className="flex items-center justify-start bg-gradient-to-br from-red-100 to-red-300 text-red-600 
+                  rounded-lg p-4 shadow-lg shadow-red-200 mb-3 border-2 border-white 
+                  max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
+                >
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
+                    <p className="text-lg font-extrabold">Giá bán:</p>
+                  </div>
+                  <p className="text-lg font-extrabold ml-4">
+                    {formatPrice(post.price)}
+                  </p>
+                </div>
+              </div>
+              {/* Giao diện tối ưu */}
+              <div className="flex flex-col gap-1 items-start justify-center">
+                {/* Địa chỉ */}
+                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-2">
+                  {/* Biểu tượng */}
+                  <div className="w-8 h-8 flex items-center justify-center bg-red-100 rounded-full">
+                    <FontAwesomeIcon
+                      icon={faMapMarkerAlt}
+                      className="text-red-500 text-lg"
+                    />
+                  </div>
+
+                  {/* Label và Nội dung */}
+                  <div className="flex items-center gap-2">
+                    <p className="text-red-500 font-bold text-sm whitespace-nowrap">
+                      Địa chỉ:
+                    </p>
+                    <p className="text-gray-700 text-sm bg-red-50 p-2 rounded-xl">
+                      {post.address}, Phường {post.ward}, Quận {post.district},
+                      Thành phố {post.city}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faRulerCombined}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Diện tích:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.area} m²
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faCompass}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">Hướng:</p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.orientation}
+                      </p>
+                    </div>
+                  </div>
+                  {/* Mặt tiền */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faRoad}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Mặt tiền:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.frontage} m
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      {/* <FontAwesomeIcon
+                        icon={faRulerCombined}
+                        className="text-blue-500 text-lg"
+                      /> */}
+                      <FaRegFileAlt className="text-gray-500 text-lg" />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Tình trạng pháp lý:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.legal_status}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faFileContract}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Tờ bản đồ số:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.map_sheet_number
+                          ? post.map_sheet_number
+                          : "Chưa có thông tin"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Diện tích và Hướng */}
+                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
+                  {/* Diện tích */}
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faFileContract}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">
+                        Thửa đất số:
+                      </p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.land_parcel ? post.land_parcel : "Chưa có thông tin"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+                  <div className="flex items-center gap-1">
+                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                      <FontAwesomeIcon
+                        icon={faFileContract}
+                        className="text-gray-500 text-lg"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <p className="text-gray-500 font-bold text-sm">Lô đất:</p>
+                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
+                        {post.land_lot ? post.land_lot : "Chưa có thông tin"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Hướng */}
+
+                  <div className=" flex items-center">
+                    <button
+                      className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                      onClick={() => {
+                        handleDetailClick();
+                      }}
+                    >
+                      Chi tiết
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex justify-center ">
+            <div className="flex space-x-8 mt-5 justify-center gap-10 w-[55%] border-t-[3px] border-gray-200 border-solid pt-2 pl-5 pr-5">
+              {role !== "admin" && (
+                <>
+                  {/* Heart */}
+                  <div className="flex flex-col items-center text-gray-500 gap-2">
+                    <button
+                      onClick={handleClick}
+                      className="focus:outline-none"
+                      title="Yêu thích"
+                    >
+                      <div className="flex gap-2 items-center space-x-1">
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          className={`w-6 h-6 transition duration-100 ${
+                            isClicked ? "text-red-400" : "text-gray-500"
+                          }`}
+                        />
+                        <span>
+                          {/* {isClicked && reactionsCount === 0
+                        ? reactionsCount + 1
+                        : reactionsCount} */}
+                          {reactionsCount}
+                        </span>
+                      </div>
+                    </button>
+                    <span className="text-xs">Yêu thích</span>
+                  </div>
+                  {/* Chat */}
+                  <div
+                    className="flex flex-col items-center text-gray-500 gap-2 cursor-pointer"
+                    onClick={handleDetailClick}
+                    title="Bình luận"
+                  >
+                    <div className="flex gap-2 items-center space-x-1">
+                      <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
+                      <span>{post.comments_count}</span>
+                    </div>
+                    <span className="text-xs">Bình luận</span>
+                  </div>
+                  {/* Share */}
+                  {/* <div
+                    className="flex flex-col items-center text-gray-500 gap-2"
+                    title="Chia sẻ"
+                  >
+                    <div className="flex gap-2 items-center space-x-1">
+                      <FontAwesomeIcon icon={faShareAlt} className="w-6 h-6" />
+                      <span>124</span>
+                    </div>
+                    <span className="text-xs">Chia sẻ</span>
+                  </div> */}
+                </>
+              )}
+
+              {/* Save */}
+              {type !== "personal-page" && (
+                <div
+                  className="flex flex-col items-center text-gray-500 gap-2"
+                  title="Lưu bài"
+                >
+                  <button
+                    onClick={handleSaveClick}
+                    className="focus:outline-none"
+                  >
+                    <div className="flex gap-2 items-center space-x-1">
+                      <FontAwesomeIcon
+                        icon={faBookmark}
+                        className={`w-6 h-6 transition duration-100 ${
+                          isSaved ? "text-yellow-400" : "text-gray-500"
+                        }`}
+                      />
+                      <span>
+                        {/* {isSaved && savesCount === 0
+                          ? savesCount + 1
+                          : savesCount} */}
+                        {savesCount}
+                      </span>
+                    </div>
+                  </button>
+                  <span className="text-xs">Lưu bài</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
