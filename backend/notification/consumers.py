@@ -77,6 +77,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         notification_list = [
             {
                 "notification_id": str(noti.notification_id),
+                "is_read": noti.is_read,
                 "description": noti.description,
                 "data": noti.data,
             }
