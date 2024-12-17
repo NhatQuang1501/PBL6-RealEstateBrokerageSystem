@@ -54,7 +54,7 @@ class AdminPostView(APIView):
 
         return Response(
             {
-                "message": "Duyệt bài đăng thành công",
+                "message": f"{"Duyệt" if post_status == Status.APPROVED else "Từ chối duyệt"} bài đăng thành công",
             },
             status=status.HTTP_200_OK,
         )
@@ -63,18 +63,18 @@ class AdminPostView(APIView):
         post = get_object_or_404(Post, post_id=pk)
         post_id = post.post_id
         post_title = post.title
+        author = post.user_id
         post.delete()
 
-        author = post.user_id
-        author_noti = f"Bài đăng của bạn đã bị xóa bởi admin"
-        # additional_info = {
-        #     "post_id": str(post_id),
-        # }
-        NotificationService.add_notification(author, author_noti)
+        author_noti = f"Bài đăng {post_title} của bạn đã bị xóa bởi admin"
+        additional_info = {
+            "post_title": str(post_title),
+        }
+        NotificationService.add_notification(author, author_noti, additional_info)
 
         return Response(
             {
-                "message": f"Xóa bài đăng {'đang chờ duyệt' if post.status==Status.PENDING_APPROVAL else 'đã duyệt'} {post_id} - {post_title} thành công"
+                "message": f"Xóa bài đăng {post_id} - {post_title} thành công"
             },
             status=status.HTTP_204_NO_CONTENT,
         )
