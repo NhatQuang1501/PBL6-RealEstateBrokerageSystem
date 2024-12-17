@@ -13,7 +13,7 @@ def content_based_filtering(user_id, num_recommendations=10):
     # Tạo ma trận đặc trưng cho các bài đăng
     post_features = []
     for post in all_posts:
-        features = f"{post.title} {post.estate_type} {post.city} {post.district} {post.ward} {post.street} {post.address} {post.description}"
+        features = f"{post.title} {post.estate_type} {post.city} {post.district} {post.ward} {post.street} {post.orientation} {post.legal_status}"
         post_features.append(features)
 
     # Tính toán ma trận TF-IDF
@@ -43,6 +43,5 @@ def content_based_filtering(user_id, num_recommendations=10):
     # Chuyển đổi các chỉ số thành số nguyên
     recommendations = [int(i) for i in recommendations]
 
-    # Trả về danh sách các bài đăng được đề xuất
     recommended_posts = [all_posts[i] for i in recommendations[:num_recommendations]]
     return recommended_posts

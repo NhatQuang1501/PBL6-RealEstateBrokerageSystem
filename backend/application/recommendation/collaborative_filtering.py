@@ -4,10 +4,10 @@ from accounts.models import *
 from application.models import *
 
 
-def collaborative_filtering(user_id, num_recommendations=5):
+def collaborative_filtering(user_id, num_recommendations=10):
     # Lấy tất cả các bài đăng và người dùng
     all_posts = Post.objects.filter(status=Status.APPROVED)
-    all_users = User.objects.all()
+    all_users = User.objects.filter(role=Role.USER)
 
     # Tạo ma trận tương tác giữa người dùng và bài đăng
     interaction_matrix = np.zeros((all_users.count(), all_posts.count()))
@@ -32,6 +32,5 @@ def collaborative_filtering(user_id, num_recommendations=5):
 
     recommendations = [int(i) for i in recommendations]
 
-    # Trả về danh sách các bài đăng được đề xuất
     recommended_posts = [all_posts[i] for i in recommendations[:num_recommendations]]
     return recommended_posts
