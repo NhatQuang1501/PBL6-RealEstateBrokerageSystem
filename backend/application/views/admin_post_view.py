@@ -54,7 +54,7 @@ class AdminPostView(APIView):
 
         return Response(
             {
-                "message": f"{"Duyệt" if post_status == Status.APPROVED else "Từ chối duyệt"} bài đăng thành công",
+                "message": f"{'Duyệt' if post_status == Status.APPROVED else 'Từ chối duyệt'} bài đăng thành công",
             },
             status=status.HTTP_200_OK,
         )
