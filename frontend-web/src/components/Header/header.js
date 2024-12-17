@@ -12,6 +12,7 @@ import {
   faEdit,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
+import NotifyUser from "../Notification/NotifyUser";
 
 function Header() {
   let navigate = useNavigate();
@@ -280,6 +281,7 @@ function Header() {
               </ul>
             </nav>
             <div className="flex flex-row gap-5">
+            <NotifyUser />
               <div className="flex items-center gap-4">
                 <img
                   src={

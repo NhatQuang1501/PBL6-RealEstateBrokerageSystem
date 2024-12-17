@@ -546,11 +546,10 @@ function Post({ post, type }) {
                   />
                 </div>
 
-                {/* Price */}
                 <div
-                  className="flex items-center justify-start bg-gradient-to-br from-red-100 to-red-300 text-red-600 
-                  rounded-lg p-4 shadow-lg shadow-red-200 mb-3 border-2 border-white 
-                  max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
+                  className="flex items-center justify-start bg-gradient-to-br from-yellow-200 to-orange-300 text-orange-700 
+                             rounded-lg p-4 shadow-lg shadow-orange-300 mb-3 border-2 border-white 
+                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out glossy-effect"
                 >
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
@@ -754,9 +753,9 @@ function Post({ post, type }) {
 
                 {/* Price */}
                 <div
-                  className="flex items-center justify-start bg-gradient-to-br from-red-100 to-red-300 text-red-600 
-                  rounded-lg p-4 shadow-lg shadow-red-200 mb-3 border-2 border-white 
-                  max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
+                  className="flex items-center justify-start bg-gradient-to-br from-yellow-200 to-orange-300 text-orange-700 
+                             rounded-lg p-4 shadow-lg shadow-orange-300 mb-3 border-2 border-white 
+                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out glossy-effect"
                 >
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
@@ -907,7 +906,9 @@ function Post({ post, type }) {
                         Thửa đất số:
                       </p>
                       <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.land_parcel ? post.land_parcel : "Chưa có thông tin"}
+                        {post.land_parcel
+                          ? post.land_parcel
+                          : "Chưa có thông tin"}
                       </p>
                     </div>
                   </div>

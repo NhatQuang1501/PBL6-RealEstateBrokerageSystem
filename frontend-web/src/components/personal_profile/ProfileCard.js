@@ -253,7 +253,7 @@ const ProfileCard = () => {
             <img
               src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300 border-[3px] border-gray-200 border-solid shadow-lg"
+              className="rounded-full w-[12rem] h-[12rem] object-cover bg-gray-300 border-[3px] border-gray-200 border-solid shadow-lg"
             />
           ) : (
             <img
@@ -291,18 +291,21 @@ const ProfileCard = () => {
           ) : (
             // Trường hợp người lạ
             <>
-            {!isSend ? (              <button
-                className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200"
-                onClick={handleSendFriendRequest(user.user.username)}
-              >
-                Kết bạn
-                <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
-              </button>
-            ) : (
-              <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
-                <div className="text-sm font-bold text-gray-600">Đã gửi yêu cầu</div>
-              </div>
-            )}
+              {!isSend ? (
+                <button
+                  className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200"
+                  onClick={handleSendFriendRequest(user.user.username)}
+                >
+                  Kết bạn
+                  <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
+                </button>
+              ) : (
+                <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
+                  <div className="text-sm font-bold text-gray-600">
+                    Đã gửi yêu cầu
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

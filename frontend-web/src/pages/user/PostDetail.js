@@ -6,7 +6,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faComment,
-  faShareAlt,
   faBookmark,
   faListAlt,
   faUpload,
@@ -31,7 +30,7 @@ import NegotiationList from "../../components/neogotiation/NegotiationList";
 import MapView from "../../components/map_api/Mapbox";
 
 const DetailPost = () => {
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
   const { postId } = useParams();
   const [post, setPost] = useState();
   const [isClicked, setIsClicked] = useState();
@@ -308,7 +307,7 @@ const DetailPost = () => {
                 </div>
               </div>
 
-              {id !== post.user.user_id && (
+              {id !== post.user.user_id && role === "user" && (
                 <div className="mt-5 flex justify-center items-center">
                   <button
                     className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
@@ -528,11 +527,7 @@ const DetailPost = () => {
                     <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
                     <span>{commentCount}</span>
                   </div>
-                  {/* Share */}
-                  <div className="flex items-end text-gray-500 space-x-1">
-                    <FontAwesomeIcon icon={faShareAlt} className="w-8 h-8" />
-                    <span>5</span>
-                  </div>
+
                   {/* Save */}
                   <div className="flex items-end text-gray-500 space-x-1">
                     <button

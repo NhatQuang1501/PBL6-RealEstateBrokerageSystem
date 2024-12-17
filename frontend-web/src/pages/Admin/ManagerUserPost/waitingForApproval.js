@@ -86,12 +86,18 @@ const WaitingForApproval = () => {
 
   const handleDeletePost = async (postId) => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/admin/posts/${postId}/`, {
+      const response = await axios.delete(`http://127.0.0.1:8000/api/admin/posts/${postId}/`, {
         headers: {
           Authorization: `Bearer ${sessionToken}`,
         },
       });
       fetchPosts();
+      if (response.status === 204) {
+        closeDeletePopup();
+        console.log("Post deleted successfully");
+        alert("Xóa bài đăng thành công");
+        
+      }
     } catch (error) {
       console.error("Error deleting post:", error);
     }
@@ -106,6 +112,7 @@ const WaitingForApproval = () => {
   }
 
   const openDeletePopup = (postId) => {
+    console.log("postId", postId);
     setDeletePostId(postId);
     setConfirmDelete(true);
   };
@@ -192,7 +199,9 @@ const WaitingForApproval = () => {
                       <div className="flex justify-center gap-4">
                         <button
                           className="bg-red-500 text-white p-2 rounded-lg hover:bg-red-600"
-                          onClick={handleDeletePost}
+                          onClick={() => {
+                            handleDeletePost(deletePostId);
+                          }}
                         >
                           Xóa bài đăng
                         </button>

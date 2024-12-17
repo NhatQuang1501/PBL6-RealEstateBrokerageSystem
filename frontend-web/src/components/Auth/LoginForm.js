@@ -38,7 +38,8 @@ const LoginForm = () => {
 
         if (data.data && role === "admin") {
           setName(data.data.username);
-          setId(data.data.user_id);
+          setId(data.user_id);
+          console.log("Id: ", data.user_id);
         } else if (data.data && role === "user") {
           setName(data.data.user.username);
           setId(data.data.user_id);
