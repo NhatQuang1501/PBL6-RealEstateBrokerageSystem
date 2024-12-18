@@ -280,7 +280,6 @@ class NegotiationChatRoomListView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
     def get(self, request):
-        params = {key.strip(): value for key, value in request.query_params.items()}
         user_id = request.query_params.get("user_id", "").strip()
 
         if not user_id:
@@ -297,24 +296,32 @@ class NegotiationChatRoomListView(APIView):
 
         data = []
         for chatroom in chatrooms:
+            chatroom_negotiation = chatroom.negotiation
+            chatroom_post = chatroom_negotiation.post
+            negotiator = chatroom_negotiation.user
+            author = chatroom.participants.exclude(user_id=negotiator.user_id).first()
             other_participants = chatroom.participants.exclude(user_id=user_id)
-            for participant in other_participants:
-                data.append(
-                    {
-                        "chatroom_id": chatroom.chatroom_id,
-                        "chatroom_name": chatroom.chatroom_name,
-                        "negotiation_id": chatroom.negotiation.negotiation_id,
-                        "other_participant": {
-                            "user_id": participant.user_id,
-                            "username": participant.username,
-                            "avatar": (
-                                participant.profile.avatar.url
-                                if participant.profile.avatar
-                                else None
-                            ),
-                        },
-                    }
-                )
+            other_participants_data = [
+                {
+                    "user_id": participant.user_id,
+                    "username": participant.username,
+                    "email": participant.email,
+                    # Thêm các thuộc tính khác của người dùng nếu cần
+                }
+                for participant in other_participants
+            ]
+
+            data.append(
+                {
+                    "chatroom_id": chatroom.chatroom_id,
+                    "chatroom_name": chatroom.chatroom_name,
+                    "negotiation_id": chatroom.negotiation.negotiation_id,
+                    "post_id": chatroom_post.post_id,
+                    "author": author.user_id,
+                    "negotiator": negotiator.user_id,
+                    "other_participant": other_participants_data,
+                }
+            )
 
         return Response(
             {
