@@ -77,7 +77,7 @@ const PredictLandPrice = () => {
     <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-lg shadow-blue-200">
       <h2 className="text-2xl font-bold mb-6 text-center text-blue-600 flex items-center justify-center">
         <FaCommentDollar className="mr-2" />
-        Dự Đoán Giá Bất Động Sản
+        Dự Đoán Giá Đất
       </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Diện tích */}

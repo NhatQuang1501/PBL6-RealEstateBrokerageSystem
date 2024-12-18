@@ -212,8 +212,11 @@ function Post({ post, type }) {
     if (!sessionToken) {
       alert("Bạn cần đăng nhập để thực hiện hành động này.");
       return;
-    } else {
+    } else if (role === "user") {
       navigate(`/user/detail-post/${post.post_id}`);
+    }
+    else {
+      navigate(`/admin/detail-post/${post.post_id}`);
     }
   };
 

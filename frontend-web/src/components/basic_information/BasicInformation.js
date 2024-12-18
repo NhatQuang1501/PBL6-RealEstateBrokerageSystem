@@ -142,12 +142,12 @@ const BasicInformation = ({
     <div className="space-y-16 my-12 px-6 bg-gray-200 p-10 rounded-2xl">
       {/* Giá */}
       <div className="flex justify-center">
-        <div className="relative p-12 w-full sm:w-3/4 lg:w-4/5 rounded-2xl overflow-hidden bg-gradient-to-r from-red-400 to-pink-500 text-white shadow-2xl hover:scale-105 transform transition-all duration-300">
+        <div className="relative p-12 w-full sm:w-3/4 lg:w-4/5 rounded-2xl overflow-hidden bg-gradient-to-br from-yellow-200 to-orange-300 text-orange-700 shadow-2xl hover:scale-105 transform transition-all duration-300 ease-out glossy-effect shadow-orange-300">
           <div className="absolute inset-0 bg-black opacity-10 rounded-2xl pointer-events-none"></div>
-          <div className="relative z-10 flex flex-row justify-center items-center gap-2">
+          <div className="relative z-10 flex flex-row justify-center items-center gap-4">
             <FontAwesomeIcon icon={faDollarSign} className="text-5xl" />
-            <p className="text-3xl font-bold mr-2">Giá:</p>
-            <p className="text-5xl font-extrabold">{formatPrice(price)}</p>
+            <p className="text-4xl font-extrabold mr-2">Giá bán:</p>
+            <p className="text-4xl font-extrabold">{formatPrice(price)}</p>
           </div>
         </div>
       </div>

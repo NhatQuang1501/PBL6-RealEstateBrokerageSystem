@@ -86,7 +86,9 @@ export default function FriendList({ selectFriend }) {
   };
 
   if (loading) {
-    return <p className="text-white">Đang tải danh sách người thương lượng...</p>;
+    return (
+      <p className="text-white">Đang tải danh sách người thương lượng...</p>
+    );
   }
 
   if (error) {
@@ -94,83 +96,165 @@ export default function FriendList({ selectFriend }) {
   }
 
   return (
-    <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg w-[25rem] h-[38rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
-      <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
-        Danh sách thương lượng ({numNego})
-      </h2>
-      <div className="grid grid-cols-1 gap-4">
-        {friends.map((friend) => (
-          <div
-            key={friend.chatroom_id}
-            className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold relative shadow-md"
-          >
-            {/* Avatar */}
-            <img
-              src={"http://127.0.0.1:8000" + friend.other_participant.avatar}
-              alt={`${friend.other_participant.username} avatar`}
-              className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
-              onClick={() => toggleMenu(friend.other_participant.user_id)}
-            />
-            {/* Username */}
-            <p
-              className="flex-1 truncate"
-              onMouseEnter={(e) =>
-                showTooltip(friend.other_participant.username, e)
-              }
-              onMouseLeave={hideTooltip}
+    <div className="flex flex-col w-[38rem] gap-5 overflow-y-auto">
+      <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
+        <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
+          Danh sách người mua ({numNego})
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          {friends.map((friend) => (
+            <div
+              key={friend.chatroom_id}
+              className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold relative shadow-md"
             >
-              {friend.other_participant.username}
-            </p>
-
-            <button
-              className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
-              onClick={() =>
-                selectFriend(
-                  friend.chatroom_id,
-                  friend.other_participant.avatar,
-                  friend.other_participant.username,
-                  friend.other_participant.user_id
-                )
-              }
-            >
-              <FontAwesomeIcon icon={faCommentDots} className="mr-2" />
-              Nhắn tin
-            </button>
-
-            {/* Tooltip */}
-            {tooltip.visible && (
-              <div
-                className="fixed bg-black text-white p-2 rounded-lg"
-                style={{ top: tooltip.y + 20, left: tooltip.x }}
+              {/* Avatar */}
+              <img
+                src={"http://127.0.0.1:8000" + friend.other_participant.avatar}
+                alt={`${friend.other_participant.username} avatar`}
+                className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
+                onClick={() => toggleMenu(friend.other_participant.user_id)}
+              />
+              {/* Username */}
+              <p
+                className="flex-1 truncate"
+                onMouseEnter={(e) =>
+                  showTooltip(friend.other_participant.username, e)
+                }
+                onMouseLeave={hideTooltip}
               >
-                {tooltip.text}
-              </div>
-            )}
+                {friend.other_participant.username}
+              </p>
 
-            {openMenuUserId === friend.other_participant.user_id && (
-              <div
-                ref={menuRef}
-                className="absolute left-5 bottom-3 mt-2 w-auto p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+              <button
+                className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
+                onClick={() =>
+                  selectFriend(
+                    friend.chatroom_id,
+                    friend.other_participant.avatar,
+                    friend.other_participant.username,
+                    friend.other_participant.user_id
+                  )
+                }
               >
-                <button
-                  className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
-                  onClick={() => {
-                    handlePersonalProfileClick(
-                      friend.other_participant.user_id
-                    );
-                  }}
+                <FontAwesomeIcon icon={faCommentDots} className="mr-2" />
+                Nhắn tin
+              </button>
+
+              {/* Tooltip */}
+              {tooltip.visible && (
+                <div
+                  className="fixed bg-black text-white p-2 rounded-lg"
+                  style={{ top: tooltip.y + 20, left: tooltip.x }}
                 >
-                  <FontAwesomeIcon icon={faUser} className="text-blue-500" />
-                  <span className="text-gray-700">Thông tin cá nhân</span>
-                </button>
-                <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
-                  <FontAwesomeIcon icon={faFlag} className="text-red-500" />
-                  <span className="text-gray-700">Báo cáo</span>
-                </button>
-              </div>
-            )}
-          </div>
-        ))}
+                  {tooltip.text}
+                </div>
+              )}
+
+              {openMenuUserId === friend.other_participant.user_id && (
+                <div
+                  ref={menuRef}
+                  className="absolute left-5 bottom-3 mt-2 w-auto p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                >
+                  <button
+                    className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                    onClick={() => {
+                      handlePersonalProfileClick(
+                        friend.other_participant.user_id
+                      );
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                    <span className="text-gray-700">Thông tin cá nhân</span>
+                  </button>
+                  <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                    <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+                    <span className="text-gray-700">Báo cáo</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
+        <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
+          Danh sách người bán ({numNego})
+        </h2>
+        <div className="grid grid-cols-1 gap-4">
+          {friends.map((friend) => (
+            <div
+              key={friend.chatroom_id}
+              className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-bold relative shadow-md"
+            >
+              {/* Avatar */}
+              <img
+                src={"http://127.0.0.1:8000" + friend.other_participant.avatar}
+                alt={`${friend.other_participant.username} avatar`}
+                className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
+                onClick={() => toggleMenu(friend.other_participant.user_id)}
+              />
+              {/* Username */}
+              <p
+                className="flex-1 truncate"
+                onMouseEnter={(e) =>
+                  showTooltip(friend.other_participant.username, e)
+                }
+                onMouseLeave={hideTooltip}
+              >
+                {friend.other_participant.username}
+              </p>
+
+              <button
+                className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
+                onClick={() =>
+                  selectFriend(
+                    friend.chatroom_id,
+                    friend.other_participant.avatar,
+                    friend.other_participant.username,
+                    friend.other_participant.user_id
+                  )
+                }
+              >
+                <FontAwesomeIcon icon={faCommentDots} className="mr-2" />
+                Nhắn tin
+              </button>
+
+              {/* Tooltip */}
+              {tooltip.visible && (
+                <div
+                  className="fixed bg-black text-white p-2 rounded-lg"
+                  style={{ top: tooltip.y + 20, left: tooltip.x }}
+                >
+                  {tooltip.text}
+                </div>
+              )}
+
+              {openMenuUserId === friend.other_participant.user_id && (
+                <div
+                  ref={menuRef}
+                  className="absolute left-5 bottom-3 mt-2 w-auto p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                >
+                  <button
+                    className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                    onClick={() => {
+                      handlePersonalProfileClick(
+                        friend.other_participant.user_id
+                      );
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                    <span className="text-gray-700">Thông tin cá nhân</span>
+                  </button>
+                  <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                    <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+                    <span className="text-gray-700">Báo cáo</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

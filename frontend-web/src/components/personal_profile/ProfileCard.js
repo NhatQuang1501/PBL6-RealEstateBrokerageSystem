@@ -12,27 +12,30 @@ import {
   faPhone,
   faCity,
   faBirthdayCake,
-  faUserPlus,
-  faCommentDots,
   faUserEdit,
   faCamera,
+  faBan,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaAddressCard, FaUserFriends } from "react-icons/fa";
+import { FaAddressCard } from "react-icons/fa";
 
 const ProfileCard = () => {
   const navigate = useNavigate();
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
-  const [profileImage, setProfileImage] = useState(null); // Updated here
+  const [profileImage, setProfileImage] = useState(null);
   const [fileName, setFileName] = useState("Hãy chọn file ảnh");
   const [avatar, setAvatar] = useState(null);
   const { userId } = useParams();
-  const [isFriend, setIsFriend] = useState(false);
-  const [senders, setSenders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSend, setIsSend] = useState(false);
+  const [lockedAccounts, setLockedAccounts] = useState([]);
+  const [isLockPopupOpen, setIsLockPopupOpen] = useState(false);
+  const [isUnLockPopupOpen, setIsUnLockPopupOpen] = useState(false);
+
+  const [lockedReason, setLockedReason] = useState(
+    "Ngôn từ không phù hợp với chính sách của hệ thống"
+  );
+  const [unlockDate, setUnlockDate] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -98,59 +101,23 @@ const ProfileCard = () => {
     };
     fetchAvatar();
 
-    // Check if the user is a friend
-    const fetchFriends = async () => {
+    // Fetch locked accounts
+    const fetchLockedAccounts = async () => {
       try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/friendlist/${id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-            },
-          }
-        );
-
-        const friends = response.data.friends;
-        console.log("Friends data-----:", friends);
-        const friendIds = friends.map((friend) => friend.user_id);
-        console.log("Friend IDs------:", friendIds);
-        setIsFriend(friendIds.includes(userId));
-      } catch (error) {
-        console.error("Error fetching friends:", error);
-      }
-    };
-    fetchFriends();
-
-    const fetchSenders = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/friend-requests-sent/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-            },
-          }
-        );
-
-        // Lọc các yêu cầu kết bạn có friendrequest_status là "đang chờ"
-        const filteredSenders = response.data.data.filter(
-          (request) => request.friendrequest_status === "đang chờ"
-        );
-        // Kiểm tra đã gửi yêu cầu kết bạn chưa
-        const senders = filteredSenders.map((sender) => sender.receiver);
-        setIsSend(senders.includes(userId));
-        console.log("Sender data=============>:", filteredSenders.length);
-        setSenders(filteredSenders);
-        console.log("Sender data:", filteredSenders.length);
+        const res = await fetch("http://127.0.0.1:8000/auth/lock-users/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        });
+        const data = await res.json();
+        setLockedAccounts(data.data.map((item) => item.profile.user_id));
       } catch (err) {
-        console.error("Error fetching sender:", err);
-        setError("Không thể tải danh sách yêu cầu kết bạn.");
-      } finally {
-        setLoading(false);
+        console.log(err);
       }
     };
-
-    fetchSenders();
+    fetchLockedAccounts();
   }, [id, userId, sessionToken]);
 
   if (!user) {
@@ -220,32 +187,121 @@ const ProfileCard = () => {
     }
   };
 
-  // Send friend request
-  const handleSendFriendRequest = (username) => async () => {
+  const formatDateTime = (dateTime) => {
+    const date = new Date(dateTime);
+    const year = date.getFullYear();
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const day = ("0" + date.getDate()).slice(-2);
+    const hours = ("0" + date.getHours()).slice(-2);
+    const minutes = ("0" + date.getMinutes()).slice(-2);
+    const seconds = ("0" + date.getSeconds()).slice(-2);
+
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
+
+  // Lock account
+  const handleLockAccount = async (userId, lockedReason, unlockDate) => {
+    const formattedUnlockDate = formatDateTime(unlockDate);
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/friend-requests/`,
+      const res = await fetch(
+        `http://127.0.0.1:8000/auth/lock-users/${userId}/`,
         {
-          receiver: username,
-        },
-        {
+          method: "POST",
           headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            locked_reason: lockedReason,
+            unlocked_date: formattedUnlockDate,
+            // locked_reason: "Ngôn từ không phù hợp với chính sách của hệ thống",
+            // unlocked_date: "2024-12-09 12:03:00",
+          }),
+        }
+      );
+      if (res.ok) {
+        console.log("Khóa tài khoản thành công");
+        alert("Khóa tài khoản thành công");
+        closeLockPopup();
+        setLockedAccounts([...lockedAccounts, userId]);
+      } else {
+        alert("Khóa tài khoản thất bại");
+        console.log("Khóa tài khoản thất bại");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  // Mở popup khóa tài khoản
+  const openLockPopup_ = (userId) => {
+    setSelectedUserId(userId);
+    setIsLockPopupOpen(true);
+  };
+
+  // Đóng popup khóa tài khoản
+  const closeLockPopup = () => {
+    setIsLockPopupOpen(false);
+    setLockedReason("");
+    setUnlockDate("");
+    setSelectedUserId(null);
+  };
+
+  const handleUnlockDateChange = (e) => {
+    const selectedDate = e.target.value;
+    setUnlockDate(selectedDate);
+
+    const now = new Date();
+    const selectedDateTime = new Date(selectedDate);
+
+    if (selectedDateTime <= now) {
+      alert(
+        "Ngày mở khóa phải là một thời điểm trong tương lai. Vui lòng chọn lại."
+      );
+      setUnlockDate("");
+    }
+  };
+
+  // Mở popup mở khóa tài khoản
+  const openUnLockPopup_ = (userId) => {
+    setSelectedUserId(userId);
+    setIsUnLockPopupOpen(true);
+  };
+
+  // Đóng popup mở khóa tài khoản
+  const closeUnLockPopup = () => {
+    setIsUnLockPopupOpen(false);
+    setSelectedUserId(null);
+  };
+
+  const handleUnLockAccount = async (userId) => {
+    try {
+      const res = await fetch(
+        `http://127.0.0.1:8000/auth/unlock-users/${userId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
             Authorization: `Bearer ${sessionToken}`,
           },
         }
       );
-
-      console.log("Friend request sent successfully:", response.data);
-      alert("Yêu cầu kết bạn đã được gửi !");
-    } catch (error) {
-      console.error("Error sending friend request:", error);
-      alert("Gửi yêu cầu kết bạn thất bại !");
+      if (res.ok) {
+        console.log("Mở khóa tài khoản thành công");
+        alert("Mở khóa tài khoản thành công");
+        closeUnLockPopup();
+        setLockedAccounts(lockedAccounts.filter((id) => id !== userId));
+      } else {
+        alert("Mở khóa tài khoản thất bại");
+        console.log("Mở khóa tài khoản thất bại");
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
 
-
   return (
-    <div className="bg-gradient-to-r from-gray-400 to-gray-600 text-white p-6 rounded-lg shadow-lg">
+    <div className="bg-gradient-to-r from-blue-200 to-blue-300 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
@@ -282,29 +338,31 @@ const ProfileCard = () => {
                 onChange={handleImageUpload}
               />
             </>
-          ) : isFriend ? (
-            // Trường hợp bạn bè
-            <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
-              <div className="text-sm font-bold text-gray-600">Bạn bè</div>
-              <FaUserFriends className="text-2xl text-gray-600 ml-2" />
-            </div>
           ) : (
-            // Trường hợp người lạ
+            // lock/unlock account
             <>
-              {!isSend ? (
-                <button
-                  className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200"
-                  onClick={handleSendFriendRequest(user.user.username)}
-                >
-                  Kết bạn
-                  <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
-                </button>
-              ) : (
-                <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
-                  <div className="text-sm font-bold text-gray-600">
-                    Đã gửi yêu cầu
-                  </div>
-                </div>
+              {role === "admin" && (
+                <>
+                  {lockedAccounts.includes(userId) ? (
+                    <button
+                      className="p-1 text-sm bg-yellow-500 font-bold text-black rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-yellow-600 flex items-center justify-center gap-2"
+                      onClick={() => openUnLockPopup_(userId)}
+                    >
+                      <FontAwesomeIcon icon={faBan} className="ml-2" />{" "}
+                      {/* Thêm biểu tượng */}
+                      Mở khóa tài khoản
+                    </button>
+                  ) : (
+                    <button
+                      className="p-1 text-sm bg-red-600 font-bold text-white rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-red-700 flex items-center justify-center gap-2"
+                      onClick={() => openLockPopup_(userId)}
+                    >
+                      <FontAwesomeIcon icon={faBan} className="ml-2" />{" "}
+                      {/* Thêm biểu tượng */}
+                      Khóa tài khoản
+                    </button>
+                  )}
+                </>
               )}
             </>
           )}
@@ -321,29 +379,7 @@ const ProfileCard = () => {
             Cập nhật trang cá nhân
           </button>
         </>
-      ) : isFriend ? (
-        // Trường hợp bạn bè
-        <>
-          {/* Contact Button */}
-          <button
-            className="bg-gradient-to-r from-purple-300 to-purple-400 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-gray-500 hover:to-gray-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2 border-[1px] border-solid border-white"
-            // onClick={() => handleUpdateProfile()}
-          >
-            <FontAwesomeIcon icon={faCommentDots} />
-            Nhắn tin
-          </button>
-        </>
-      ) : (
-        <>
-          {/* Contact Button */}
-          {/* <button
-            className="bg-gray-500 px-4 py-2 rounded-lg w-full mb-4"
-            // onClick={() => handleUpdateProfile()}
-          >
-            Nhắn tin
-          </button> */}
-        </>
-      )}
+      ) : null}
 
       {/* Face Customizer Options */}
       <div className="p-5 bg-[#fafffe] rounded-lg shadow-md">
@@ -392,6 +428,109 @@ const ProfileCard = () => {
           </div>
         </div>
       </div>
+
+      {/* Popup khóa tài khoản */}
+      {isLockPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
+            <h2 className="text-2xl font-bold mb-6 text-center border-b-[2px] border-solid border-gray-500">
+              Khóa tài khoản
+            </h2>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-3 font-bold">
+                Lý do khóa tài khoản:
+              </label>
+              {/* Thẻ lý do */}
+              <div className="flex flex-wrap gap-2 mb-4">
+                {[
+                  "Ngôn từ không phù hợp",
+                  "Spam nội dung",
+                  "Hành vi gian lận",
+                  "Vi phạm điều khoản",
+                  "Khác",
+                ].map((reason) => (
+                  <button
+                    key={reason}
+                    type="button"
+                    className={`px-3 py-1 rounded-full border ${
+                      lockedReason === reason
+                        ? "bg-blue-500 text-white border-blue-500"
+                        : "bg-gray-200 text-gray-700 border-gray-300"
+                    }`}
+                    onClick={() => setLockedReason(reason)}
+                  >
+                    {reason}
+                  </button>
+                ))}
+              </div>
+              {/* Ô nhập lý do */}
+              <textarea
+                value={lockedReason}
+                onChange={(e) => setLockedReason(e.target.value)}
+                className="w-full mt-1 p-3 border rounded resize-none"
+                rows="4"
+                placeholder="Nhập lý do khóa tài khoản"
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block text-gray-700 mb-2 font-bold">
+                Ngày mở khóa:
+              </label>
+              <input
+                type="datetime-local"
+                value={unlockDate}
+                onChange={handleUnlockDateChange}
+                className="w-full mt-1 p-2 border rounded"
+                min={new Date().toISOString().slice(0, 16)}
+              />
+            </div>
+            <div className="flex justify-end">
+              <button
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 font-semibold"
+                onClick={closeLockPopup}
+              >
+                Hủy
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 font-semibold"
+                onClick={() =>
+                  handleLockAccount(selectedUserId, lockedReason, unlockDate)
+                }
+              >
+                Khóa tài khoản
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup mở khóa tài khoản */}
+      {isUnLockPopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
+            <h2 className="text-2xl font-bold mb-6 text-center border-b-[2px] border-solid border-gray-500">
+              Mở khóa tài khoản
+            </h2>
+            <p className="mb-6 text-center font-semibold">
+              Bạn có chắc chắn muốn mở khóa tài khoản này không?
+            </p>
+            <div className="flex justify-end">
+              <button
+                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 hover:bg-gray-400 font-semibold"
+                onClick={closeLockPopup}
+              >
+                Hủy
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 font-semibold"
+                onClick={() => handleUnLockAccount(selectedUserId)}
+              >
+                Mở khóa
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

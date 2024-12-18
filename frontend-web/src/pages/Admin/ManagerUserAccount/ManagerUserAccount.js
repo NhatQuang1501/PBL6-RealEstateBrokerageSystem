@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Pagination from "../../Pagination/Pagination";
 import { useAppContext } from "../../../AppProvider";
+import { useNavigate } from "react-router-dom";
 
 const ManagerUserAccount = () => {
   const [accounts, setAccounts] = useState([]);
@@ -17,6 +18,7 @@ const ManagerUserAccount = () => {
   );
   const [unlockDate, setUnlockDate] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
+  let navigate = useNavigate();
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -82,6 +84,11 @@ const ManagerUserAccount = () => {
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
+  };
+
   // Lock account
   const handleLockAccount = async (userId, lockedReason, unlockDate) => {
     const formattedUnlockDate = formatDateTime(unlockDate);
@@ -314,7 +321,12 @@ const ManagerUserAccount = () => {
                   </td>
 
                   <td className="border border-gray-300 px-4 py-3 space-x-2  whitespace-nowrap font-bold">
-                    <button className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">
+                    <button
+                      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600"
+                      onClick={() => {
+                        handlePersonalProfileClick(account.user_id);
+                      }}
+                    >
                       Trang cá nhân
                     </button>
                     {/* <button className="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">

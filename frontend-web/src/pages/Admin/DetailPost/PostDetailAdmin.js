@@ -3,7 +3,13 @@ import DetailDescription from "../../../components/detail_description/DetailDesc
 import BasicInformation from "../../../components/basic_information/BasicInformation";
 import ProfileInformation from "../../../components/profile_information/ProfileInformation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  faListAlt,
+  faCheck,
+  faX,
+  faBan,
+} from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useAppContext } from "../../../AppProvider";
@@ -11,11 +17,16 @@ import { useParams, useLocation } from "react-router-dom";
 import Comment from "../../../components/comment/Comment";
 import NegotiationList from "../../../components/neogotiation/NegotiationList";
 import MapView from "../../../components/map_api/Mapbox";
+import Popup from "reactjs-popup";
+import axios from "axios";
 
 const PostDetailAdmin = () => {
-  const { sessionToken } = useAppContext();
+  const { sessionToken, role } = useAppContext();
   const { postId } = useParams();
   const [post, setPost] = useState();
+  const [postStatus, setPostStatus] = useState();
+  const [selectedPostIdD, setSelectedPostIdD] = useState(null);
+  const [showPopupD, setShowPopupD] = useState(false);
 
   //Cmt_id location
   const location = useLocation();
@@ -48,11 +59,12 @@ const PostDetailAdmin = () => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${postId}/`;
+        let url = `http://127.0.0.1:8000/api/admin/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
           },
         });
 
@@ -63,6 +75,7 @@ const PostDetailAdmin = () => {
         const data = await response.json();
         console.log("Post data:", data);
         setPost(data);
+        setPostStatus(data.status);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
@@ -73,16 +86,108 @@ const PostDetailAdmin = () => {
     // fetch images
   }, [postId, sessionToken]);
 
+  // Admin
+  const handleApprovePost = async (postId) => {
+    setShowPopupD(false);
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/admin/posts/`,
+        {
+          post_id: postId,
+          status: "Đã duyệt",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error updating post status:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center font-montserrat">
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-400 to-blue-500 rounded-3xl shadow-lg">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-3xl shadow-lg">
+        <h3 className="text-2xl font-bold text-gray-600 flex items-center gap-3">
           <FontAwesomeIcon
             icon={faListAlt}
-            className="text-blue-400 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+            className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
           />
           Chi tiết bài đăng
         </h3>
+        {role === "admin" && postStatus === "Đang chờ duyệt" && (
+          <div className="flex justify-center items-center gap-10">
+            <button
+              className="bg-gradient-to-r from-yellow-500 to-yellow-400 text-black font-bold px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500"
+              onClick={() => {
+                setShowPopupD(true);
+                setSelectedPostIdD(post.post_id);
+              }}
+            >
+              <FontAwesomeIcon icon={faCheck} className="text-lg" />
+              Duyệt bài đăng
+            </button>
+
+            <button
+              className="bg-gradient-to-r from-red-500 to-red-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-red-600 hover:to-red-500"
+              // onClick={() => {
+              //   handleNeogotiate(post.post_id);
+              // }}
+            >
+              <FontAwesomeIcon icon={faX} className="text-lg" />
+              Từ chối duyệt
+            </button>
+          </div>
+        )}
+
+        {showPopupD && (
+          <Popup
+            open={showPopupD}
+            closeOnDocumentClick={false}
+            onClose={() => setShowPopupD(false)}
+            position="right center"
+            contentStyle={{
+              width: "450px",
+              borderRadius: "16px",
+              padding: "20px",
+              backgroundColor: "#f9fafb",
+              border: "1px solid #e5e7eb",
+              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+              animation: "fadeIn 0.3s ease-in-out",
+            }}
+          >
+            <div className="font-montserrat">
+              <div className="text-center">
+                <p className="font-extrabold text-[1.3rem] text-gray-800">
+                  ⚠️ Xác nhận
+                </p>
+              </div>
+              <hr className="my-4 border-gray-300" />
+              <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
+                Bạn chắc chắn muốn thực hiện hành động này? Hãy kiểm tra kỹ
+                trước khi xác nhận.
+              </p>
+              <div className="flex justify-center mt-6 gap-4">
+                <button
+                  className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                  onClick={() => setShowPopupD(false)}
+                >
+                  <FontAwesomeIcon icon={faBan} className="mr-2" />
+                  Đóng
+                </button>
+                <button
+                  className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                  onClick={() => handleApprovePost(selectedPostIdD)}
+                >
+                  <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                  OK
+                </button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </div>
 
       <div className="flex flex-row-2 gap-3 items-start justify-center">

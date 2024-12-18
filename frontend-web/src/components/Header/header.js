@@ -81,7 +81,7 @@ function Header() {
 
   return (
     <>
-      {!sessionToken && role !== "user" ? (
+      {role !== "user" && role !== "admin" ? (
         <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
           <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
             <div id="logo-header" className="flex items-center gap-1">
@@ -174,7 +174,7 @@ function Header() {
             </div>
           </div>
         </div>
-      ) : role !== "admin" ? (
+      ) : role === "user" ? (
         <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
           <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
             <Link to="/" id="logo-header" className="flex items-center gap-1">

@@ -4,6 +4,8 @@ import axios from "axios";
 import { useAppContext } from "../../../AppProvider";
 import { Popup } from "reactjs-popup";
 import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faBan } from "@fortawesome/free-solid-svg-icons";
 
 const WaitingForApproval = () => {
   const { role, sessionToken } = useAppContext();
@@ -86,17 +88,19 @@ const WaitingForApproval = () => {
 
   const handleDeletePost = async (postId) => {
     try {
-      const response = await axios.delete(`http://127.0.0.1:8000/api/admin/posts/${postId}/`, {
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      });
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
       fetchPosts();
       if (response.status === 204) {
         closeDeletePopup();
         console.log("Post deleted successfully");
         alert("Xóa bài đăng thành công");
-        
       }
     } catch (error) {
       console.error("Error deleting post:", error);
@@ -228,34 +232,39 @@ const WaitingForApproval = () => {
           onClose={() => setShowPopupD(false)}
           position="right center"
           contentStyle={{
-            width: "400px",
-            borderRadius: "10px",
-            padding: "1%",
-            backgroundColor: "white",
-            border: "1px solid #ccc",
-            boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            width: "450px",
+            borderRadius: "16px",
+            padding: "20px",
+            backgroundColor: "#f9fafb",
+            border: "1px solid #e5e7eb",
+            boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
+            animation: "fadeIn 0.3s ease-in-out",
           }}
         >
           <div className="font-montserrat">
-            <div>
-              <p className="font-bold text-[1.1rem]">Xác nhận</p>
+            <div className="text-center">
+              <p className="font-extrabold text-[1.3rem] text-gray-800">
+                ⚠️ Xác nhận
+              </p>
             </div>
-            <hr className="my-2" />
-            <p>Bạn chắc chắn muốn thực hiện ?</p>
-
-            <div className="flex justify-end mt-4 gap-3">
+            <hr className="my-4 border-gray-300" />
+            <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
+              Bạn chắc chắn muốn thực hiện hành động này? Hãy kiểm tra kỹ trước
+              khi xác nhận.
+            </p>
+            <div className="flex justify-center mt-6 gap-4">
               <button
-                className="bg-red-500 text-white py-1 rounded w-[90px]"
+                className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
                 onClick={() => setShowPopupD(false)}
               >
-                <i className="fa-solid fa-ban mr-2"></i>
+                <FontAwesomeIcon icon={faBan} className="mr-2" />
                 Đóng
               </button>
               <button
-                className="bg-blue-500 text-white rounded w-[90px] ml-2"
+                className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
                 onClick={() => handleApprovePost(selectedPostIdD)}
               >
-                <i className="fa-solid fa-check mr-2"></i>
+                <FontAwesomeIcon icon={faCheck} className="mr-2" />
                 OK
               </button>
             </div>

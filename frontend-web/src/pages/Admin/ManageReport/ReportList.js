@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
+import { useNavigate } from "react-router-dom";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { sessionToken } = useAppContext();
+  let navigate = useNavigate();
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -38,6 +40,10 @@ const ReportList = () => {
 
   const handleViewPost = (postId, commentId) => {
     window.location.href = `/admin/detail-post/${postId}?comment_id=${commentId}`;
+  };
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
   };
 
   // Hiển thị dữ liệu khi đang tải hoặc khi có lỗi
@@ -129,18 +135,25 @@ const ReportList = () => {
                 {report.report_type === "Bài đăng" ||
                 report.report_type === "Bình luận" ? (
                   <button
-                    className="px-4 py-2 rounded-full text-white bg-blue-500"
-                    onClick={() => handleViewPost(report.post_id, report.comment_id)}
+                    className="px-4 py-2 rounded-full text-white bg-blue-500 font-semibold"
+                    onClick={() =>
+                      handleViewPost(report.post_id, report.comment_id)
+                    }
                   >
                     Đến bài đăng
                   </button>
                 ) : (
-                  <button className="px-4 py-2 rounded-full text-white bg-blue-500">
+                  <button
+                    className="px-4 py-2 rounded-full text-white bg-blue-500 font-semibold"
+                    onClick={() => {
+                      handlePersonalProfileClick(report.reportee_id);
+                    }}
+                  >
                     Xem thông tin người dùng
                   </button>
                 )}
                 <button
-                  className={`px-4 py-2 rounded-full text-white ${
+                  className={`px-4 py-2 rounded-full  font-semibold text-white ${
                     report.resolved ? "bg-green-500" : "bg-yellow-500"
                   }`}
                 >

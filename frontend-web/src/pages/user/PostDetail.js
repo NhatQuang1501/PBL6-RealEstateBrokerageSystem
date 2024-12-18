@@ -44,6 +44,8 @@ const DetailPost = () => {
   const [negotiationDate, setNegotiationDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [negotiationNote, setNegotiationNote] = useState("");
+  const [selectedPostIdD, setSelectedPostIdD] = useState(null);
+  const [showPopupD, setShowPopupD] = useState(false);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -266,8 +268,8 @@ const DetailPost = () => {
 
   return (
     <div className="flex flex-col items-center font-montserrat">
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-gray-400 to-gray-600 rounded-3xl shadow-lg">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-3xl shadow-lg">
+        <h3 className="text-2xl font-bold text-gray-600 flex items-center gap-3">
           <FontAwesomeIcon
             icon={faListAlt}
             className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
@@ -279,11 +281,11 @@ const DetailPost = () => {
           post.user.user_id === id &&
           post.sale_status === "Đang bán" && (
             <button
-              className="bg-white text-black font-semibold hover:bg-gray-500 hover:text-white transition duration-300 ease-in-out px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
+              className="bg-white text-black font-semibold hover:bg-gray-500 hover:text-white transition duration-300 ease-in-out px-5 py-3 rounded-full ml-5 flex items-center"
               onClick={handleUploadImage}
             >
               <FontAwesomeIcon icon={faUpload} className="mr-2" />
-              Tải ảnh lên
+              Tải thêm ảnh lên
             </button>
           )}
       </div>
