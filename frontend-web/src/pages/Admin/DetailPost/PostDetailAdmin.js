@@ -4,12 +4,7 @@ import BasicInformation from "../../../components/basic_information/BasicInforma
 import ProfileInformation from "../../../components/profile_information/ProfileInformation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import {
-  faListAlt,
-  faCheck,
-  faX,
-  faBan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faListAlt, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useAppContext } from "../../../AppProvider";
@@ -17,7 +12,6 @@ import { useParams, useLocation } from "react-router-dom";
 import Comment from "../../../components/comment/Comment";
 import NegotiationList from "../../../components/neogotiation/NegotiationList";
 import MapView from "../../../components/map_api/Mapbox";
-import Popup from "reactjs-popup";
 import axios from "axios";
 
 const PostDetailAdmin = () => {
@@ -27,6 +21,7 @@ const PostDetailAdmin = () => {
   const [postStatus, setPostStatus] = useState();
   const [selectedPostIdD, setSelectedPostIdD] = useState(null);
   const [showPopupD, setShowPopupD] = useState(false);
+  const [showPopUpConfirm, setShowPopUpConfirm] = useState(false);
 
   //Cmt_id location
   const location = useLocation();
@@ -90,11 +85,11 @@ const PostDetailAdmin = () => {
   const handleApprovePost = async (postId) => {
     setShowPopupD(false);
     try {
-      await axios.post(
+      const response = await axios.post(
         `http://127.0.0.1:8000/api/admin/posts/`,
         {
           post_id: postId,
-          status: "Đã duyệt",
+          status: "đã duyệt",
         },
         {
           headers: {
@@ -102,6 +97,40 @@ const PostDetailAdmin = () => {
           },
         }
       );
+      if (response.status === 200) {
+        alert("Duyệt bài đăng thành công");
+        window.location.reload();
+      } else {
+        alert("Duyệt bài đăng thất bại");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error updating post status:", error);
+    }
+  };
+
+  const handleRefusePost = async (postId) => {
+    setShowPopUpConfirm(false);
+    try {
+      const response = await axios.post(
+        `http://127.0.0.1:8000/api/admin/posts/`,
+        {
+          post_id: postId,
+          status: "bị từ chối",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("Từ chối duyệt bài đăng thành công");
+        window.location.reload();
+      } else {
+        alert("Từ chối duyệt bài đăng thất bại");
+        window.location.reload();
+      }
     } catch (error) {
       console.error("Error updating post status:", error);
     }
@@ -132,9 +161,10 @@ const PostDetailAdmin = () => {
 
             <button
               className="bg-gradient-to-r from-red-500 to-red-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-red-600 hover:to-red-500"
-              // onClick={() => {
-              //   handleNeogotiate(post.post_id);
-              // }}
+              onClick={() => {
+                setShowPopUpConfirm(true);
+                setSelectedPostIdD(post.post_id);
+              }}
             >
               <FontAwesomeIcon icon={faX} className="text-lg" />
               Từ chối duyệt
@@ -143,50 +173,79 @@ const PostDetailAdmin = () => {
         )}
 
         {showPopupD && (
-          <Popup
-            open={showPopupD}
-            closeOnDocumentClick={false}
-            onClose={() => setShowPopupD(false)}
-            position="right center"
-            contentStyle={{
-              width: "450px",
-              borderRadius: "16px",
-              padding: "20px",
-              backgroundColor: "#f9fafb",
-              border: "1px solid #e5e7eb",
-              boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.15)",
-              animation: "fadeIn 0.3s ease-in-out",
-            }}
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
+            style={{ zIndex: 9999 }}
           >
-            <div className="font-montserrat">
-              <div className="text-center">
-                <p className="font-extrabold text-[1.3rem] text-gray-800">
-                  ⚠️ Xác nhận
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
+              <div className="font-montserrat">
+                <div className="text-center">
+                  <p className="font-extrabold text-[1.3rem] text-gray-800">
+                    Xác nhận
+                  </p>
+                </div>
+                <hr className="my-4 border-gray-300" />
+                <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
+                  Bạn chắc chắn muốn thực hiện hành động này? Hãy kiểm tra kỹ
+                  trước khi xác nhận.
                 </p>
-              </div>
-              <hr className="my-4 border-gray-300" />
-              <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
-                Bạn chắc chắn muốn thực hiện hành động này? Hãy kiểm tra kỹ
-                trước khi xác nhận.
-              </p>
-              <div className="flex justify-center mt-6 gap-4">
-                <button
-                  className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
-                  onClick={() => setShowPopupD(false)}
-                >
-                  <FontAwesomeIcon icon={faBan} className="mr-2" />
-                  Đóng
-                </button>
-                <button
-                  className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-                  onClick={() => handleApprovePost(selectedPostIdD)}
-                >
-                  <FontAwesomeIcon icon={faCheck} className="mr-2" />
-                  OK
-                </button>
+                <div className="flex justify-center mt-6 gap-4">
+                  <button
+                    className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                    onClick={() => setShowPopupD(false)}
+                  >
+                    <FontAwesomeIcon icon={faX} className="mr-2" />
+                    Đóng
+                  </button>
+                  <button
+                    className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    onClick={() => handleApprovePost(selectedPostIdD)}
+                  >
+                    <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                    OK
+                  </button>
+                </div>
               </div>
             </div>
-          </Popup>
+          </div>
+        )}
+
+        {showPopUpConfirm && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
+            style={{ zIndex: 9999 }}
+          >
+            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
+              <div className="font-montserrat">
+                <div className="text-center">
+                  <p className="font-extrabold text-[1.3rem] text-gray-800">
+                    Xác nhận
+                  </p>
+                </div>
+                <hr className="my-4 border-gray-300" />
+                <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
+                  Bạn có chắc chắn từ chối duyệt bài đăng này? Hãy kiểm tra kỹ
+                  trước khi xác nhận.
+                </p>
+                <div className="flex justify-center mt-6 gap-4">
+                  <button
+                    className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                    onClick={() => setShowPopupD(false)}
+                  >
+                    <FontAwesomeIcon icon={faX} className="mr-2" />
+                    Đóng
+                  </button>
+                  <button
+                    className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                    onClick={() => handleRefusePost(selectedPostIdD)}
+                  >
+                    <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 

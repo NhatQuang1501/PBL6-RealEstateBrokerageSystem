@@ -121,7 +121,7 @@ export default function Portfolio() {
       </div>
 
       <Panel className="flex flex-col max-h-full" type="personal-page">
-        <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
+        <div className=" h-full overflow-y-auto grid grid-cols-1 gap-4">
           {currentPosts.map((post, index) => (
             <div
               key={index}

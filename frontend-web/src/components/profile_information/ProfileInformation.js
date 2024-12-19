@@ -218,15 +218,19 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
                   }}
                 >
                   <FontAwesomeIcon icon={faUser} className="text-blue-500" />
-                  <span className="text-gray-700">Thông tin cá nhân</span>
+                  <span className="text-gray-700 font-semibold">
+                    Thông tin cá nhân
+                  </span>
                 </button>
-                <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                {/* <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
                   <FontAwesomeIcon icon={faLock} className="text-gray-500" />
                   <span className="text-gray-700">Khóa tài khoản này</span>
-                </button>
+                </button> */}
                 <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
                   <FontAwesomeIcon icon={faTrash} className="text-red-500" />
-                  <span className="text-gray-700">Xóa bài đăng</span>
+                  <span className="text-gray-700 font-semibold">
+                    Xóa bài đăng
+                  </span>
                 </button>
               </div>
             )}

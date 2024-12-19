@@ -282,8 +282,8 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
               reportType="comment"
               commentId={selectedCommentId}
               postId={post_id}
-              reporteeId={selectedUserCommentId}
-              reportedUserId={id}
+              reportedUserId={selectedUserCommentId}
+              reporteeId={id}
             />
           )}
           {confirmDeletePopupOpen && (

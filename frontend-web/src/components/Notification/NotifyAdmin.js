@@ -39,10 +39,10 @@ const NotifyAdmin = () => {
         setNotifications(unreadNotifications);
       } else if (response.type === "new_notification") {
         setTypeNotify("new");
-        setNotifications((prevNotifications) => [
-          ...prevNotifications,
-          response.notification,
-        ]);
+        // setNotifications((prevNotifications) => [
+        //   ...prevNotifications,
+        //   response.notification,
+        // ]);
       }
     };
 
@@ -93,13 +93,13 @@ const NotifyAdmin = () => {
     );
   };
 
-  // const handleGoToReport = (reportId) => {
-  //   navigate(`/admin/manage-report/${reportId}`);
-  //   setIsDropdownOpen(false);
-  // };
+  const handleGoToReport = (reportId) => {
+    navigate(`/admin/detail-report/${reportId}`);
+    setIsDropdownOpen(false);
+  };
 
   const handleGoToPost = (postId) => {
-    navigate(`/user/detail-post/${postId}`);
+    navigate(`/admin/detail-post/${postId}`);
     setIsDropdownOpen(false);
   };
 
@@ -135,7 +135,7 @@ const NotifyAdmin = () => {
                 <li
                   key={notification.notification_id}
                   className={`p-3 border-b-[2px] border-solid border-gray-300 flex items-start ${
-                    notification.is_read ? "bg-gray-200" : "bg-gray-200"
+                    notification.is_read ? "bg-gray-300" : "bg-gray-100"
                   } hover:bg-blue-100 transition duration-300`}
                 >
                   {notification.data.additional_info?.post_id ? (
@@ -165,11 +165,11 @@ const NotifyAdmin = () => {
                         </p>
                         <div className="flex justify-between mt-2">
                           <button
-                            // onClick={() =>
-                            //   handleGoToReport(
-                            //     notification.additional_info.report_id
-                            //   )
-                            // }
+                            onClick={() =>
+                              handleGoToReport(
+                                notification.data.additional_info.report_id
+                              )
+                            }
                             className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
                           >
                             <FontAwesomeIcon

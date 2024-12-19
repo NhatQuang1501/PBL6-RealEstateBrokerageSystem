@@ -25,6 +25,7 @@ import { useState } from "react";
 import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
 import Chat from "./pages/user/Chat";
 import Predict from "./pages/user/Predict";
+import ReportDetail from "./pages/Admin/ManageReport/ReportDetail";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
@@ -171,15 +172,6 @@ function App() {
               }
             />
 
-            {/* <Route
-              path="user/chat-box"
-              element={
-                <>
-                  <ChatPage />
-                </>
-              }
-            /> */}
-
             <Route
               path="/user/chat"
               element={
@@ -215,6 +207,10 @@ function App() {
             <Route
               path="/admin/detail-post/:postId"
               element={<PostDetailAdmin />}
+            />
+            <Route
+              path="/admin/detail-report/:reportId"
+              element={<ReportDetail />}
             />
 
             <Route path="*" element={<Error />} />
