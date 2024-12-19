@@ -300,16 +300,17 @@ class NegotiationChatRoomListView(APIView):
             chatroom_post = chatroom_negotiation.post
             negotiator = chatroom_negotiation.user
             author = chatroom.participants.exclude(user_id=negotiator.user_id).first()
-            other_participants = chatroom.participants.exclude(user_id=user_id)
-            other_participants_data = [
-                {
-                    "user_id": participant.user_id,
-                    "username": participant.username,
-                    "email": participant.email,
-                    # Thêm các thuộc tính khác của người dùng nếu cần
-                }
-                for participant in other_participants
-            ]
+            other_participant = chatroom.participants.exclude(user_id=user_id).first()
+            other_participant_avatar = (
+                other_participant.profile.avatar.url
+                if other_participant.profile.avatar
+                else None
+            )
+            other_participant_data = {
+                "user_id": other_participant.user_id,
+                "username": other_participant.username,
+                "avatar": other_participant_avatar,
+            }
 
             data.append(
                 {
@@ -319,7 +320,7 @@ class NegotiationChatRoomListView(APIView):
                     "post_id": chatroom_post.post_id,
                     "author": author.user_id,
                     "negotiator": negotiator.user_id,
-                    "other_participant": other_participants_data,
+                    "other_participant": other_participant_data,
                 }
             )
 
