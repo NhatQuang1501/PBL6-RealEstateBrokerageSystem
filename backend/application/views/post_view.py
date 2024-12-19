@@ -25,10 +25,8 @@ class PostView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
     def get_permissions(self):
-        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
         if self.request.method == "GET":
             return [AllowAny()]
-
         return [permission() for permission in self.permission_classes]
 
     def get(self, request, pk=None):
@@ -71,7 +69,7 @@ class PostView(APIView):
 
         else:
             if not category:
-                query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
+                query = Q(status=Status.APPROVED)
                 posts = Post.objects.filter(query).order_by("-created_at")
                 post_serializer = PostSerializer(
                     posts, many=True, context={"request_type": "list"}

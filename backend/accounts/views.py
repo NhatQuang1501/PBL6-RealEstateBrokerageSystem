@@ -4,6 +4,7 @@ from rest_framework import status, serializers, views
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from application.utils import PaginatedAPIView
 from .serializers import *
 from .models import *
 from .utils import *

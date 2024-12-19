@@ -58,20 +58,32 @@ class UserNegotiationsView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
     def get(self, request, negotiation_id=None):
+        user = request.user
+        negotiation_type = request.query_params.get("type", "").lower()
+
         if negotiation_id:
             negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
-            serializer = NegotiationSerializer(negotiation)
+            post = negotiation.post
+            serializer = PostSerializer(post)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
-            negotiations = Negotiation.objects.filter(user=request.user).order_by(
-                "-created_at"
-            )
-            serializer = NegotiationSerializer(negotiations, many=True)
+            if negotiation_type == "author":
+                authored_posts = Post.objects.filter(user_id=user)
+                negotiations = Negotiation.objects.filter(
+                    post__in=authored_posts
+                ).order_by("-created_at")
+            else:
+                negotiations = Negotiation.objects.filter(user=user).order_by(
+                    "-created_at"
+                )
+
+            posts = {negotiation.post for negotiation in negotiations}
+            serializer = PostSerializer(list(posts), many=True)
 
             return Response(
-                {"count": negotiations.count(), "negotiations": serializer.data},
+                {"count": len(posts), "posts": serializer.data},
                 status=status.HTTP_200_OK,
             )
 
@@ -82,8 +94,8 @@ class PostNegotiationsView(APIView):
 
     def get(self, request, post_id=None):
         params = {key.strip(): value for key, value in request.query_params.items()}
-        sort_by = params.get("sort_by").strip()
-        order = params.get("order", "desc").strip()
+        sort_by = params.get("sort_by")
+        order = params.get("order", "desc")
         amount = params.get("amount", None)
 
         if post_id:
