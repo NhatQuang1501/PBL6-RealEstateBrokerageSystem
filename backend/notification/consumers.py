@@ -50,15 +50,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         # Lấy tất cả thông báo
         all_notifications, count = await self.get_all_notifications(user)
 
-        # Gửi thông báo mới
-        await self.send(
-            text_data=json.dumps(
-                {
-                    "type": "new_notification",
-                    "notifications": notification,
-                }
-            )
-        )
+        # # Gửi thông báo mới
+        # await self.send(
+        #     text_data=json.dumps(
+        #         {
+        #             "type": "new_notification",
+        #             "notifications": notification,
+        #         }
+        #     )
+        # )
 
         # Gửi danh sách tất cả thông báo
         await self.send(

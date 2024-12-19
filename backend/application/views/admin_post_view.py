@@ -48,6 +48,7 @@ class AdminPostView(APIView):
         author = post.user_id
         author_noti = f"Bài đăng của bạn {post_status}"
         additional_info = {
+            "type": NotificationType.ADMINPOST,
             "post_id": str(post_id),
         }
         NotificationService.add_notification(author, author_noti, additional_info)
@@ -69,6 +70,7 @@ class AdminPostView(APIView):
 
         author_noti = f"Bài đăng {post_title} của bạn đã bị xóa bởi admin"
         additional_info = {
+            "type": "Xóa" + NotificationType.ADMINPOST,
             "post_title": str(post_title),
         }
         NotificationService.add_notification(author, author_noti, additional_info)
