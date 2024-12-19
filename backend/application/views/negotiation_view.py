@@ -53,7 +53,6 @@ class NegotiationsView(APIView):
             return Response(list(grouped_data.values()), status=status.HTTP_200_OK)
 
 
-# Danh sách thương lượng mà user là người thương lượng
 class UserNegotiationsView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
@@ -63,6 +62,11 @@ class UserNegotiationsView(APIView):
 
         if negotiation_id:
             negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+            if negotiation.user != user and negotiation.post.user_id != user:
+                return Response(
+                    {"message": "Bạn không có quyền xem chi tiết thương lượng này"},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
             post = negotiation.post
             serializer = PostSerializer(post)
 
@@ -269,6 +273,7 @@ class PostNegotiationsView(APIView):
             negotiator.profile.avatar if negotiator.profile.avatar else None
         )
         additional_info = {
+            "type": NotificationType.NEGOTIATION,
             "negotiator_id": str(negotiator_id),
             "negotiator_avatar": negotiator_avatar,
             "post_id": str(post.post_id),
@@ -405,6 +410,7 @@ class ProposalView(APIView):
         author_username = author.username
         author_avatar = author.profile.avatar if author.profile.avatar else None
         additional_info = {
+            "type": NotificationType.PROPOSAL,
             "author_id": str(author_id),
             "author_username": str(author_username),
             "author_avatar": author_avatar,
@@ -484,11 +490,11 @@ class AcceptProposalView(APIView):
             # Thông báo cho người đăng bài
             author_noti = f"{negotiator.username} đã gửi yêu cầu thương lượng mới theo lời đề nghị cho bài đăng của bạn"
             negotiator_id = negotiator.user_id
-            negotiator_username = negotiator.username
             negotiator_avatar = (
                 negotiator.profile.avatar if negotiator.profile.avatar else None
             )
             additional_info = {
+                "type": "Chấp nhận" + NotificationType.PROPOSAL,
                 "negotiator_id": str(negotiator_id),
                 "negotiator_avatar": negotiator_avatar,
                 "post_id": str(post.post_id),
@@ -590,6 +596,7 @@ class ConsideredNegotiationsView(APIView):
             author_username = author.username
             author_avatar = author.profile.avatar if author.profile.avatar else None
             additional_info = {
+                "type": NotificationType.CONSIDERATION,
                 "author_id": str(author_id),
                 "author_username": str(author_username),
                 "author_avatar": author_avatar,
@@ -739,6 +746,7 @@ class AcceptNegotiationView(APIView):
             author_username = author.username
             author_avatar = author.profile.avatar if author.profile.avatar else None
             additional_info = {
+                "type": "chấp nhận" + NotificationType.NEGOTIATION,
                 "author_id": str(author_id),
                 "author_username": str(author_username),
                 "author_avatar": author_avatar,

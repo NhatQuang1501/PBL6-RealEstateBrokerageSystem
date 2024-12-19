@@ -85,10 +85,12 @@ class Payment_method(Enum):
     UPFRONT = "trả trước", "Trả trước"
     OTHER = "khác", "Khác"
 
+
 class ReportType(Enum):
-    POST = 'post', 'Bài đăng'
-    COMMENT = 'comment', 'Bình luận'
-    USER = 'user', 'Người dùng'
+    POST = "post", "Bài đăng"
+    COMMENT = "comment", "Bình luận"
+    USER = "user", "Người dùng"
+
 
 class HouseType(Enum):
     STREET = "3", "Nhà mặt phố, mặt tiền"
@@ -96,8 +98,19 @@ class HouseType(Enum):
     VILLA = "4", "Nhà biệt thự"
     TOWNHOUSE = "2", "Nhà phố liền kề"
 
+
 class FurnishingSell(Enum):
     BASIC = "2", "Hoàn thiện cơ bản"
     UNFURNISHED = "1", "Bàn giao thô"
     FULL = "3", "Nội thất đầy đủ"
     LUXURY = "4", "Nội thất cao cấp"
+
+
+class NotificationType:
+    ADMINPOST = "adminpost"
+    POST = "post"
+    REPORT = "report"
+    NEGOTIATION = "negotiation"
+    PROPOSAL = "proposal"
+    CONSIDERATION = "consideration"
+    ACCEPTANCE = "acceptance"

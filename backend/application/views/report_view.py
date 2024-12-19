@@ -64,6 +64,7 @@ class ReportView(APIView):
                 )
 
                 additional_info = {
+                    "type": NotificationType.REPORT,
                     "reportee_id": str(reportee_id),
                     "reportee_name": str(reportee_name),
                     "reportee_avatar": reportee_avatar,

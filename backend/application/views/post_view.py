@@ -167,6 +167,7 @@ class PostView(APIView):
                     author.profile.avatar.url if author.profile.avatar else None
                 )
                 additional_info = {
+                    "type": NotificationType.POST,
                     "author_id": str(author_id),
                     "author_avatar": author_avatar,
                     "post_id": str(post_serializer.data["post_id"]),
@@ -238,6 +239,7 @@ class PostView(APIView):
                     author.profile.avatar.url if author.profile.avatar else None
                 )
                 additional_info = {
+                    "type": NotificationType.POST,
                     "author_id": str(author_id),
                     "author_avatar": author_avatar,
                     "post_id": str(post_serializer.data["post_id"]),
