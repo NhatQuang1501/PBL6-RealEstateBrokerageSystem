@@ -247,7 +247,7 @@ class PostView(APIView):
                 NotificationService.add_notification(admin, admin_noti, additional_info)
 
             author_noti = f"Bạn đã chỉnh sửa 1 bài đăng, đang chờ duyệt bởi admin"
-            NotificationService.add_notification(author, author_noti)
+            NotificationService.add_notification(author, author_noti, additional_info)
 
             return Response(
                 {
