@@ -494,7 +494,7 @@ class AcceptProposalView(APIView):
                 negotiator.profile.avatar if negotiator.profile.avatar else None
             )
             additional_info = {
-                "type": "Chấp nhận" + NotificationType.PROPOSAL,
+                "type": "accept" + NotificationType.PROPOSAL,
                 "negotiator_id": str(negotiator_id),
                 "negotiator_avatar": negotiator_avatar,
                 "post_id": str(post.post_id),
@@ -746,7 +746,7 @@ class AcceptNegotiationView(APIView):
             author_username = author.username
             author_avatar = author.profile.avatar if author.profile.avatar else None
             additional_info = {
-                "type": "chấp nhận" + NotificationType.NEGOTIATION,
+                "type": "accept" + NotificationType.NEGOTIATION,
                 "author_id": str(author_id),
                 "author_username": str(author_username),
                 "author_avatar": author_avatar,
