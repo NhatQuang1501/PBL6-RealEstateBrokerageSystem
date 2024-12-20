@@ -70,7 +70,7 @@ def send_email_verification(user, request):
         to=[user.email],
     )
 
-    send_email_async(email)
+    send_email_async(user, subject, body)
 
 
 def decode_token(token):
