@@ -24,4 +24,7 @@ urlpatterns = [
     path("unlock-users/<str:user_id>/", UnlockUserView.as_view(), name="unlock-user"),
     path("report-comment/<str:pk>/", AdminPostCommentView.as_view()),
     path("change-password/", ChangePasswordView.as_view(), name="change-password"),
+    path('request-reset-email/', RequestPasswordResetEmail.as_view(), name="request-reset-email"),
+    path("reset-password/<uidb64>/<token>/", PasswordTokenCheckAPI.as_view(), name="password-reset-confirm"),
+    path("reset-password-complete/", SetNewPasswordAPIView.as_view(), name="reset-password-complete"),
 ]

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import logout
-from rest_framework import status, serializers, views
+from rest_framework import status, serializers, views, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -18,6 +18,13 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from .utils import send_email_async
 
 
 class BaseView(APIView):
@@ -740,5 +747,78 @@ class ChangePasswordView(APIView):
 
         return Response(
             {"message": "Đổi mật khẩu thành công"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ResetPasswordEmailRequestSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        email = request.data.get("email", None)
+
+        if not User.objects.filter(email=email).exists():
+            return Response(
+                {"error": "Không tìm thấy tài khoản với email này"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
+            user = User.objects.get(email=email)
+            if user.is_locked:
+                return Response(
+                    {"error": "Tài khoản của bạn đã bị khóa"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            uidb64 = urlsafe_base64_encode(smart_bytes(user.user_id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            current_site = get_current_site(request=request).domain
+            relativeLink = reverse("password-reset-confirm", kwargs={"uidb64": uidb64, "token": token})
+            absurl = f"http://{current_site}{relativeLink}"
+            email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
+            send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)
+        return Response(
+            {"message": "Email reset mật khẩu đã được gửi"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordTokenCheckAPI(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            id = smart_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(user_id=id)
+
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response(
+                    {"error": "Token không hợp lệ"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            return Response(
+                {"message": "Token hợp lệ", "uidb64": uidb64, "token": token},
+                status=status.HTTP_200_OK,
+            )
+
+        except DjangoUnicodeDecodeError as identifier:
+            return Response(
+                {"error": str(identifier), "message": "Token không hợp lệ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
+
+class SetNewPasswordAPIView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SetNewPasswordSerializer
+
+    def patch(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            {"message": "Mật khẩu đã được đặt lại"},
             status=status.HTTP_200_OK,
         )

@@ -108,10 +108,10 @@ class ReportSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("Report already exists")
         else:
             report = Report.objects.filter(
-                reported_user=reported_user, reportee=reportee
+                reported_user=reported_user, reportee=reportee, post=None, comment=None
             )
             if report.exists():
-                raise serializers.ValidationError("Report already exists")
+                raise serializers.ValidationError("You have already reported this user")
 
         if post == "":
             validated_data["post"] = None
