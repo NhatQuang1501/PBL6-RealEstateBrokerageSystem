@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../../../components/pagination/pagination";
 import axios from "axios";
 import { useAppContext } from "../../../AppProvider";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import Panel from "../../../components/panel/Panel";
 import Post from "../../../components/item_post/Post";
 
@@ -21,7 +21,7 @@ const ListPosts = () => {
     setCurrentPage(page);
   };
   const { role, sessionToken } = useAppContext();
-  let navigate = useNavigate();
+  // let navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -63,14 +63,14 @@ const ListPosts = () => {
     );
   }
 
-  const handleDetailClick = (postId) => {
-    if (!sessionToken) {
-      alert("Bạn cần đăng nhập để thực hiện hành động này.");
-      return;
-    } else {
-      navigate(`/user/detail-post/${postId}`);
-    }
-  };
+  // const handleDetailClick = (postId) => {
+  //   if (!sessionToken) {
+  //     alert("Bạn cần đăng nhập để thực hiện hành động này.");
+  //     return;
+  //   } else {
+  //     navigate(`/user/detail-post/${postId}`);
+  //   }
+  // };
 
   return (
     <div className="rounded-lg h-[39rem] overflow-auto">

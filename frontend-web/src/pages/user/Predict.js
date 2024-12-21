@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import PredictLandPrice from "../../components/predict/PredictLandPrice";
 import backgroundVideo from "../../assets/video/Xám và Trắng Doanh nghiệp Bất động sản Thương mại Video Trình chiếu.mp4";
 import { MdLandscape, MdOutlineHouse, MdArrowBack } from "react-icons/md";

@@ -39,14 +39,27 @@ export default function FriendList({ selectFriend }) {
           }
         );
         console.log("============negolist=======>", response.data.data);
+
         // Separate buyers and sellers based on author
         const buyers = response.data.data
           .filter((chatroom) => chatroom.author === id)
-          .flatMap((chatroom) => chatroom.other_participant);
+          .map((chatroom) => ({
+            chatroom_id: chatroom.chatroom_id,
+            post_id: chatroom.post_id,
+            negotiation_id: chatroom.negotiation_id,
+            ...chatroom.other_participant,
+            type: "buyer",
+          }));
 
         const sellers = response.data.data
           .filter((chatroom) => chatroom.author !== id)
-          .flatMap((chatroom) => chatroom.other_participant);
+          .map((chatroom) => ({
+            chatroom_id: chatroom.chatroom_id,
+            post_id: chatroom.post_id,
+            negotiation_id: chatroom.negotiation_id,
+            ...chatroom.other_participant,
+            type: "seller",
+          }));
 
         setBuyers(buyers);
         setSellers(sellers);
@@ -108,28 +121,24 @@ export default function FriendList({ selectFriend }) {
 
   return (
     <div className="flex flex-col w-[38rem] gap-5 overflow-y-auto">
+      {/* Danh sách người mua */}
       <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
         <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người mua ({buyers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
-          {buyers.map((friend) => {
-            // Ensure other_participant exists and has at least one member
-            const participant =
-              friend.other_participant && friend.other_participant[0];
-
+          {buyers.map((participant) => {
             if (!participant) {
-              // Handle cases where other_participant is undefined or empty
               return null;
             }
 
             return (
               <div
-                key={friend.chatroom_id}
+                key={participant.chatroom_id}
                 className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-semibold relative shadow-md"
               >
                 {/* Avatar */}
-                {/* <img
+                <img
                   src={
                     participant.avatar
                       ? `http://127.0.0.1:8000${participant.avatar}`
@@ -138,7 +147,9 @@ export default function FriendList({ selectFriend }) {
                   alt={`${participant.username} avatar`}
                   className="w-12 h-12 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
                   onClick={() => toggleMenu(participant.user_id)}
-                /> */}
+                  data-userid={participant.user_id}
+                  aria-label={`${participant.username}'s avatar`}
+                />
 
                 {/* Username */}
                 <p
@@ -154,10 +165,13 @@ export default function FriendList({ selectFriend }) {
                   className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
                   onClick={() =>
                     selectFriend(
-                      friend.chatroom_id,
+                      participant.chatroom_id,
+                      participant.post_id,
+                      participant.negotiation_id,
                       participant.avatar,
                       participant.username,
-                      participant.user_id
+                      participant.user_id,
+                      participant.type
                     )
                   }
                 >
@@ -212,28 +226,24 @@ export default function FriendList({ selectFriend }) {
         </div>
       </div>
 
+      {/* Danh sách người bán */}
       <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
         <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người bán ({sellers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
-          {sellers.map((friend) => {
-            // Ensure other_participant exists and has at least one member
-            const participant =
-              friend.other_participant && friend.other_participant[0];
-
+          {sellers.map((participant) => {
             if (!participant) {
-              // Handle cases where other_participant is undefined or empty
               return null;
             }
 
             return (
               <div
-                key={friend.chatroom_id}
+                key={participant.chatroom_id}
                 className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-semibold relative shadow-md"
               >
                 {/* Avatar */}
-                {/* <img
+                <img
                   src={
                     participant.avatar
                       ? `http://127.0.0.1:8000${participant.avatar}`
@@ -242,7 +252,9 @@ export default function FriendList({ selectFriend }) {
                   alt={`${participant.username} avatar`}
                   className="w-12 h-12 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
                   onClick={() => toggleMenu(participant.user_id)}
-                /> */}
+                  data-userid={participant.user_id}
+                  aria-label={`${participant.username}'s avatar`}
+                />
 
                 {/* Username */}
                 <p
@@ -258,10 +270,13 @@ export default function FriendList({ selectFriend }) {
                   className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
                   onClick={() =>
                     selectFriend(
-                      friend.chatroom_id,
+                      participant.chatroom_id,
+                      participant.post_id,
+                      participant.negotiation_id,
                       participant.avatar,
                       participant.username,
-                      participant.user_id
+                      participant.user_id,
+                      participant.type
                     )
                   }
                 >

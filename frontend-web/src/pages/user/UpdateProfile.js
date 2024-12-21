@@ -71,7 +71,7 @@ const handleSubmit = async (e) => {
   useEffect(() => {
     fetchUserData();
   }, [id]);
-
+      
   if (loading) return <p>Đang tải dữ liệu...</p>;
   if (error) return <p>{error}</p>;
 

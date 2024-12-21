@@ -6,7 +6,6 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
-  faNewspaper,
   faChartLine,
   faEnvelope,
   faEdit,
@@ -106,7 +105,7 @@ function Header() {
                     Trang chủ
                   </span>
                 </li>
-                <li className="relative group">
+                {/* <li className="relative group">
                   <Link
                     to="/news"
                     className={`${linkStyle} ${
@@ -119,7 +118,7 @@ function Header() {
                   <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     Tin tức
                   </span>
-                </li>
+                </li> */}
                 <li className="relative group">
                   <Link
                     to="/user/predict"
@@ -211,7 +210,7 @@ function Header() {
                     Tin tức
                   </a>
                 </li> */}
-                <li className="relative group">
+                {/* <li className="relative group">
                   <Link
                     to="/news"
                     className={`${linkStyle} ${
@@ -224,7 +223,7 @@ function Header() {
                   <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                     Tin tức
                   </span>
-                </li>
+                </li> */}
                 <li className="relative group">
                   <Link
                     to="/user/predict"
@@ -305,7 +304,100 @@ function Header() {
             </div>
           </div>
         </div>
-      ) : null}
+      ) : (
+                <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
+          <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
+            <div id="logo-header" className="flex items-center gap-1">
+              <img className="w-[33px]" src={Logo} alt=""></img>
+              <strong className="font-extrabold text-base ml-2">
+                SweetHome
+              </strong>
+            </div>
+            <nav className="flex items-center w-[60%] px-6">
+              <ul className="flex space-x-6 gap-20">
+                <li className="relative group">
+                  <Link
+                    to="/"
+                    className={`${linkStyle} ${
+                      activeLink === "/" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/")}
+                  >
+                    <FontAwesomeIcon icon={faHome} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Trang chủ
+                  </span>
+                </li>
+                {/* <li className="relative group">
+                  <Link
+                    to="/news"
+                    className={`${linkStyle} ${
+                      activeLink === "/news" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/news")}
+                  >
+                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Tin tức
+                  </span>
+                </li> */}
+                <li className="relative group">
+                  <Link
+                    to="/user/predict"
+                    className={`${linkStyle} ${
+                      activeLink === "/user/predict" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/user/predict")}
+                  >
+                    <FontAwesomeIcon icon={faChartLine} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Dự đoán giá BĐS
+                  </span>
+                </li>
+                <li className="relative group">
+                  <Link
+                    to="/contact"
+                    className={`${linkStyle} ${
+                      activeLink === "/contact" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/contact")}
+                  >
+                    <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Liên hệ
+                  </span>
+                </li>
+                <li className="relative group">
+                  <Link
+                    to="/authen/login"
+                    className={`${linkStyle} ${
+                      activeLink === "/authen/login" ? "text-gray-400" : ""
+                    }`}
+                    onClick={() => setActiveLink("/authen/login")}
+                  >
+                    <FontAwesomeIcon icon={faEdit} className="w-5 h-5" />
+                  </Link>
+                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                    Đăng tin
+                  </span>
+                </li>
+              </ul>
+            </nav>
+            <div>
+              <button
+                className="bg-gray-600 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
+                onClick={() => navigate("/authen/login")}
+              >
+                Đăng nhập
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

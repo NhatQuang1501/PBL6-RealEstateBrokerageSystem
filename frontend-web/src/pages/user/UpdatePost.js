@@ -24,7 +24,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import MapView from "../../components/map_api/Mapbox";
 import MapUpdate from "../../components/map_api/MapUpdate";
 
 const UpdatePost = () => {

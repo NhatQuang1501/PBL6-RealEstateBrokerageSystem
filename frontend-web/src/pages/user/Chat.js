@@ -34,9 +34,20 @@ const Chat = () => {
     localStorage.setItem("friendInfo", JSON.stringify(friendInfo));
   }, [selectedFriend, friendInfo]);
 
-  const handleSelectFriend = (chatroomId, avatar, userName, userId) => {
+  const handleSelectFriend = (
+    chatroomId,
+    postId,
+    negoId,
+    avatar,
+    userName,
+    userId,
+    type
+  ) => {
     setSelectedFriend(chatroomId);
-    setFriendInfo({ avatar, userName, userId });
+    setFriendInfo({ avatar, userName, userId, postId, negoId, type });
+    console.log("post id=======1>", postId);
+    console.log("nego id=======1>", negoId);
+    console.log("type=======1>", type);
   };
 
   return (

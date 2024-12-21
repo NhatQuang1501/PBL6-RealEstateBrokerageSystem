@@ -44,8 +44,8 @@ const DetailPost = () => {
   const [negotiationDate, setNegotiationDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [negotiationNote, setNegotiationNote] = useState("");
-  const [selectedPostIdD, setSelectedPostIdD] = useState(null);
-  const [showPopupD, setShowPopupD] = useState(false);
+  // const [selectedPostIdD, setSelectedPostIdD] = useState(null);
+  // const [showPopupD, setShowPopupD] = useState(false);
 
   const getStatusClass = (status) => {
     switch (status) {
