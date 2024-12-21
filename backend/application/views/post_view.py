@@ -164,7 +164,7 @@ class PostView(APIView):
                 admin_noti = f"{author.username} đã tạo bài đăng mới"
                 author_id = author.user_id
                 author_avatar = (
-                    author.profile.avatar.url if author.profile.avatar else None
+                    author.profile.avatar.url if author.profile.avatar.url else None
                 )
                 additional_info = {
                     "type": NotificationType.POST,
@@ -236,7 +236,7 @@ class PostView(APIView):
                 admin_noti = f"{author.username} đã chỉnh sửa 1 bài đăng"
                 author_id = author.user_id
                 author_avatar = (
-                    author.profile.avatar.url if author.profile.avatar else None
+                    author.profile.avatar.url if author.profile.avatar.url else None
                 )
                 additional_info = {
                     "type": NotificationType.POST,
