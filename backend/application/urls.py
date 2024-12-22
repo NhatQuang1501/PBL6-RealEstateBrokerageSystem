@@ -78,11 +78,6 @@ urlpatterns = [
         name="proposals-list",
     ),
     path(
-        "send-proposal/<str:negotiation_id>/",
-        ProposalView.as_view(),
-        name="send-proposal",
-    ),
-    path(
         "accept-proposal/<str:proposal_id>/",
         AcceptProposalView.as_view(),
         name="accept-proposal",
