@@ -42,10 +42,6 @@ export default function Portfolio() {
           author = id;
         }
 
-        // const url =
-        //   filterStatus === "Đã duyệt"
-        //     ? `http://127.0.0.1:8000/api/posts/${author}/`
-        //     : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
         let url;
         if (filterStatus === "Đã duyệt") {
           url = `http://127.0.0.1:8000/api/posts/${author}/`;
@@ -59,6 +55,12 @@ export default function Portfolio() {
           } else {
             url = `http://127.0.0.1:8000/api/saved-posts/${id}/`;
           }
+        }
+        if (filterStatus === "Đang thương lượng") {
+          url = `http://127.0.0.1:8000/api/user-negotiations/?type=author`;
+        }
+        if (filterStatus === "Đang tham gia thương lượng") {
+          url = `http://127.0.0.1:8000/api/user-negotiations/?type=negotiator`;
         }
 
         const response = await fetch(url, {
@@ -83,8 +85,8 @@ export default function Portfolio() {
 
   return (
     <div className=" p-1 rounded-lg">
-      <div className="flex flex-row justify-start gap-10 border-b-[2px] border-solid border-gray-400 ">
-        <h2 className="text-lg font-bold mb-4">
+      <div className="flex flex-row justify-start gap-10 border-b-[2px] border-solid border-gray-400 overflow-x-auto">
+        <h2 className="text-md font-bold mb-4">
           <button
             className={`text-black ${
               filterStatus === "Đã duyệt" ? "underline text-gray-500" : ""
@@ -94,7 +96,7 @@ export default function Portfolio() {
             Bài đăng đã duyệt
           </button>
         </h2>
-        <h2 className="text-lg font-bold mb-4">
+        <h2 className="text-md font-bold mb-4">
           <button
             className={`text-black ${
               filterStatus === "Đã lưu" ? "underline text-gray-500" : ""
@@ -105,28 +107,53 @@ export default function Portfolio() {
           </button>
         </h2>
         {!userId && (
-          <h2 className="text-lg font-bold mb-4">
-            <button
-              className={`text-black ${
-                filterStatus === "Đang chờ duyệt"
-                  ? "underline text-gray-500"
-                  : ""
-              }`}
-              onClick={() => handleFilterChange("Đang chờ duyệt")}
-            >
-              Bài đăng chờ duyệt
-            </button>
-          </h2>
+          <div className="flex flex-row gap-10">
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black ${
+                  filterStatus === "Đang chờ duyệt"
+                    ? "underline text-gray-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang chờ duyệt")}
+              >
+                Bài đăng chờ duyệt
+              </button>
+            </h2>
+
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black ${
+                  filterStatus === "Đang thương lượng"
+                    ? "underline text-gray-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang thương lượng")}
+              >
+                Bài đăng đang thương lượng
+              </button>
+            </h2>
+
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black ${
+                  filterStatus === "Đang tham gia thương lượng"
+                    ? "underline text-gray-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang tham gia thương lượng")}
+              >
+                Bài đăng đang tham gia thương lượng
+              </button>
+            </h2>
+          </div>
         )}
       </div>
 
       <Panel className="flex flex-col max-h-full" type="personal-page">
         <div className=" h-full overflow-y-auto grid grid-cols-1 gap-4">
           {currentPosts.map((post, index) => (
-            <div
-              key={index}
-              className=""
-            >
+            <div key={index} className="">
               <Post post={post} type="personal-page" />
             </div>
           ))}

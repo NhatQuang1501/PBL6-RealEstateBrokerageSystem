@@ -86,10 +86,7 @@ class UserNegotiationsView(APIView):
             posts = {negotiation.post for negotiation in negotiations}
             serializer = PostSerializer(list(posts), many=True)
 
-            return Response(
-                {"count": len(posts), "posts": serializer.data},
-                status=status.HTTP_200_OK,
-            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # List và Detail thương lượng trên các bài đăng của user
