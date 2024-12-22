@@ -267,7 +267,7 @@ class PostView(APIView):
         post.delete()
 
         return Response(
-            {"message": "Xoá bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xoá bài đăng thành công"}, status=status.HTTP_200_OK
         )
 
 
@@ -543,9 +543,7 @@ class PostImageView(APIView):
         images = PostImage.objects.filter(post_id=post)
         images.delete()
 
-        return Response(
-            {"message": "Xoá ảnh thành công"}, status=status.HTTP_204_NO_CONTENT
-        )
+        return Response({"message": "Xoá ảnh thành công"}, status=status.HTTP_200_OK)
 
 
 class MarkPostAsSoldView(APIView):

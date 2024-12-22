@@ -202,7 +202,7 @@ class ChatRoomView(APIView):
         chatroom.delete()
 
         return Response(
-            {"message": "Xóa phòng chat thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa phòng chat thành công"}, status=status.HTTP_200_OK
         )
 
 
