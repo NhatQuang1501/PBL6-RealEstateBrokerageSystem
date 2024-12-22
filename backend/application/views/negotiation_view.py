@@ -741,11 +741,13 @@ class AcceptNegotiationView(APIView):
             Negotiation.objects.filter(post=post, is_accepted=False).update(
                 is_accepted=False
             )
-            ChatRoom.objects.filter(negotiation=negotiation).delete()
             serializer = NegotiationSerializer(negotiation)
 
-            # Thông báo cho người thương lượng
-            negotiator_noti = f"{author.username} đã chấp nhận thương lượng của bạn"
+            # Xóa tất cả các chatroom liên quan tới tất cả thương lượng của bài đăng
+            ChatRoom.objects.filter(negotiation__post=post).delete()
+
+            # Thông báo cho người thương lượng được chấp nhận
+            negotiator_noti = f"{author.username} đã chấp nhận thương lượng của bạn. Chatroom trao đổi đã xóa"
             author_id = author.user_id
             author_username = author.username
             author_avatar = (
@@ -761,6 +763,35 @@ class AcceptNegotiationView(APIView):
             NotificationService.add_notification(
                 negotiator, negotiator_noti, additional_info
             )
+
+            # Thông báo cho những người thương lượng khác tự động bị từ chối khi bài đăng đã được chấp nhận
+            other_negotiations = Negotiation.objects.filter(
+                post=post, is_considered=True, is_accepted=False
+            )
+            for other_negotiation in other_negotiations:
+                other_negotiation.is_considered = False
+                other_negotiation.save()
+
+                # Thông báo cho người thương lượng khác
+                other_negotiator = other_negotiation.user
+                other_noti = f"{author.username} đã chấp nhận thương lượng của người khác, thương lượng của bạn đã bị từ chối"
+                other_negotiator_id = other_negotiator.user_id
+                other_negotiator_username = other_negotiator.username
+                other_negotiator_avatar = (
+                    other_negotiator.profile.avatar.url
+                    if other_negotiator.profile.avatar.url
+                    else None
+                )
+                other_additional_info = {
+                    "type": "accept" + NotificationType.NEGOTIATION,
+                    "author_id": str(author_id),
+                    "author_username": str(author_username),
+                    "author_avatar": author_avatar,
+                    "negotiation_id": str(other_negotiation.negotiation_id),
+                }
+                NotificationService.add_notification(
+                    other_negotiator, other_noti, other_additional_info
+                )
 
             return Response(
                 {
