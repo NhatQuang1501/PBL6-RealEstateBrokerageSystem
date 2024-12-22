@@ -67,7 +67,7 @@ urlpatterns = [
         name="post-negotiations-list",
     ),
     path(
-        "post-negotiations/<str:post_id>/",
+        "post-negotiations/<str:pk>/",
         PostNegotiationsView.as_view(),
         name="post-negotiations",
     ),
@@ -105,6 +105,5 @@ urlpatterns = [
     ),
     path("report/", ReportView.as_view(), name="report"),
     path("report/<str:pk>/", ReportView.as_view(), name="report-detail"),
-    path('statistics/', StatisticView.as_view()),
-
+    path("statistics/", StatisticView.as_view()),
 ]
