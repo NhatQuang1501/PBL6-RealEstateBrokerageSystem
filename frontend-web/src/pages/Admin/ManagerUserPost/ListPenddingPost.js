@@ -6,7 +6,7 @@ import { useAppContext } from "../../../AppProvider";
 import Panel from "../../../components/panel/Panel";
 import Post from "../../../components/item_post/Post";
 
-const ListPosts = () => {
+const PenddingPosts = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -26,20 +26,23 @@ const ListPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/posts/", {
-          headers: { Authorization: `Bearer ${sessionToken}` },
-        });
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/admin/posts/",
+          {
+            headers: { Authorization: `Bearer ${sessionToken}` },
+          }
+        );
 
         console.log("Fetched posts:", response.data);
 
         if (Array.isArray(response.data)) {
           const approvedPosts = response.data.filter(
-            (post) => post.status === "Đã duyệt"
+            (post) => post.status === "Đang chờ duyệt"
           );
           setPosts(approvedPosts);
         } else if (response.data && Array.isArray(response.data.results)) {
           const approvedPosts = response.data.results.filter(
-            (post) => post.status === "Đã duyệt"
+            (post) => post.status === "Đang chờ duyệt"
           );
           setPosts(approvedPosts);
         } else {
@@ -64,38 +67,35 @@ const ListPosts = () => {
   }
 
   return (
-    <div className="">
-      <h1 className="text-xl font-bold mb-1 text-center">Danh Sách Bài Đăng Đã Duyệt</h1>
-      <div className="rounded-lg h-[39rem] overflow-auto">
-        <Panel className="flex flex-col h-full" type="personal-page">
-          <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
-            {currentPosts.map((post, index) => (
-              <div
-                key={index}
-                className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white"
-              >
-                <Post post={post} type="personal-page" />
-              </div>
-            ))}
-          </div>
+    <div className="rounded-lg h-[39rem] overflow-auto">
+      <Panel className="flex flex-col h-full" type="personal-page">
+        <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
+          {currentPosts.map((post, index) => (
+            <div
+              key={index}
+              className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white"
+            >
+              <Post post={post} type="personal-page" />
+            </div>
+          ))}
+        </div>
 
-          {posts.length > 0 ? (
-            <div className="mt-8">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          ) : (
-            <div className="text-center text-gray-600 font-bold">
-              Không có bài đăng nào
-            </div>
-          )}
-        </Panel>
-      </div>
+        {posts.length > 0 ? (
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        ) : (
+          <div className="text-center text-gray-600 font-bold">
+            Không có bài đăng nào
+          </div>
+        )}
+      </Panel>
     </div>
   );
 };
 
-export default ListPosts;
+export default PenddingPosts;

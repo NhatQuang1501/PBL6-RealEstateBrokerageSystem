@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faArrowRight,
   faCheck,
+  faSignOut,
   faTimes,
   faX,
 } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +17,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const messagesEndRef = useRef(null);
   let navigate = useNavigate();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isCancelOpen, setIsCancelOpen] = useState(false);
 
   useEffect(() => {
     const socket = new WebSocket(wsUrl);
@@ -107,6 +109,9 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const openConfirm = () => setIsConfirmOpen(true);
   const closeConfirm = () => setIsConfirmOpen(false);
 
+  const openCancel = () => setIsCancelOpen(true);
+  const closeCancel = () => setIsCancelOpen(false);
+
   // const confirmAccept = () => {
   //   console.log("=============>nego>>>", friendInfo.negoId);
   //   handleAcceptNego(friendInfo.negoId);
@@ -133,6 +138,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
       if (response.ok) {
         console.log("Accept negotiation successfully");
         alert("Chấp nhận thương lượng thành công!");
+        window.location.reload();
       } else {
         const errorData = await response.json();
         console.error("Accept negotiation failed:", errorData);
@@ -141,6 +147,39 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
     } catch (error) {
       console.error("Error accepting negotiation:", error);
       alert("Có lỗi xảy ra khi chấp nhận thương lượng!");
+    }
+  };
+
+  const handleCancelNego = async (negoId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/accept-negotiations/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            negotiation_id: negoId,
+            is_accepted: false,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.log("Accept negotiation successfully");
+        alert("Hủy thương lượng thành công!");
+        // friendInfo.avatar = null;
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        console.error("Accept negotiation failed:", errorData);
+        alert("Hủy thương lượng thất bại!");
+      }
+    } catch (error) {
+      console.error("Error accepting negotiation:", error);
+      alert("Có lỗi xảy ra khi hủy thương lượng!");
     }
   };
 
@@ -157,19 +196,29 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
             {friendInfo.userName} -{" "}
             {friendInfo.type === "buyer" ? "Người mua" : "Người bán"}
           </h2>
-          <div className="ml-auto flex items-center gap-4 font-semibold">
+          <div className="ml-auto flex items-center gap-2 font-semibold">
             {friendInfo.type === "buyer" && (
-              <button
-                className="text-white bg-yellow-500 hover:bg-yellow-600 px-4 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
-                onClick={openConfirm}
-              >
-                <FontAwesomeIcon icon={faCheck} />
-                <span>Chấp nhận thương lượng</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                  onClick={openCancel}
+                >
+                  <FontAwesomeIcon icon={faSignOut} />
+                  <span>Hủy thương lượng</span>
+                </button>
+
+                <button
+                  className="text-white bg-yellow-500 hover:bg-yellow-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                  onClick={openConfirm}
+                >
+                  <FontAwesomeIcon icon={faCheck} />
+                  <span>Chấp nhận thương lượng</span>
+                </button>
+              </div>
             )}
             {friendInfo.type === "seller" && (
               <button
-                className="text-white bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
                 // onClick={openConfirm}
               >
                 <FontAwesomeIcon icon={faX} />
@@ -177,7 +226,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
               </button>
             )}
             <button
-              className="text-white bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+              className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
               onClick={() => {
                 handleDetailPost(friendInfo.postId);
               }}
@@ -226,6 +275,51 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
                   >
                     <FontAwesomeIcon icon={faCheck} />
                     <span>Chấp nhận</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isCancelOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-2xl relative">
+                {/* Tiêu đề căn giữa */}
+                <h3 className="text-2xl font-semibold text-center mb-4 border-b border-solid border-gray-200 pb-2">
+                  Xác Nhận
+                </h3>
+
+                {/* Nút đóng popup */}
+                <button
+                  onClick={closeCancel}
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                  aria-label="Đóng"
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+
+                {/* Nội dung xác nhận */}
+                <p className="mb-6 text-center font-semibold text-gray-700">
+                  Bạn có chắc chắn muốn hủy thương lượng này?
+                </p>
+
+                {/* Các nút hành động */}
+                <div className="flex justify-center space-x-4 font-semibold">
+                  <button
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300"
+                    onClick={closeCancel}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center space-x-2"
+                    onClick={() => {
+                      handleCancelNego(friendInfo.negoId);
+                      closeCancel();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faSignOut} />
+                    <span>Xác nhận hủy</span>
                   </button>
                 </div>
               </div>

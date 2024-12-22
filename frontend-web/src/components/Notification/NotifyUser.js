@@ -138,13 +138,24 @@ const NotifyUser = () => {
                     notification.is_read ? "bg-gray-300" : "bg-gray-100"
                   } hover:bg-blue-100 transition duration-300`}
                 >
-                  {notification.data.additional_info ? (
+                  {["adminpost", "post", "proposal"].includes(
+                    notification.data.additional_info.type
+                  ) && (
                     <img
                       src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
                       alt="Avatar"
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />
-                  ) : null}
+                  )}
+                  {["negotiation"].includes(
+                    notification.data.additional_info.type
+                  ) && (
+                    <img
+                      src={`http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`}
+                      alt="Avatar"
+                      className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
+                    />
+                  )}
                   <div className="flex-1">
                     {!notification.data.additional_info ? (
                       <>
@@ -157,21 +168,14 @@ const NotifyUser = () => {
                           <FontAwesomeIcon icon={faClock} className="mr-1" />
                           {notification.data.created_at}
                         </p>
-                        <div className="flex justify-between mt-2">
-                          <button
-                            // onClick={() =>
-                            //   handleGoToReport(
-                            //     notification.additional_info.report_id
-                            //   )
-                            // }
-                            className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
-                          >
+                        <div className="flex justify-end mt-2">
+                          {/* <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
                             <FontAwesomeIcon
                               icon={faExclamationCircle}
                               className="mr-1"
                             />
                             Đi đến bài đăng
-                          </button>
+                          </button> */}
                           {!notification.is_read && (
                             <button
                               onClick={() =>

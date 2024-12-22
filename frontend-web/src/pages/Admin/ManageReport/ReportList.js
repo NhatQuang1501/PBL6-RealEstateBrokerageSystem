@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
@@ -43,6 +44,33 @@ const ReportList = () => {
 
     fetchReports();
   }, [sessionToken]);
+
+  const handleResolveReport = async (reportId) => {
+    console.log("Resolving report with ID:", reportId);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/report/${reportId}/`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        const updatedReports = reports.map((report) =>
+          report.report_id === reportId ? { ...report, resolved: true } : report
+        );
+        setReports(updatedReports);
+        alert("Đã giải quyết báo cáo thành công.");
+      }
+      setLoading(false);
+    } catch (error) {
+      setError("Có lỗi xảy ra khi tải dữ liệu.");
+      setLoading(false);
+    }
+  };
 
   const handleViewPost = (postId, commentId) => {
     window.location.href = `/admin/detail-post/${postId}?comment_id=${commentId}`;
@@ -153,7 +181,7 @@ const ReportList = () => {
                       </button>
                     ) : (
                       <button
-                        className="px-4 py-2 rounded-full text-white bg-blue-500 font-semibold"
+                        className="px-4 py-2 rounded-full text-white bg-blue-500 hover:bg-blue-600 font-semibold"
                         onClick={() => {
                           handlePersonalProfileClick(report.reportee_id);
                         }}
@@ -163,10 +191,15 @@ const ReportList = () => {
                     )}
                     <button
                       className={`px-4 py-2 rounded-full font-semibold text-white ${
-                        report.resolved ? "bg-green-500" : "bg-yellow-500"
+                        report.resolved
+                          ? "bg-green-500 hover:bg-green-600"
+                          : "bg-yellow-500 hover:bg-yellow-600"
                       }`}
+                      onClick={() => {
+                        handleResolveReport(report.report_id);
+                      }}
                     >
-                      {report.resolved ? "Đã giải quyết" : "Chưa giải quyết"}
+                      {report.resolved ? "Đã giải quyết" : "Giải quyết ?"}
                     </button>
                   </div>
                 </div>

@@ -81,6 +81,6 @@ class ReportView(APIView):
         report = get_object_or_404(Report, report_id=pk)
         report.resolved = True
         reported_user = report.reported_user
-        reported_user.reputation_score -= 10
+        reported_user.profile.reputation_score -= 10
         report.save()
         return Response(status=status.HTTP_200_OK)

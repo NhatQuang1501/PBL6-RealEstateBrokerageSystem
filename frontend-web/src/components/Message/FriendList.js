@@ -120,10 +120,10 @@ export default function FriendList({ selectFriend }) {
   }
 
   return (
-    <div className="flex flex-col w-[38rem] gap-5 overflow-y-auto">
+    <div className="flex flex-col w-[30rem] gap-5 overflow-y-auto">
       {/* Danh sách người mua */}
       <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
-        <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
+        <h2 className="text-lg mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người mua ({buyers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
@@ -228,7 +228,7 @@ export default function FriendList({ selectFriend }) {
 
       {/* Danh sách người bán */}
       <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
-        <h2 className="text-lg mb-4 font-bold text-center text-blue-600 border-solid border-gray-300 border-b-[2px] pb-2">
+        <h2 className="text-lg mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người bán ({sellers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
