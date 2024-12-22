@@ -646,11 +646,4 @@ class RecommendedPostView(APIView):
         recommended_posts = hybrid_filtering(user_id, num_recommendations)
         serializer = PostSerializer(recommended_posts, many=True)
 
-        return Response(
-            {
-                "message": "Danh sách bài đăng được đề xuất",
-                "count": len(recommended_posts),
-                "data": serializer.data,
-            },
-            status=status.HTTP_200_OK,
-        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
