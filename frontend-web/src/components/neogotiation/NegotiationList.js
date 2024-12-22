@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import axios from "axios";
 
@@ -24,6 +24,7 @@ import {
 const NegotiationList = ({ type }) => {
   const { postId } = useParams();
   const { id, sessionToken } = useAppContext();
+  let navigate = useNavigate();
 
   const [negotiations, setNegotiations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -331,6 +332,7 @@ const NegotiationList = ({ type }) => {
       if (response.status === 200) {
         alert("Đã xem xét thương lượng thành công !");
         window.location.reload();
+        navigate(`/user/chat`);
       } else {
         alert("Đã xảy ra lỗi khi xem xét thương lượng !");
         window.location.reload();

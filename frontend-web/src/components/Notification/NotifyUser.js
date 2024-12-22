@@ -103,6 +103,11 @@ const NotifyUser = () => {
     setIsDropdownOpen(false);
   };
 
+  const handleGoToChatRoom = () => {
+    navigate(`/user/chat`);
+    setIsDropdownOpen(false);
+  };
+
   let unreadCount = 0;
   if (typeNotify === "all") {
     unreadCount = notifications.filter(
@@ -138,7 +143,7 @@ const NotifyUser = () => {
                     notification.is_read ? "bg-gray-300" : "bg-gray-100"
                   } hover:bg-blue-100 transition duration-300`}
                 >
-                  {["adminpost", "post", "proposal"].includes(
+                  {["adminpost", "post", "proposal", "consideration"].includes(
                     notification.data.additional_info.type
                   ) && (
                     <img
@@ -147,7 +152,7 @@ const NotifyUser = () => {
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />
                   )}
-                  {["negotiation"].includes(
+                  {["negotiation", "acceptproposal"].includes(
                     notification.data.additional_info.type
                   ) && (
                     <img
@@ -206,7 +211,13 @@ const NotifyUser = () => {
                           {notification.data.created_at}
                         </p>
                         <div className="flex justify-between mt-2">
-                          {["adminpost", "post", "proposal", "negotiation"].includes(
+                          {[
+                            "adminpost",
+                            "post",
+                            "proposal",
+                            "negotiation",
+                            "acceptproposal",
+                          ].includes(
                             notification.data.additional_info.type
                           ) && (
                             <button
@@ -222,6 +233,20 @@ const NotifyUser = () => {
                                 className="mr-1"
                               />
                               Đi đến bài viết
+                            </button>
+                          )}
+                          {["consideration"].includes(
+                            notification.data.additional_info.type
+                          ) && (
+                            <button
+                              onClick={() => handleGoToChatRoom()}
+                              className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                            >
+                              <FontAwesomeIcon
+                                icon={faArrowRight}
+                                className="mr-1"
+                              />
+                              Đi đến phòng chat
                             </button>
                           )}
                           {!notification.is_read && (

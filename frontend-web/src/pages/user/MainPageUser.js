@@ -3,7 +3,11 @@ import Post from "../../components/item_post/Post";
 import Pagination from "../../components/pagination/pagination";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt, faEdit, faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faListAlt,
+  faEdit,
+  faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -73,13 +77,26 @@ const MainPageUser = ({
         }
       }
       try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionToken}`,
-          },
-        });
+        let response;
+        if (
+          url ===
+          `http://127.0.0.1:8000/api/posts-recommendation/?num_recommendations=10`
+        ) {
+          response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          });
+        } else {
+          response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
 
         const data = await response.json();
         console.log("Post data:", data);

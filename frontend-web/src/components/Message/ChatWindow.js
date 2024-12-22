@@ -18,6 +18,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   let navigate = useNavigate();
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isCancelOpen, setIsCancelOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   useEffect(() => {
     const socket = new WebSocket(wsUrl);
@@ -112,11 +113,8 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const openCancel = () => setIsCancelOpen(true);
   const closeCancel = () => setIsCancelOpen(false);
 
-  // const confirmAccept = () => {
-  //   console.log("=============>nego>>>", friendInfo.negoId);
-  //   handleAcceptNego(friendInfo.negoId);
-  //   closeConfirm();
-  // };
+  const openDelete = () => setIsDeleteOpen(true);
+  const closeDelete = () => setIsDeleteOpen(false);
 
   const handleAcceptNego = async (negoId) => {
     try {
@@ -183,6 +181,33 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
     }
   };
 
+  const handleDeleteNego = async (negoId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/post-negotiations/${negoId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Delete negotiation successfully");
+        alert("Xóa thương lượng thành công!");
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        console.error("Delete negotiation failed:", errorData);
+        alert("Xóa thương lượng thất bại!");
+      }
+    } catch (error) {
+      console.error("Error deleting negotiation:", error);
+      alert("Có lỗi xảy ra khi xóa thương lượng!");
+    }
+  };
+
   return (
     <div className="w-full mx-auto rounded-lg">
       <div className="">
@@ -219,7 +244,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
             {friendInfo.type === "seller" && (
               <button
                 className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
-                // onClick={openConfirm}
+                onClick={openDelete}
               >
                 <FontAwesomeIcon icon={faX} />
                 <span>Xóa thương lượng</span>
@@ -320,6 +345,51 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
                   >
                     <FontAwesomeIcon icon={faSignOut} />
                     <span>Xác nhận hủy</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isDeleteOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="bg-white rounded-lg shadow-lg p-6 w-2xl relative">
+                {/* Tiêu đề căn giữa */}
+                <h3 className="text-2xl font-semibold text-center mb-4 border-b border-solid border-gray-200 pb-2">
+                  Xác Nhận
+                </h3>
+
+                {/* Nút đóng popup */}
+                <button
+                  onClick={closeCancel}
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                  aria-label="Đóng"
+                >
+                  <FontAwesomeIcon icon={faTimes} />
+                </button>
+
+                {/* Nội dung xác nhận */}
+                <p className="mb-6 text-center font-semibold text-gray-700">
+                  Bạn có chắc chắn muốn xóa thương lượng này?
+                </p>
+
+                {/* Các nút hành động */}
+                <div className="flex justify-center space-x-4 font-semibold">
+                  <button
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300"
+                    onClick={closeDelete}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center space-x-2"
+                    onClick={() => {
+                      handleDeleteNego(friendInfo.negoId);
+                      closeDelete();
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faX} />
+                    <span>Xác nhận xóa</span>
                   </button>
                 </div>
               </div>

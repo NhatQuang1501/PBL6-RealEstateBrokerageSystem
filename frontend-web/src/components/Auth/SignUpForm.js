@@ -41,7 +41,7 @@ const SignUpForm = () => {
         navigate("/authen/verify-email", { state: { email: email } });
         // console.log(data);
       } else if (response.status === 400) {
-        setError(data || "Đã xảy ra lỗi");
+        setError(data.error || "Đã xảy ra lỗi");
       }
     } catch (error) {
       console.log(error);
@@ -133,7 +133,7 @@ const SignUpForm = () => {
               placeholder="Nhập lại mật khẩu"
               className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            {error && <div className="text-red-500 mb-4">{error}</div>}
+            {error && <div className="text-red-500 mb-4 text-center font-semibold">{error}</div>}
             <div className="flex flex-col items-center">
               <button
                 className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300 mt-1"

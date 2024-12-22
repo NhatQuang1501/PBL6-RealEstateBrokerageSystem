@@ -413,6 +413,7 @@ class ProposalView(APIView):
             "author_id": str(author_id),
             "author_username": str(author_username),
             "author_avatar": author_avatar,
+            "post_id": str(post.post_id),
             "negotiation_id": str(negotiation_id),
             "proposal_id": str(serializer.data[0]["proposal_id"]),
         }

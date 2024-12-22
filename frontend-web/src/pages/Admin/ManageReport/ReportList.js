@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
