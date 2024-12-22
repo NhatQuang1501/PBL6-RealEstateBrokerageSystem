@@ -8,7 +8,7 @@ import { faListAlt, faCheck, faX } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { useAppContext } from "../../../AppProvider";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import Comment from "../../../components/comment/Comment";
 import NegotiationList from "../../../components/neogotiation/NegotiationList";
 import MapView from "../../../components/map_api/Mapbox";
@@ -33,6 +33,7 @@ const PostDetailAdmin = () => {
   const queryParams = getQueryParams(location.search);
   const commentId = queryParams.get("comment_id");
   console.log("Comment ID=>>>>>>:", commentId);
+  let navigate = useNavigate();
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -140,7 +141,7 @@ const PostDetailAdmin = () => {
   const handleDeletePost = async (postId) => {
     setShowPopUpConfirm(false);
     try {
-      const response = await axios.post(
+      const response = await axios.delete(
         `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
         {
           headers: {
@@ -151,6 +152,8 @@ const PostDetailAdmin = () => {
       if (response.status === 200) {
         alert("Xóa bài đăng thành công");
         window.location.reload();
+        navigate("/admin/dashboard");
+        
       } else {
         alert("Xóa bài đăng thất bại");
         window.location.reload();

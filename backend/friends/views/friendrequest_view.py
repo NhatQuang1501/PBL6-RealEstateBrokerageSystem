@@ -206,7 +206,7 @@ class FriendRequestView(APIView):
 
         return Response(
             {"message": f"Xóa lời mời kết bạn đến {receiver_response} thành công"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=status.HTTP_200_OK,
         )
 
 
@@ -343,5 +343,5 @@ class FriendListView(APIView):
 
         return Response(
             {"message": "Đã hủy kết bạn thành công và xóa phòng chat riêng tư"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=status.HTTP_200_OK,
         )

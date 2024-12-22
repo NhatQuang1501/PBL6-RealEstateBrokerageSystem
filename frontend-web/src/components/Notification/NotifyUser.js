@@ -2,13 +2,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBell,
   faCheckCircle,
-  faExclamationCircle,
   faArrowRight,
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect, useRef } from "react";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import User from "../../assets/image/User.png";
 
 const NotifyUser = () => {
   const [notifications, setNotifications] = useState([]);
@@ -156,6 +156,15 @@ const NotifyUser = () => {
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />
                   )}
+                  {["deleteadminpost"].includes(
+                    notification.data.additional_info.type
+                  ) && (
+                    <img
+                      src={User}
+                      alt="Avatar"
+                      className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
+                    />
+                  )}
                   <div className="flex-1">
                     {!notification.data.additional_info ? (
                       <>
@@ -169,13 +178,6 @@ const NotifyUser = () => {
                           {notification.data.created_at}
                         </p>
                         <div className="flex justify-end mt-2">
-                          {/* <button className="text-sm text-blue-500 hover:text-blue-600 flex items-center">
-                            <FontAwesomeIcon
-                              icon={faExclamationCircle}
-                              className="mr-1"
-                            />
-                            Đi đến bài đăng
-                          </button> */}
                           {!notification.is_read && (
                             <button
                               onClick={() =>
@@ -204,20 +206,24 @@ const NotifyUser = () => {
                           {notification.data.created_at}
                         </p>
                         <div className="flex justify-between mt-2">
-                          <button
-                            onClick={() =>
-                              handleGoToPost(
-                                notification.data.additional_info.post_id
-                              )
-                            }
-                            className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
-                          >
-                            <FontAwesomeIcon
-                              icon={faArrowRight}
-                              className="mr-1"
-                            />
-                            Đi đến bài viết
-                          </button>
+                          {["adminpost", "post", "proposal", "negotiation"].includes(
+                            notification.data.additional_info.type
+                          ) && (
+                            <button
+                              onClick={() =>
+                                handleGoToPost(
+                                  notification.data.additional_info.post_id
+                                )
+                              }
+                              className="text-sm text-blue-500 hover:text-blue-600 flex items-center"
+                            >
+                              <FontAwesomeIcon
+                                icon={faArrowRight}
+                                className="mr-1"
+                              />
+                              Đi đến bài viết
+                            </button>
+                          )}
                           {!notification.is_read && (
                             <button
                               onClick={() =>

@@ -31,7 +31,9 @@ class AdminPostView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
         else:
-            posts = Post.objects.filter(status=Status.PENDING_APPROVAL).order_by("-created_at")
+            posts = Post.objects.filter(status=Status.PENDING_APPROVAL).order_by(
+                "-created_at"
+            )
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 

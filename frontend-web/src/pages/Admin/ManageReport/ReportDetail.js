@@ -44,6 +44,30 @@ const ReportDetail = () => {
     navigate(`/user/profile/${user_id}`);
   };
 
+  const handleResolveReport = async (reportId) => {
+    console.log("Resolving report with ID:", reportId);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/report/${reportId}/`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (response.ok) {
+        alert("Đã giải quyết báo cáo thành công.");
+        window.history.back();
+      }
+      setLoading(false);
+    } catch (error) {
+      setError("Có lỗi xảy ra khi tải dữ liệu.");
+      setLoading(false);
+    }
+  };
+
   // Render loading or error state
   if (loading) return <div className="text-center text-xl">Đang tải...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -143,7 +167,7 @@ const ReportDetail = () => {
               {report.report_type === "Bài đăng" ||
               report.report_type === "Bình luận" ? (
                 <button
-                  className="px-4 py-2 rounded-full text-white bg-blue-500 font-semibold"
+                  className="px-4 py-2 rounded-full text-white bg-blue-500 hover:bg-blue-600 font-semibold"
                   onClick={() =>
                     handleViewPost(report.post_id, report.comment_id)
                   }
@@ -161,13 +185,16 @@ const ReportDetail = () => {
                 </button>
               )}
               <button
-                className={`px-4 py-2 rounded-lg font-semibold text-white ${
+                className={`px-4 py-2 rounded-full font-semibold text-white ${
                   report.resolved
                     ? "bg-green-500 hover:bg-green-600"
                     : "bg-yellow-500 hover:bg-yellow-600"
                 }`}
+                onClick={() => {
+                  handleResolveReport(report.report_id);
+                }}
               >
-                {report.resolved ? "Đã giải quyết" : "Chưa giải quyết"}
+                {report.resolved ? "Đã giải quyết" : "Giải quyết ?"}
               </button>
             </div>
           </div>

@@ -9,6 +9,12 @@ import Post from "../../../components/item_post/Post";
 const ListPosts = () => {
   const [posts, setPosts] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
+  }, []);
   const itemsPerPage = 10;
   const totalPages = Math.ceil(posts.length / itemsPerPage);
 
@@ -65,7 +71,9 @@ const ListPosts = () => {
 
   return (
     <div className="">
-      <h1 className="text-xl font-bold mb-1 text-center">Danh Sách Bài Đăng Đã Duyệt</h1>
+      <h1 className="text-xl font-bold mb-1 text-center">
+        Danh Sách Bài Đăng Đã Duyệt
+      </h1>
       <div className="rounded-lg h-[39rem] overflow-auto">
         <Panel className="flex flex-col h-full" type="personal-page">
           <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">

@@ -120,10 +120,8 @@ const LoginForm = () => {
               </button>
             </div>
             <p
-              className="text-red-500 pt-1 font-semibold "
-              style={{
-                height: "0.5rem",
-              }}
+              className="text-red-500 pt-1 font-semibold text-center mt-5"
+              
               dangerouslySetInnerHTML={{ __html: error }}
             ></p>
           </form>

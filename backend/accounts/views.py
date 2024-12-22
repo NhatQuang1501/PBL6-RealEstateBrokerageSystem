@@ -20,7 +20,12 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.encoding import (
+    smart_str,
+    force_str,
+    smart_bytes,
+    DjangoUnicodeDecodeError,
+)
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -107,7 +112,7 @@ class BaseView(APIView):
         user.delete()
 
         return Response(
-            {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa người dùng thành công"}, status=status.HTTP_200_OK
         )
 
 
@@ -449,7 +454,7 @@ class AvatarView(APIView):
         user_profile.avatar.delete(save=True)
         return Response(
             {"message": "Avatar đã được xóa"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=status.HTTP_200_OK,
         )
 
 
@@ -775,7 +780,9 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             uidb64 = urlsafe_base64_encode(smart_bytes(user.user_id))
             token = PasswordResetTokenGenerator().make_token(user)
             current_site = get_current_site(request=request).domain
-            relativeLink = reverse("password-reset-confirm", kwargs={"uidb64": uidb64, "token": token})
+            relativeLink = reverse(
+                "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
+            )
             absurl = f"http://{current_site}{relativeLink}"
             email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
             send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)
@@ -809,7 +816,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 {"error": str(identifier), "message": "Token không hợp lệ"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
     permission_classes = [AllowAny]

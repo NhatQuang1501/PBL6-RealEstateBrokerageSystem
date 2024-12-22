@@ -26,10 +26,10 @@ const SignUpForm = () => {
         },
         body: JSON.stringify({
           user: {
-          email: email,
-          username: username,
-          password: password,
-          role: "user",
+            email: email,
+            username: username,
+            password: password,
+            role: "user",
           },
         }),
       });
@@ -40,8 +40,8 @@ const SignUpForm = () => {
       if (response.ok) {
         navigate("/authen/verify-email", { state: { email: email } });
         // console.log(data);
-      } else {
-        setError(data.message || "Đã tồn tại người dùng có tên đăng nhập này");
+      } else if (response.status === 400) {
+        setError(data || "Đã xảy ra lỗi");
       }
     } catch (error) {
       console.log(error);

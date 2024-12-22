@@ -80,6 +80,10 @@ const ReportList = () => {
     navigate(`/user/profile/${user_id}`);
   };
 
+  const handleDetailReportClick = (reportId) => {
+    navigate(`/admin/detail-report/${reportId}`);
+  };
+
   // Render loading or error state
   if (loading) return <div className="text-center text-xl">Đang tải...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
@@ -189,6 +193,14 @@ const ReportList = () => {
                         Xem thông tin người dùng
                       </button>
                     )}
+                    <button
+                      className="px-4 py-2 rounded-full text-white bg-gray-500 hover:bg-gray-600 font-semibold"
+                      onClick={() => {
+                        handleDetailReportClick(report.report_id);
+                      }}
+                    >
+                      Chi tiết báo cáo
+                    </button>
                     <button
                       className={`px-4 py-2 rounded-full font-semibold text-white ${
                         report.resolved

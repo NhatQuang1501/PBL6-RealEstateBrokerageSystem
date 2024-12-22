@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faComment,
-  faShareAlt,
   faBookmark,
   faDollarSign,
   faMapMarkerAlt,
@@ -20,7 +19,6 @@ import {
   faBuilding,
   faFileContract,
   faCheck,
-  faTimes,
   faX,
 } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -56,6 +54,7 @@ function Post({ post, type }) {
   const [selectedPostIdD, setSelectedPostIdD] = useState(null);
   const [showPopupD, setShowPopupD] = useState(false);
   const [showPopUpConfirm, setShowPopUpConfirm] = useState(false);
+  const [showPopUpDelete, setShowPopUpDelete] = useState(false);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -373,6 +372,30 @@ function Post({ post, type }) {
         window.location.reload();
       } else {
         alert("Từ chối duyệt bài đăng thất bại");
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error updating post status:", error);
+    }
+  };
+
+  const handleAdminDelete = async (postId) => {
+    setShowPopUpDelete(false);
+    try {
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        alert("Xóa bài đăng thành công");
+        window.location.reload();
+        navigate("/admin/dashboard");
+      } else {
+        alert("Xóa bài đăng thất bại");
         window.location.reload();
       }
     } catch (error) {
@@ -1110,6 +1133,21 @@ function Post({ post, type }) {
                 </div>
               )}
 
+              {role === "admin" && post.status === "Đã duyệt" && (
+                <div className="flex justify-center items-center gap-10">
+                  <button
+                    className="bg-gradient-to-r from-red-500 to-red-400 text-white font-bold px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-red-600 hover:to-red-500"
+                    onClick={() => {
+                      setShowPopUpDelete(true);
+                      setSelectedPostIdD(post.post_id);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faX} className="text-lg" />
+                    Xóa bài đăng
+                  </button>
+                </div>
+              )}
+
               {showPopupD && (
                 <div
                   className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
@@ -1176,6 +1214,44 @@ function Post({ post, type }) {
                         <button
                           className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
                           onClick={() => handleRefusePost(selectedPostIdD)}
+                        >
+                          <FontAwesomeIcon icon={faCheck} className="mr-2" />
+                          OK
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {showPopUpDelete && (
+                <div
+                  className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm z-50"
+                  style={{ zIndex: 9999 }}
+                >
+                  <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-xl mx-4">
+                    <div className="font-montserrat">
+                      <div className="text-center">
+                        <p className="font-extrabold text-[1.3rem] text-gray-800">
+                          Xác nhận
+                        </p>
+                      </div>
+                      <hr className="my-4 border-gray-300" />
+                      <p className="text-gray-600 text-[0.95rem] text-center font-bold leading-snug">
+                        Bạn có chắc chắn xóa bài đăng này? Hãy kiểm tra kỹ trước
+                        khi xác nhận.
+                      </p>
+                      <div className="flex justify-center mt-6 gap-4">
+                        <button
+                          className="flex items-center bg-red-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-red-600 transition"
+                          onClick={() => setShowPopUpDelete(false)}
+                        >
+                          <FontAwesomeIcon icon={faX} className="mr-2" />
+                          Đóng
+                        </button>
+                        <button
+                          className="flex items-center bg-blue-500 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+                          onClick={() => handleAdminDelete(selectedPostIdD)}
                         >
                           <FontAwesomeIcon icon={faCheck} className="mr-2" />
                           OK
