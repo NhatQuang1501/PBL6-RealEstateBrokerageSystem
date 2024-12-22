@@ -18,23 +18,22 @@ from notification.notification_service import NotificationService
 
 class AdminPostView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
-    getter = PostGetter()
+    # getter = PostGetter()
 
     def get(self, request, pk=None):
         if pk:
-            if User.objects.filter(user_id=pk).exists():
-                posts = self.getter.get_posts_by_user_id(pk)
-            else:
-                post_serializer = self.getter.get_posts_by_post_id(pk)
-
-                return Response(post_serializer.data, status="200")
-        else:
-            status = request.query_params.get("status", "đang chờ duyệt")
-            posts = self.getter.get_posts_by_status(request, status).order_by(
-                "-created_at"
+            post = Post.objects.get(post_id=pk)
+            if post:
+                serializer = PostSerializer(post)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {"message": f"Bài đăng {pk} không tồn tại"},
+                status=status.HTTP_404_NOT_FOUND,
             )
-
-        return self.getter.paginate_posts(posts, request)
+        else:
+            posts = Post.objects.filter(status=Status.PENDING).order_by("-created_at")
+            serializer = PostSerializer(posts, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     # Chức năng duyệt của Admin
     def post(self, request):
