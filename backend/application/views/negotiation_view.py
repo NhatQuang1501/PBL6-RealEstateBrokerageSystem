@@ -93,14 +93,14 @@ class UserNegotiationsView(APIView):
 class PostNegotiationsView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
-    def get(self, request, post_id=None):
+    def get(self, request, pk=None):
         params = {key.strip(): value for key, value in request.query_params.items()}
         sort_by = params.get("sort_by")
         order = params.get("order", "desc")
         amount = params.get("amount", None)
 
-        if post_id:
-            post = get_object_or_404(Post, post_id=post_id)
+        if pk:
+            post = get_object_or_404(Post, post_id=pk)
             negotiations = Negotiation.objects.filter(post=post).select_related(
                 "user__profile"
             )
@@ -174,8 +174,8 @@ class PostNegotiationsView(APIView):
 
             return Response(list(grouped_data.values()), status=status.HTTP_200_OK)
 
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, post_id=post_id)
+    def post(self, request, pk):
+        post = get_object_or_404(Post, post_id=pk)
         author = post.user_id
         negotiator = request.user
 
@@ -287,23 +287,29 @@ class PostNegotiationsView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-    def delete(self, request, negotiation_id):
-        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+    def delete(self, request, pk):
+        if Negotiation.objects.filter(negotiation_id=pk).exists():
+            negotiation = get_object_or_404(Negotiation, negotiation_id=pk)
 
-        # Kiểm tra xem người dùng có phải là người đăng bài không
-        if negotiation.user != request.user:
+            # Kiểm tra xem người dùng có phải là người đăng bài không
+            if negotiation.user != request.user:
+                return Response(
+                    {"message": "Bạn không có quyền xóa thương lượng này."},
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+
+            negotiation.delete()
+            ChatRoom.objects.filter(negotiation=negotiation).delete()
+
             return Response(
-                {"message": "Bạn không có quyền xóa thương lượng này."},
-                status=status.HTTP_403_FORBIDDEN,
+                {"message": "Thương lượng đã bị xóa thành công"},
+                status=status.HTTP_200_OK,
             )
-
-        negotiation.delete()
-        ChatRoom.objects.filter(negotiation=negotiation).delete()
-
-        return Response(
-            {"message": "Thương lượng đã bị xóa thành công"},
-            status=status.HTTP_200_OK,
-        )
+        else:
+            return Response(
+                {"message": "Không tìm thấy thương lượng"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class ProposalView(APIView):
