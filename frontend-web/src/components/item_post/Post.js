@@ -621,7 +621,7 @@ function Post({ post, type }) {
         <div className="flex flex-col bg-white gap-2 justify-center w-full mt-2">
           {post.estate_type === "Nhà" && (
             <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white ">
-              <div className="flex flex-row justify-between items-center gap-4 w-full">
+              <div className="flex flex-row justify-between items-start gap-4 w-full">
                 {/* DetailDescription */}
                 <div className="flex-1">
                   <DetailDescription
@@ -635,7 +635,7 @@ function Post({ post, type }) {
                 <div
                   className="flex items-center justify-start bg-gradient-to-br from-yellow-200 to-orange-300 text-orange-700 
                              rounded-lg p-4 shadow-lg shadow-orange-300 mb-3 border-2 border-white 
-                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out glossy-effect"
+                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
                 >
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
@@ -648,9 +648,9 @@ function Post({ post, type }) {
               </div>
 
               {/* Giao diện tối ưu */}
-              <div className="flex flex-col gap-1 items-start justify-center">
+              <div className="flex flex-col items-start justify-center">
                 {/* Địa chỉ */}
-                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-2">
+                <div className="w-auto max-w-[42rem] bg-white p-2 flex items-center gap-2">
                   {/* Biểu tượng */}
                   <div className="w-8 h-8 flex items-center justify-center bg-red-100 rounded-full">
                     <FontAwesomeIcon
@@ -671,162 +671,172 @@ function Post({ post, type }) {
                   </div>
                 </div>
 
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faRulerCombined}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Diện tích:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.area} m²
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faCompass}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">Hướng:</p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.orientation}
-                      </p>
-                    </div>
-                  </div>
-                  {/* Mặt tiền */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faRoad}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Mặt tiền:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.frontage} m
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      {/* <FontAwesomeIcon
-                        icon={faRulerCombined}
-                        className="text-blue-500 text-lg"
-                      /> */}
-                      <FaRegFileAlt className="text-gray-500 text-lg" />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Tình trạng pháp lý:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.legal_status}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faBuilding}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Số tầng:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.floor}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-3 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faBed}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Số phòng ngủ:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.bedroom}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faBath}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Số phòng tắm:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.bathroom}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="ml-[3rem] flex items-center">
-                    <button
-                      className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                      onClick={() => {
-                        handleDetailClick();
-                      }}
-                    >
-                      Chi tiết
-                    </button>
-                  </div>
+                <div className="w-full bg-white">
+                  <table className="table-auto w-full border-collapse border border-gray-200">
+                    <tbody>
+                      <tr>
+                        <td className="w-1/2 align-top">
+                          <table className="table-auto w-full">
+                            <tbody>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faRulerCombined}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Diện tích:
+                                  </p>
+                                </td>
+                                <td className="">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.area} m²
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faCompass}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Hướng:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.orientation}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faRoad}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Mặt tiền:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.frontage} m
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faBath}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Số phòng tắm:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.bathroom}
+                                  </p>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                        <td className="w-1/2 align-top">
+                          <table className="table-auto w-full">
+                            <tbody>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FaRegFileAlt className="text-gray-500 text-lg" />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Tình trạng pháp lý:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.legal_status}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faBuilding}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Số tầng:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.floor}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faBed}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Số phòng ngủ:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.bedroom}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td
+                                  colSpan="2"
+                                  className="border border-gray-200 pt-2"
+                                >
+                                  <div className="flex items-center justify-end w-auto">
+                                    <button
+                                      className="w-auto bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                                      onClick={() => {
+                                        handleDetailClick();
+                                      }}
+                                    >
+                                      Xem chi tiết bài đăng
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
           )}
           {post.estate_type === "Đất" && (
             <div className="flex flex-col gap-4 p-4 text-gray-700 text-lg font-semibold bg-white ">
-              <div className="flex flex-row justify-between items-center gap-4 w-full">
+              <div className="flex flex-row justify-between items-start gap-4 w-full">
                 {/* DetailDescription */}
                 <div className="flex-1">
                   <DetailDescription
@@ -837,11 +847,10 @@ function Post({ post, type }) {
                   />
                 </div>
 
-                {/* Price */}
                 <div
                   className="flex items-center justify-start bg-gradient-to-br from-yellow-200 to-orange-300 text-orange-700 
                              rounded-lg p-4 shadow-lg shadow-orange-300 mb-3 border-2 border-white 
-                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out glossy-effect"
+                            max-w-xs transform hover:scale-105 transition-transform duration-200 ease-out"
                 >
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
@@ -854,9 +863,7 @@ function Post({ post, type }) {
               </div>
               {/* Giao diện tối ưu */}
               <div className="flex flex-col gap-1 items-start justify-center">
-                {/* Địa chỉ */}
                 <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-2">
-                  {/* Biểu tượng */}
                   <div className="w-8 h-8 flex items-center justify-center bg-red-100 rounded-full">
                     <FontAwesomeIcon
                       icon={faMapMarkerAlt}
@@ -876,158 +883,172 @@ function Post({ post, type }) {
                   </div>
                 </div>
 
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faRulerCombined}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
+                <div className="w-full bg-white">
+                  <table className="table-auto w-full border-collapse border border-gray-200">
+                    <tbody>
+                      <tr>
+                        <td className="w-1/2 align-top">
+                          <table className="table-auto w-full">
+                            <tbody>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faRulerCombined}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Diện tích:
+                                  </p>
+                                </td>
+                                <td className="">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.area} m²
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faFileContract}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Lô đất:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.land_lot
+                                      ? post.land_lot
+                                      : "Chưa có thông tin"}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faFileContract}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Thửa đất số:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.land_parcel
+                                      ? post.land_parcel
+                                      : "Chưa có thông tin"}
+                                  </p>
+                                </td>
+                              </tr>
 
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Diện tích:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.area} m²
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faCompass}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">Hướng:</p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.orientation}
-                      </p>
-                    </div>
-                  </div>
-                  {/* Mặt tiền */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faRoad}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Mặt tiền:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.frontage} m
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      {/* <FontAwesomeIcon
-                        icon={faRulerCombined}
-                        className="text-blue-500 text-lg"
-                      /> */}
-                      <FaRegFileAlt className="text-gray-500 text-lg" />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Tình trạng pháp lý:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.legal_status}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faFileContract}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Tờ bản đồ số:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.map_sheet_number
-                          ? post.map_sheet_number
-                          : "Chưa có thông tin"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Diện tích và Hướng */}
-                <div className="w-auto max-w-[42rem] bg-white p-1 flex items-center gap-7">
-                  {/* Diện tích */}
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faFileContract}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">
-                        Thửa đất số:
-                      </p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.land_parcel
-                          ? post.land_parcel
-                          : "Chưa có thông tin"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-                  <div className="flex items-center gap-1">
-                    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
-                      <FontAwesomeIcon
-                        icon={faFileContract}
-                        className="text-gray-500 text-lg"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <p className="text-gray-500 font-bold text-sm">Lô đất:</p>
-                      <p className="text-gray-700 text-sm bg-blue-100 px-2 py-1 rounded-xl">
-                        {post.land_lot ? post.land_lot : "Chưa có thông tin"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Hướng */}
-
-                  <div className=" flex items-center">
-                    <button
-                      className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                      onClick={() => {
-                        handleDetailClick();
-                      }}
-                    >
-                      Chi tiết
-                    </button>
-                  </div>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faFileContract}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Tờ bản đồ số:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.map_sheet_number
+                                      ? post.map_sheet_number
+                                      : "Chưa có thông tin"}
+                                  </p>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                        <td className="w-1/2 align-top">
+                          <table className="table-auto w-full">
+                            <tbody>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FaRegFileAlt className="text-gray-500 text-lg" />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Tình trạng pháp lý:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.legal_status}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faCompass}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Hướng:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.orientation}
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td className="flex items-center gap-2 border border-gray-200 p-2">
+                                  <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full">
+                                    <FontAwesomeIcon
+                                      icon={faRoad}
+                                      className="text-gray-500 text-lg"
+                                    />
+                                  </div>
+                                  <p className="text-gray-500 font-bold text-sm">
+                                    Mặt tiền:
+                                  </p>
+                                </td>
+                                <td className="border border-gray-200">
+                                  <p className="text-gray-700 text-sm text-center bg-blue-100 px-2 py-1 rounded-xl">
+                                    {post.frontage} m
+                                  </p>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td
+                                  colSpan="2"
+                                  className="border border-gray-200 pt-2"
+                                >
+                                  <div className="flex items-center justify-end w-auto">
+                                    <button
+                                      className="w-auto bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-medium px-3 py-2 rounded-md shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                                      onClick={() => {
+                                        handleDetailClick();
+                                      }}
+                                    >
+                                      Xem chi tiết bài đăng
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -1265,7 +1286,7 @@ function Post({ post, type }) {
           </div>
         </div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between bg-white">
         {/* Profile Info */}
         <ProfileInformation
           type="personal-page"
@@ -1282,7 +1303,7 @@ function Post({ post, type }) {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
               stroke="currentColor"
-              className="size-6"
+              className="size-6 text-gray-500"
             >
               <path
                 strokeLinecap="round"
@@ -1297,7 +1318,7 @@ function Post({ post, type }) {
             </svg>
           </div>
 
-          <span className="text-gray-500 w-[8rem]">
+          <span className="text-gray-500 mr-5">
             {Math.floor(post.view_count / 2)} lượt xem
           </span>
         </div>

@@ -331,7 +331,6 @@ const NegotiationList = ({ type }) => {
       );
       if (response.status === 200) {
         alert("Đã xem xét thương lượng thành công !");
-        window.location.reload();
         navigate(`/user/chat`);
       } else {
         alert("Đã xảy ra lỗi khi xem xét thương lượng !");
@@ -342,82 +341,89 @@ const NegotiationList = ({ type }) => {
     }
   };
 
+  const handleToRoomChat = () => {
+    navigate(`/user/chat`);
+  };
+
   return (
     <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] max-h-[85rem] overflow-auto">
       <div className="border-b-[2px] border-gray-300 border-solid">
         <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
-          <FontAwesomeIcon icon={faHandshake} /> {/* Thêm biểu tượng */}
+          <FontAwesomeIcon icon={faHandshake} />
           Danh sách thương lượng
         </h2>
       </div>
 
-      {/* Order by params */}
-      <div className="flex flex-col justify-center mb-4 mt-4 gap-2 border-solid border-gray-300 border-b-[2px] pb-3">
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="sort_by"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Sắp xếp theo:
-          </label>
-          <select
-            id="sort_by"
-            value={sortBy}
-            onChange={handleSortChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-          >
-            <option value="">Chọn tiêu chí</option>
-            <option value="average_response_time">
-              Thời gian phản hồi trung bình
-            </option>
-            <option value="reputation_score">Điểm uy tín</option>
-            <option value="successful_transactions">
-              Giao dịch thành công
-            </option>
-            <option value="response_rate">Tỷ lệ phản hồi</option>
-            <option value="profile_completeness">Độ hoàn thiện hồ sơ</option>
-            <option value="negotiation_experience">
-              Kinh nghiệm thương lượng
-            </option>
-          </select>
-        </div>
+      {type === "owner" && (
+        <div className="flex flex-col justify-center mb-4 mt-4 gap-2 border-solid border-gray-300 border-b-[2px] pb-3">
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="sort_by"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Sắp xếp theo:
+            </label>
+            <select
+              id="sort_by"
+              value={sortBy}
+              onChange={handleSortChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+            >
+              <option value="">Chọn tiêu chí</option>
+              <option value="average_response_time">
+                Thời gian phản hồi trung bình
+              </option>
+              <option value="reputation_score">Điểm uy tín</option>
+              <option value="successful_transactions">
+                Giao dịch thành công
+              </option>
+              <option value="response_rate">Tỷ lệ phản hồi</option>
+              <option value="profile_completeness">Độ hoàn thiện hồ sơ</option>
+              <option value="negotiation_experience">
+                Kinh nghiệm thương lượng
+              </option>
+            </select>
+          </div>
 
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="order"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Thứ tự:
-          </label>
-          <select
-            id="order"
-            value={order}
-            onChange={handleOrderChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-          >
-            <option value="">Chọn thứ tự</option>
-            <option value="asc">Tăng dần</option>
-            <option value="desc">Giảm dần</option>
-          </select>
-        </div>
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="order"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Thứ tự:
+            </label>
+            <select
+              id="order"
+              value={order}
+              onChange={handleOrderChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+            >
+              <option value="">Chọn thứ tự</option>
+              <option value="asc">Tăng dần</option>
+              <option value="desc">Giảm dần</option>
+            </select>
+          </div>
 
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="amount"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Số lượng:
-          </label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={handleAmountChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-            placeholder="Nhập số lượng"
-          />
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="amount"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Số lượng:
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              id="amount"
+              value={amount}
+              onChange={handleAmountChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+              placeholder="Nhập số lượng"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {negotiations.length > 0 ? (
         <div className="space-y-4 mt-[3rem]">
@@ -548,7 +554,10 @@ const NegotiationList = ({ type }) => {
                     Chấp nhận
                   </button> */}
 
-                    <button className="text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 ">
+                    <button
+                      className="text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 "
+                      onClick={() => handleToRoomChat()}
+                    >
                       Đang thương lượng
                     </button>
                   </div>

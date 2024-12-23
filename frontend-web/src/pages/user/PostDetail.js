@@ -268,11 +268,11 @@ const DetailPost = () => {
 
   return (
     <div className="flex flex-col items-center font-montserrat">
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-3xl shadow-lg">
-        <h3 className="text-2xl font-bold text-gray-600 flex items-center gap-3">
+      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-2 bg-gradient-to-r from-blue-100 to-blue-200 rounded-3xl shadow-lg">
+        <h3 className="text-xl font-bold text-gray-600 flex items-center gap-3">
           <FontAwesomeIcon
             icon={faListAlt}
-            className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+            className="text-gray-600 bg-white p-2 w-5 h-5 rounded-full shadow-md"
           />
           Chi tiết bài đăng
         </h3>
@@ -309,163 +309,168 @@ const DetailPost = () => {
                 </div>
               </div>
 
-              {id !== post.user.user_id && role === "user" && (
-                <div className="mt-5 flex justify-center items-center">
-                  <button
-                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => {
-                      handleNeogotiate(post.post_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faHandshake} className="text-lg" />
-                    Thương lượng
-                  </button>
-                  {isPopupOpen && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
-                          Hãy nhập giá tiền và thông tin bạn muốn thương lượng
-                        </h2>
-                        <p className="text-sm text-gray-600 mb-6 text-center">
-                          <strong className="font-bold text-red-500">
-                            Chú ý:
-                          </strong>{" "}
-                          Khi thương lượng, giá thương lượng mà bạn đưa ra không
-                          được nhỏ hơn{" "}
-                          <span className="text-red-500 font-semibold">
-                            70%
-                          </span>{" "}
-                          giá tiền mà chủ bài viết đã đăng bán.
-                        </p>
+              {id !== post.user.user_id &&
+                role === "user" &&
+                post.sale_status !== "Đã cọc" &&
+                post.sale_status !== "Đã bán" && (
+                  <div className="mt-5 flex justify-center items-center">
+                    <button
+                      className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                      onClick={() => {
+                        handleNeogotiate(post.post_id);
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faHandshake} className="text-lg" />
+                      Thương lượng
+                    </button>
+                    {isPopupOpen && (
+                      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                        <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                          <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                            Hãy nhập giá tiền và thông tin bạn muốn thương lượng
+                          </h2>
+                          <p className="text-sm text-gray-600 mb-6 text-center">
+                            <strong className="font-bold text-red-500">
+                              Chú ý:
+                            </strong>{" "}
+                            Khi thương lượng, giá thương lượng mà bạn đưa ra
+                            không được nhỏ hơn{" "}
+                            <span className="text-red-500 font-semibold">
+                              70%
+                            </span>{" "}
+                            giá tiền mà chủ bài viết đã đăng bán.
+                          </p>
 
-                        {/* Trường Giá Thương Lượng */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="price"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Giá Thương Lượng (VNĐ)
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaDollarSign className="text-gray-500" />
-                            </div>
-                            <input
-                              type="text"
-                              id="price"
-                              value={price}
-                              onChange={handlePriceChange}
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              placeholder="Nhập giá tiền (VNĐ)"
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        {/* Trường Ngày Thương Lượng */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="negotiationDate"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Ngày Bắt Đầu Giao Dịch
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaCalendarAlt className="text-gray-500" />
-                            </div>
-                            <input
-                              type="date"
-                              id="negotiationDate"
-                              value={negotiationDate}
-                              onChange={(e) =>
-                                setNegotiationDate(e.target.value)
-                              }
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        {/* Trường Hình Thức Trả Tiền */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="paymentMethod"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Hình Thức Trả Tiền
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaCreditCard className="text-gray-500" />
-                            </div>
-                            <select
-                              id="paymentMethod"
-                              value={paymentMethod}
-                              onChange={(e) => setPaymentMethod(e.target.value)}
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              required
+                          {/* Trường Giá Thương Lượng */}
+                          <div className="mb-4">
+                            <label
+                              htmlFor="price"
+                              className="block text-gray-800 font-bold mb-2"
                             >
-                              <option value="" disabled>
-                                Chọn hình thức trả tiền
-                              </option>
-                              <option value="Trả góp">Trả góp</option>
-                              <option value="Một lần">
-                                Thanh toán một lần
-                              </option>
-                              <option value="Khác">Khác</option>
-                              {/* Thêm các lựa chọn khác nếu cần */}
-                            </select>
-                          </div>
-                        </div>
-
-                        {/* Trường Ghi Chú Thêm */}
-                        <div className="mb-6">
-                          <label
-                            htmlFor="negotiationNote"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Ghi Chú Thêm
-                          </label>
-                          <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3 mt-2">
-                              <FaStickyNote className="text-gray-500" />
+                              Giá Thương Lượng (VNĐ)
+                            </label>
+                            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                              <div className="px-3">
+                                <FaDollarSign className="text-gray-500" />
+                              </div>
+                              <input
+                                type="text"
+                                id="price"
+                                value={price}
+                                onChange={handlePriceChange}
+                                className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                placeholder="Nhập giá tiền (VNĐ)"
+                                required
+                              />
                             </div>
-                            <textarea
-                              id="negotiationNote"
-                              value={negotiationNote}
-                              onChange={(e) =>
-                                setNegotiationNote(e.target.value)
-                              }
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              placeholder="Ghi chú thêm (tùy chọn)"
-                              rows="3"
-                            ></textarea>
                           </div>
-                        </div>
 
-                        {/* Nút Xác Nhận và Hủy Bỏ */}
-                        <div className="flex justify-center gap-4">
-                          <button
-                            type="button"
-                            className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
-                            onClick={handleSubmit}
-                          >
-                            Xác nhận
-                          </button>
-                          <button
-                            type="button"
-                            className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                            onClick={handleClose}
-                          >
-                            Hủy bỏ
-                          </button>
+                          {/* Trường Ngày Thương Lượng */}
+                          <div className="mb-4">
+                            <label
+                              htmlFor="negotiationDate"
+                              className="block text-gray-800 font-bold mb-2"
+                            >
+                              Ngày Bắt Đầu Giao Dịch
+                            </label>
+                            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                              <div className="px-3">
+                                <FaCalendarAlt className="text-gray-500" />
+                              </div>
+                              <input
+                                type="date"
+                                id="negotiationDate"
+                                value={negotiationDate}
+                                onChange={(e) =>
+                                  setNegotiationDate(e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          {/* Trường Hình Thức Trả Tiền */}
+                          <div className="mb-4">
+                            <label
+                              htmlFor="paymentMethod"
+                              className="block text-gray-800 font-bold mb-2"
+                            >
+                              Hình Thức Trả Tiền
+                            </label>
+                            <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                              <div className="px-3">
+                                <FaCreditCard className="text-gray-500" />
+                              </div>
+                              <select
+                                id="paymentMethod"
+                                value={paymentMethod}
+                                onChange={(e) =>
+                                  setPaymentMethod(e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                required
+                              >
+                                <option value="" disabled>
+                                  Chọn hình thức trả tiền
+                                </option>
+                                <option value="Trả góp">Trả góp</option>
+                                <option value="Một lần">
+                                  Thanh toán một lần
+                                </option>
+                                <option value="Khác">Khác</option>
+                                {/* Thêm các lựa chọn khác nếu cần */}
+                              </select>
+                            </div>
+                          </div>
+
+                          {/* Trường Ghi Chú Thêm */}
+                          <div className="mb-6">
+                            <label
+                              htmlFor="negotiationNote"
+                              className="block text-gray-800 font-bold mb-2"
+                            >
+                              Ghi Chú Thêm
+                            </label>
+                            <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
+                              <div className="px-3 mt-2">
+                                <FaStickyNote className="text-gray-500" />
+                              </div>
+                              <textarea
+                                id="negotiationNote"
+                                value={negotiationNote}
+                                onChange={(e) =>
+                                  setNegotiationNote(e.target.value)
+                                }
+                                className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                placeholder="Ghi chú thêm (tùy chọn)"
+                                rows="3"
+                              ></textarea>
+                            </div>
+                          </div>
+
+                          {/* Nút Xác Nhận và Hủy Bỏ */}
+                          <div className="flex justify-center gap-4">
+                            <button
+                              type="button"
+                              className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                              onClick={handleSubmit}
+                            >
+                              Xác nhận
+                            </button>
+                            <button
+                              type="button"
+                              className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                              onClick={handleClose}
+                            >
+                              Hủy bỏ
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
 
               <div className="mt-4 flex justify-center items-center gap-10">
                 {id === post.user.user_id &&
