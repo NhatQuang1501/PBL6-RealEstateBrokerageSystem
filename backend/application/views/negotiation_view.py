@@ -274,7 +274,7 @@ class PostNegotiationsView(APIView):
             negotiator_username = negotiator.username
             # avatar của người thương lượng
             negotiator_avatar = (
-                negotiator.profile.avatar.url if negotiator.profile.avatar.url else None
+                negotiator.profile.avatar.url if negotiator.profile.avatar else None
             )
             additional_info = {
                 "type": NotificationType.NEGOTIATION,
@@ -424,7 +424,7 @@ class ProposalView(APIView):
         negotiator_noti = f"{author.username} đã gửi 1 đề nghị với thương lượng cho bạn"
         author_id = author.user_id
         author_username = author.username
-        author_avatar = author.profile.avatar.url if author.profile.avatar.url else None
+        author_avatar = author.profile.avatar.url if author.profile.avatar else None
         additional_info = {
             "type": NotificationType.PROPOSAL,
             "author_id": str(author_id),
@@ -508,7 +508,7 @@ class AcceptProposalView(APIView):
             author_noti = f"{negotiator.username} đã gửi yêu cầu thương lượng mới theo lời đề nghị cho bài đăng của bạn"
             negotiator_id = negotiator.user_id
             negotiator_avatar = (
-                negotiator.profile.avatar.url if negotiator.profile.avatar.url else None
+                negotiator.profile.avatar.url if negotiator.profile.avatar else None
             )
             additional_info = {
                 "type": "accept" + NotificationType.PROPOSAL,
@@ -611,9 +611,7 @@ class ConsideredNegotiationsView(APIView):
             negotiator_noti = f"{author.username} đã xem xét thương lượng của bạn, chatroom giữa 2 người đã được tạo"
             author_id = author.user_id
             author_username = author.username
-            author_avatar = (
-                author.profile.avatar.url if author.profile.avatar.url else None
-            )
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
             additional_info = {
                 "type": NotificationType.CONSIDERATION,
                 "author_id": str(author_id),
@@ -765,15 +763,14 @@ class AcceptNegotiationView(APIView):
             negotiator_noti = f"{author.username} đã chấp nhận thương lượng của bạn. Chatroom trao đổi đã xóa"
             author_id = author.user_id
             author_username = author.username
-            author_avatar = (
-                author.profile.avatar.url if author.profile.avatar.url else None
-            )
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
             additional_info = {
                 "type": "accept" + NotificationType.NEGOTIATION,
                 "author_id": str(author_id),
                 "author_username": str(author_username),
                 "author_avatar": author_avatar,
                 "negotiation_id": str(negotiation_id),
+                "post_id": str(post.post_id),
             }
             NotificationService.add_notification(
                 negotiator, negotiator_noti, additional_info
@@ -794,7 +791,7 @@ class AcceptNegotiationView(APIView):
                 other_negotiator_username = other_negotiator.username
                 other_negotiator_avatar = (
                     other_negotiator.profile.avatar.url
-                    if other_negotiator.profile.avatar.url
+                    if other_negotiator.profile.avatar
                     else None
                 )
                 other_additional_info = {
@@ -803,6 +800,7 @@ class AcceptNegotiationView(APIView):
                     "author_username": str(author_username),
                     "author_avatar": author_avatar,
                     "negotiation_id": str(other_negotiation.negotiation_id),
+                    "post_id": str(post.post_id),
                 }
                 NotificationService.add_notification(
                     other_negotiator, other_noti, other_additional_info
@@ -820,8 +818,24 @@ class AcceptNegotiationView(APIView):
             # Không chấp nhận thương lượng
             negotiation.is_accepted = False
             negotiation.save()
-
             ChatRoom.objects.filter(negotiation=negotiation).delete()
+
+            # Thông báo cho người thương lượng
+            negotiator_noti = f"{author.username} đã từ chối thương lượng của bạn"
+            author_id = author.user_id
+            author_username = author.username
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
+            additional_info = {
+                "type": "accept" + NotificationType.NEGOTIATION,
+                "author_id": str(author_id),
+                "author_username": str(author_username),
+                "author_avatar": author_avatar,
+                "negotiation_id": str(negotiation_id),
+                "post_id": str(post.post_id),
+            }
+            NotificationService.add_notification(
+                negotiator, negotiator_noti, additional_info
+            )
 
             return Response(
                 {"message": "Thương lượng đã bị từ chối"},
