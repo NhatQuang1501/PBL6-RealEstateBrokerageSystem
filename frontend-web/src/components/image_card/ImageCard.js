@@ -109,7 +109,7 @@ const ImageCard = ({ postId, type, auth }) => {
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           <div className="relative z-10">
             <div className="flex justify-between">
-              <h4 className="text-white text-lg mb-2">
+              <h4 className="text-white text-sm mb-2">
                 Hình ảnh mô tả ({images.length})
               </h4>
               {auth === "owner" && (
@@ -216,13 +216,13 @@ const ImageCard = ({ postId, type, auth }) => {
           )}
           <div className="relative z-5">
             <div className="flex justify-between">
-              <h4 className="text-white text-lg mb-2">
+              <h4 className="text-white text-sm mb-2">
                 Hình ảnh mô tả ({images.length})
               </h4>
               {auth === "owner" && images.length > 0 && (
                 <>
                   <button
-                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="text-sm mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[6rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                     onClick={() => setShowPopup(true)}
                   >
                     Xóa ảnh

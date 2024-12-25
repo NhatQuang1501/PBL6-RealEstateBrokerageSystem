@@ -143,9 +143,13 @@ const NotifyUser = () => {
                     notification.is_read ? "bg-gray-300" : "bg-gray-100"
                   } hover:bg-blue-100 transition duration-300`}
                 >
-                  {["adminpost", "post", "proposal", "consideration"].includes(
-                    notification.data.additional_info.type
-                  ) && (
+                  {[
+                    "adminpost",
+                    "post",
+                    "proposal",
+                    "consideration",
+                    "acceptnegotiation",
+                  ].includes(notification.data.additional_info.type) && (
                     <img
                       src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
                       alt="Avatar"
@@ -217,6 +221,7 @@ const NotifyUser = () => {
                             "proposal",
                             "negotiation",
                             "acceptproposal",
+                            "acceptnegotiation",
                           ].includes(
                             notification.data.additional_info.type
                           ) && (

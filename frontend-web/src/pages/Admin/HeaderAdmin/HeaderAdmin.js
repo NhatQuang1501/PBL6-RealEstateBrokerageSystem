@@ -7,7 +7,7 @@ import NotifyAdmin from "../../../components/Notification/NotifyAdmin";
 const HeaderAdmin = ({ isCollapsed }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
-  const dropdownRef = useRef(null); 
+  const dropdownRef = useRef(null);
 
   const handleLogout = () => {
     clearUserSession();
@@ -18,7 +18,6 @@ const HeaderAdmin = ({ isCollapsed }) => {
     localStorage.removeItem("userToken");
   };
 
-  
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsDropdownOpen(false);
@@ -64,13 +63,7 @@ const HeaderAdmin = ({ isCollapsed }) => {
         {isDropdownOpen && (
           <div className="absolute top-10 right-0 mt-2 w-40 bg-white border rounded-md shadow-lg z-50">
             <button
-              className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
-              onClick={() => navigate("/profile")}
-            >
-              Xem thông tin
-            </button>
-            <button
-              className="block px-4 py-2 text-red-600 hover:bg-red-100 w-full text-left"
+              className="block px-2 py-2 bg-blue-100 rounded-md font-semibold text-red-600 hover:bg-red-100 w-full text-center"
               onClick={handleLogout}
             >
               Đăng xuất

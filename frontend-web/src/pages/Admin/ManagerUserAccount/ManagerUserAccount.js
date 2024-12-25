@@ -192,11 +192,11 @@ const ManagerUserAccount = () => {
 
   return (
     <div className="container mx-auto p-2 bg-white shadow-md rounded-lg">
-      <h2 className="text-3xl font-semibold mb-8 text-center text-gray-800">
+      <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">
         Danh Sách Tài Khoản
       </h2>
 
-      <div className="overflow-x-auto shadow-sm rounded-lg">
+      <div className="overflow-x-auto shadow-sm rounded-lg h-[31rem]">
         <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr className="bg-blue-200 text-gray-800 text-center font-bold ">

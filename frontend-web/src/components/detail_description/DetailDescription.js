@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { FaQuoteLeft } from "react-icons/fa";
+import { useLocation } from "react-router-dom"; // Import hook useLocation
 import "react-quill/dist/quill.snow.css";
 
 const DetailDescription = ({
@@ -9,6 +10,9 @@ const DetailDescription = ({
   enableToggle,
   moreLink,
 }) => {
+  const location = useLocation();
+  const isDetailPostPage = location.pathname.includes("detail-post");
+
   const safeDescription = description || "";
   const truncatedText =
     safeDescription.length > maxLength
@@ -25,7 +29,9 @@ const DetailDescription = ({
         </h2>
       </div>
       <div
-        className="text-gray-800 text-lg break-words whitespace-pre-wrap"
+        className={`text-gray-800 ${
+          isDetailPostPage ? "text-lg" : "text-xs font-medium"
+        } break-words whitespace-pre-wrap`}
         dangerouslySetInnerHTML={{ __html: truncatedText }}
       />
       {safeDescription.length > maxLength && !enableToggle && (

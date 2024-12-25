@@ -4,7 +4,6 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f6f6f6;
-
 }
 ::-webkit-scrollbar {
   width: 5px; /* Độ rộng của thanh cuộn */
@@ -63,7 +62,7 @@
 }
 
 /* glossy */
-@keyframes glossyAnimation {
+/* @keyframes glossyAnimation {
   0% {
     background-position: -200% 0;
   }
@@ -81,7 +80,7 @@
 }
 
 .glossy-effect::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -103,5 +102,5 @@
   100% {
     left: 100%;
   }
-}
+} */
 

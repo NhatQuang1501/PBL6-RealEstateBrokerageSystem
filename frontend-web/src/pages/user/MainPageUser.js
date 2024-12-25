@@ -261,34 +261,34 @@ const MainPageUser = ({
 
   return (
     <div className="font-montserrat main-content">
-      <div className="flex items-center justify-between w-[72%] ml-5 mt-6 mb-4 px-6 py-2 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg shadow-lg">
+      <div className="flex items-center justify-between w-[75%] mt-6 mb-4 px-6 py-2">
         {!searchValue ? (
-          <h3 className="text-2xl font-bold text-black flex items-center gap-3">
+          <h3 className="text-xl font-bold text-blue-500 flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-black bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-blue-500 bg-white p-2 w-5 h-5 rounded-full shadow-md"
             />
             Danh sách bài đăng
           </h3>
         ) : (
-          <h3 className="text-2xl font-bold text-black flex items-center gap-3">
+          <h3 className="text-2xl font-bold text-blue-500 flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-black bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-blue-500 bg-white p-2 w-5 h-5 rounded-full shadow-md"
             />
             Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
           </h3>
         )}
         <div className="relative">
           <div
-            className="text-black bg-white p-2 rounded-2xl font-semibold underline hover:text-gray-600 transition-colors duration-200 cursor-pointer border-[2px] border-solid border-gray-300"
+            className="text-blue-500 bg-white p-2 rounded-2xl font-semibold underline hover:text-blue-600 transition-colors duration-200 cursor-pointer border-[2px] border-solid border-gray-300"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             Sắp xếp theo
             <FontAwesomeIcon icon={faCaretDown} className="ml-2" />
           </div>
           {isDropdownOpen && (
-            <div className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+            <div className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10  border-[1px] border-solid border-gray-300">
               <ul className="py-1 font-semibold">
                 <li
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
@@ -353,7 +353,7 @@ const MainPageUser = ({
       </Panel>
       <div
         onClick={handleCreatePostClick}
-        className="fixed bottom-4 right-4 bg-gray-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
+        className="fixed bottom-4 right-4 bg-blue-400 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-500 transition duration-300 cursor-pointer"
         style={{ zIndex: 1000 }}
         title="Tạo bài đăng"
       >

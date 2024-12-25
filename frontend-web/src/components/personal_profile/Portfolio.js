@@ -84,12 +84,12 @@ export default function Portfolio() {
   }, [sessionToken, id, filterStatus, userId]);
 
   return (
-    <div className=" p-1 rounded-lg">
-      <div className="flex flex-row justify-start gap-10 border-b-[2px] border-solid border-gray-400 overflow-x-auto">
+    <div className=" p-1 mt-3 rounded-lg">
+      <div className="flex flex-row justify-center gap-5 border-b-[2px] border-solid border-gray-400 overflow-x-auto">
         <h2 className="text-md font-bold mb-4">
           <button
-            className={`text-black ${
-              filterStatus === "Đã duyệt" ? "underline text-gray-500" : ""
+            className={`text-black text-sm ${
+              filterStatus === "Đã duyệt" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã duyệt")}
           >
@@ -98,8 +98,8 @@ export default function Portfolio() {
         </h2>
         <h2 className="text-md font-bold mb-4">
           <button
-            className={`text-black ${
-              filterStatus === "Đã lưu" ? "underline text-gray-500" : ""
+            className={`text-black text-sm ${
+              filterStatus === "Đã lưu" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã lưu")}
           >
@@ -107,12 +107,12 @@ export default function Portfolio() {
           </button>
         </h2>
         {!userId && (
-          <div className="flex flex-row gap-10">
+          <div className="flex flex-row gap-5">
             <h2 className="text-md font-bold mb-4">
               <button
-                className={`text-black ${
+                className={`text-black text-sm ${
                   filterStatus === "Đang chờ duyệt"
-                    ? "underline text-gray-500"
+                    ? "underline text-blue-500"
                     : ""
                 }`}
                 onClick={() => handleFilterChange("Đang chờ duyệt")}
@@ -123,9 +123,9 @@ export default function Portfolio() {
 
             <h2 className="text-md font-bold mb-4">
               <button
-                className={`text-black ${
+                className={`text-black text-sm ${
                   filterStatus === "Đang thương lượng"
-                    ? "underline text-gray-500"
+                    ? "underline text-blue-500"
                     : ""
                 }`}
                 onClick={() => handleFilterChange("Đang thương lượng")}
@@ -136,9 +136,9 @@ export default function Portfolio() {
 
             <h2 className="text-md font-bold mb-4">
               <button
-                className={`text-black ${
+                className={`text-black text-sm ${
                   filterStatus === "Đang tham gia thương lượng"
-                    ? "underline text-gray-500"
+                    ? "underline text-blue-500"
                     : ""
                 }`}
                 onClick={() => handleFilterChange("Đang tham gia thương lượng")}

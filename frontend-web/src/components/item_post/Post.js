@@ -437,7 +437,7 @@ function Post({ post, type }) {
               post.sale_status === "Đang thương lượng") && (
               <div className="pt-3 flex justify-center items-center">
                 <button
-                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
+                  className="bg-gradient-to-r from-yellow-500 to-yellow-400 font-semibold text-black  text-sm px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500"
                   onClick={() => {
                     handleNeogotiate(post.post_id);
                   }}
@@ -591,7 +591,7 @@ function Post({ post, type }) {
             {id === post.user.user_id && post.sale_status === "Đang bán" && (
               <>
                 <button
-                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={() => {
                     handleUpdate(post.post_id);
                   }}
@@ -604,7 +604,7 @@ function Post({ post, type }) {
             {id === post.user.user_id && (
               <>
                 <button
-                  className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  className="bg-gradient-to-r from-red-500 to-red-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                   onClick={() => {
                     handleDelete(post.post_id);
                   }}
@@ -626,7 +626,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={32}
+                    maxLength={170}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />
@@ -841,7 +841,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={32}
+                    maxLength={170}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />

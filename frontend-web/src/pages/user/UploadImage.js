@@ -56,13 +56,13 @@ function UploadImage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-blue-200 p-6 font-montserrat">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-[60rem] h-[25rem] mb-[10rem]">
-        <h2 className="text-2xl font-bold text-center text-[#3CA9F9] mb-4">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-[45rem] h-[20rem] mb-[10rem]">
+        <h2 className="text-2xl font-bold text-center text-black mb-4 border-b-2 border-gray-600 border-solid pb-2">
           Tải Ảnh Lên
         </h2>
 
         {/* File Input */}
-        <div className="mb-4">
+        <div className="mb-4 mt-5">
           <label className="block text-gray-700 font-semibold mb-2">
             Chọn ảnh:
           </label>

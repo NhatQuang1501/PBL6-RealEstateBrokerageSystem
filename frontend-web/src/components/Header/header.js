@@ -76,7 +76,7 @@ function Header() {
   }, [location]);
 
   const linkStyle =
-    "text-oxford-blue font-semibold hover:text-gray-400 transition duration-300";
+    "text-oxford-blue font-semibold hover:text-blue-400 transition duration-300";
 
   return (
     <>
@@ -93,7 +93,7 @@ function Header() {
                   <Link
                     to="/"
                     className={`${linkStyle} ${
-                      activeLink === "/" ? "text-gray-400" : ""
+                      activeLink === "/" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/")}
                   >
@@ -103,27 +103,14 @@ function Header() {
                     Trang chủ
                   </span>
                 </li>
-                {/* <li className="relative group">
-                  <Link
-                    to="/news"
-                    className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
-                  </Link>
-                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Tin tức
-                  </span>
-                </li> */}
+
                 <li className="relative group">
                   <Link
-                    to="/user/predict"
+                    to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/user/predict" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/user/predict")}
+                    onClick={() => setActiveLink("/authen/login")}
                   >
                     <FontAwesomeIcon icon={faChartLine} className="w-5 h-5" />
                   </Link>
@@ -133,23 +120,23 @@ function Header() {
                 </li>
                 <li className="relative group">
                   <Link
-                    to="/contact"
+                    to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/contact" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/contact")}
+                    onClick={() => setActiveLink("/authen/login")}
                   >
                     <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
                   </Link>
                   <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Liên hệ
+                    Giới thiệu
                   </span>
                 </li>
                 <li className="relative group">
                   <Link
                     to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/authen/login" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/authen/login")}
                   >
@@ -163,7 +150,7 @@ function Header() {
             </nav>
             <div>
               <button
-                className="bg-gray-600 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
+                className="bg-blue-400 hover:bg-blue-500 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
                 onClick={() => navigate("/authen/login")}
               >
                 Đăng nhập
@@ -185,7 +172,7 @@ function Header() {
                     to="/user/main-page-user"
                     className={`${linkStyle} ${
                       activeLink === "/user/main-page-user"
-                        ? "text-gray-400"
+                        ? "text-blue-400"
                         : ""
                     }`}
                     onClick={() => setActiveLink("/user/main-page-user")}
@@ -201,7 +188,7 @@ function Header() {
                   <a
                     href="#!"
                     className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
+                      activeLink === "/news" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/news")}
                   >
@@ -212,7 +199,7 @@ function Header() {
                   <Link
                     to="/news"
                     className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
+                      activeLink === "/news" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/news")}
                   >
@@ -226,7 +213,7 @@ function Header() {
                   <Link
                     to="/user/predict"
                     className={`${linkStyle} ${
-                      activeLink === "/user/predict" ? "text-gray-400" : ""
+                      activeLink === "/user/predict" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/predict")}
                   >
@@ -240,7 +227,7 @@ function Header() {
                   <Link
                     to="/user/chat"
                     className={`${linkStyle} ${
-                      activeLink === "/user/chat" ? "text-gray-400" : ""
+                      activeLink === "/user/chat" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/chat")}
                   >
@@ -254,7 +241,7 @@ function Header() {
                   <Link
                     to="/user/create-post"
                     className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-gray-400" : ""
+                      activeLink === "/user/create-post" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/create-post")}
                   >
@@ -265,7 +252,7 @@ function Header() {
                   <Link
                     to="/user/create-post"
                     className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-gray-400" : ""
+                      activeLink === "/user/create-post" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/create-post")}
                   >
@@ -290,7 +277,7 @@ function Header() {
                   className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover bg-gray-500"
                 />
                 <Link to="/user/personal-page">
-                  <p className="text-gray-400 font-semibold">{name}</p>
+                  <p className="text-blue-400 font-semibold">{name}</p>
                 </Link>
               </div>
               <button

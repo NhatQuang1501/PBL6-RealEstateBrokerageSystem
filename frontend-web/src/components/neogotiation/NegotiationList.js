@@ -346,9 +346,9 @@ const NegotiationList = ({ type }) => {
   };
 
   return (
-    <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] max-h-[85rem] overflow-auto">
+    <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[1px] rounded-lg shadow-lg w-[32rem] max-h-[85rem] overflow-auto">
       <div className="border-b-[2px] border-gray-300 border-solid">
-        <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
+        <h2 className="text-xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
           <FontAwesomeIcon icon={faHandshake} />
           Danh sách thương lượng
         </h2>
@@ -430,7 +430,7 @@ const NegotiationList = ({ type }) => {
           {negotiations.map((negotiation) => (
             <div
               key={negotiation.negotiation_id}
-              className="bg-blue-100 p-6 border-solid border-gray-300 border-[2px] rounded-lg shadow-lg flex flex-col items-start"
+              className="bg-blue-50 p-6 border-solid border-gray-300 border-[1px] rounded-lg shadow-lg flex flex-col items-start"
             >
               <div className="w-full flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -534,7 +534,7 @@ const NegotiationList = ({ type }) => {
                     </button>
 
                     <button
-                      className="text-white font-semibold bg-gradient-to-r from-green-500 to-green-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-green-600 hover:to-green-500 "
+                      className="text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-green-700 hover:to-green-600 "
                       onClick={() =>
                         openModalConsider(negotiation.negotiation_id)
                       }
@@ -547,13 +547,6 @@ const NegotiationList = ({ type }) => {
                 !negotiation.is_accepted &&
                 negotiation.is_considered && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
-                    {/* <button
-                    className="text-white bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => openModal(negotiation.negotiation_id)}
-                  >
-                    Chấp nhận
-                  </button> */}
-
                     <button
                       className="text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 "
                       onClick={() => handleToRoomChat()}
@@ -613,7 +606,7 @@ const NegotiationList = ({ type }) => {
       {isModalProposalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center  border-b-[2px] border-gray-500 border-solid pb-2">
               Đề nghị lại mức thương lượng
             </h2>
             <p className="text-sm text-gray-600 mb-6 text-center">
@@ -1061,9 +1054,9 @@ const NegotiationList = ({ type }) => {
               <strong className="font-bold text-red-500">Chú ý:</strong> Nếu
               thấy thương lượng đạt yêu cầu thì bạn có thể cho thương lượng này
               vào danh sách được{" "}
-              <span className="text-green-500 font-semibold"> xem xét</span> và
+              <span className="text-green-700 font-semibold"> xem xét</span> và
               tạo Chatroom với người được{" "}
-              <span className="text-green-500 font-semibold"> xem xét</span> đó.{" "}
+              <span className="text-green-700 font-semibold"> xem xét</span> đó.{" "}
             </p>
 
             {/* Nút Xác Nhận và Hủy Bỏ */}

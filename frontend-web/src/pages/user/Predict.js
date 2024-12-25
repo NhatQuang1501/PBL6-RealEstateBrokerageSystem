@@ -55,7 +55,7 @@ function Predict() {
               }`}
             >
               <MdLandscape className="mr-2 text-xl" />
-              <span>Dự Đoán Đất</span>
+              <span>Dự Đoán Giá Đất</span>
             </button>
             <button
               onClick={() => setSelectedOption("house")}
@@ -66,7 +66,7 @@ function Predict() {
               }`}
             >
               <MdOutlineHouse className="mr-2 text-xl" />
-              <span>Dự Đoán Nhà</span>
+              <span>Dự Đoán Giá Nhà</span>
             </button>
           </div>
         </div>

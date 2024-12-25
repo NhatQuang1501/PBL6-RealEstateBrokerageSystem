@@ -566,22 +566,17 @@ const BasicInformation = () => {
       <div className="flex items-center p-3 space-x-2 w-[20rem]">
         <FontAwesomeIcon
           icon={faPlus}
-          className="text-white bg-gray-500 p-3 w-5 h-5 rounded-full"
+          className="text-white bg-blue-500 p-2 w-5 h-5 rounded-full"
         />
-        <h3 className="text-2xl font-bold text-gray-500 underline">
-          Tạo bài đăng
-        </h3>
+        <h3 className="text-xl font-bold text-blue-500">Tạo bài đăng</h3>
       </div>
 
-      <div className="w-full p-8 mt-8 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-gray-200">
+      <div className="w-full p-8 mt-8 rounded-xl shadow-xl transition-all duration-500 hover:shadow-2xl bg-blue-100">
         <button
           className="block text-left"
           onClick={() => (window.location.href = "/user/create-post")}
         >
-          {/* <h2 className="text-black font-extrabold">
-            Chọn loại hình bất động sản:
-          </h2> */}
-          <h2 className="text-xl font-bold text-gray-500 mb-10">
+          <h2 className="text-xl font-bold text-gray-600 mb-10">
             Chọn loại hình bất động sản:
           </h2>
         </button>
@@ -649,10 +644,10 @@ const BasicInformation = () => {
         {/* Handle select */}
         {showForm && selectedProperty === "house" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-gray-500 mb-10">
+            <h2 className="text-xl font-bold text-gray-600 mb-10">
               Thông tin cơ bản
             </h2>
-            <form className="p-8 rounded-lg shadow-xl" onSubmit={handleSubmit}>
+            <form className="" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Địa chỉ */}
                 <div className="">
@@ -783,7 +778,7 @@ const BasicInformation = () => {
                     </label>
                     <div className="relative">
                       <select
-                        className="block w-full p-2 pl-10 border rounded transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="block w-full p-3 pl-10 border border-gray-300 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:shadow-xl focus:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         id="legal_status"
                         value={legal_status}
                         onChange={(e) => setLegal_status(e.target.value)}
@@ -1295,7 +1290,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-blue-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >
@@ -1904,7 +1899,7 @@ const BasicInformation = () => {
               />
               <div className=" w-full flex justify-center border-t-[2px] border-gray-500 border-solid">
                 <button
-                  className="bg-gray-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="bg-blue-500 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   // onClick={handleSubmit}
                   type="submit"
                 >

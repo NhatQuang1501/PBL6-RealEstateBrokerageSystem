@@ -4,7 +4,6 @@ import {
   FaComment,
   FaFlag,
   FaExclamationTriangle,
-  FaAdjust,
   FaTimesCircle,
 } from "react-icons/fa";
 import { useAppContext } from "../../AppProvider";
@@ -200,10 +199,10 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
 
   return (
     <div className="flex flex-col justify-start items-center max-h-screen mr-5">
-      <div className="flex flex-col items-center justify-between p-6 mt-5 mb-5 mr-5 min-h-[20rem] h-full w-[32rem] mx-auto rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
+      <div className="flex flex-col items-center justify-between p-6 mt-5 mb-5 mr-5 min-h-[20rem] h-full w-[32rem] mx-auto rounded-lg bg-white border-solid border-gray-300 border-[1px] shadow-md">
         <div className="flex items-center justify-center w-full mb-4 gap-3 border-b-[2px] border-gray-300 border-solid pb-5">
-          <FaComment className="text-3xl text-[#3CA9F9]" />
-          <h1 className="text-2xl font-bold text-[#3CA9F9]">Bình luận</h1>
+          <FaComment className="text-xl text-gray-600" />
+          <h1 className="text-xl font-bold text-gray-600">Bình luận</h1>
         </div>
 
         {/* List of Comments */}
@@ -211,13 +210,13 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
           {sortedComments.map((comment) => (
             <li
               key={comment.comment_id}
-              className="flex flex-col items-start mb-4 bg-gray-200 p-3 rounded-2xl w-full"
+              className="flex flex-col items-start mb-4 bg-gray-100 p-3 rounded-2xl w-full"
             >
               <div className="flex items-center w-full">
                 <img
                   src={comment.avatar_url}
                   alt={comment.username}
-                  className="w-16 h-16 rounded-full mr-3 object-cover border-gray-100 border-solid border-[1px] bg-gray-500"
+                  className="w-12 h-12 rounded-full mr-3 object-cover border-gray-100 border-solid border-[1px] bg-gray-500"
                 />
                 <span className="font-semibold">{comment.username}</span>
                 <span className="text-gray-500 text-sm ml-2">
@@ -259,7 +258,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
                 )}
               </div>
               {!comment.is_report_removed ? (
-                <p className="ml-20 text-gray-700 bg-blue-300 p-3 rounded-md max-w-[20rem] break-words font-semibold">
+                <p className="ml-20 text-gray-700 bg-blue-200 p-3 rounded-md max-w-[20rem] break-words font-semibold text-sm">
                   {comment.comment}
                 </p>
               ) : (
@@ -334,7 +333,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
                 onChange={handleCommentChange}
               ></textarea>
               <button
-                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 mt-3"
+                className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 mt-3"
                 onClick={handleCommentSubmit}
               >
                 Bình luận
