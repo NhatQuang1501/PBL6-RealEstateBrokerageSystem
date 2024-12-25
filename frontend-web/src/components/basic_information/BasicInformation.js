@@ -52,8 +52,8 @@ const BasicInformation = ({
 
   const calculatePricePerSquareMeter = () => {
     if (!price || !area) return null;
-    const pricePerM2 = price / area;
-    return formatPrice(pricePerM2);
+    const pricePerM2 = (price / area).toFixed(2);
+    return formatPrice(Number(pricePerM2));
   };
 
   const infoRows = [

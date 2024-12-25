@@ -626,7 +626,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={170}
+                    maxLength={45}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />
@@ -841,7 +841,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={170}
+                    maxLength={45}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />
