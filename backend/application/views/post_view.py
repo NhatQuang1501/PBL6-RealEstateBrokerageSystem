@@ -2,40 +2,43 @@ from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from application.models import *
-from application.serializers import *
+from application.serializers.post_serializer import *
 from application.utils import PostGetter
+from application.recommendation.hybrid_filtering import hybrid_filtering
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from accounts.permission import *
 from accounts.models import *
 from accounts.serializers import *
-from django.core.paginator import Paginator
-from django.core.paginator import EmptyPage
-from django.core.paginator import PageNotAnInteger
-from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from application.utils import *
 import time
-from django.db.models import Q
+from django.db.models import Q, Count, F
 import unicodedata
 import re
+from datetime import timedelta
+from notification.notification_service import NotificationService
 
 
 class PostView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
     def get_permissions(self):
-        # Cho phép mọi người truy cập GET, nhưng yêu cầu xác thực cho các phương thức khác
         if self.request.method == "GET":
             return [AllowAny()]
-
         return [permission() for permission in self.permission_classes]
 
     def get(self, request, pk=None):
+        params = {key.strip(): value for key, value in request.query_params.items()}
+        category = params.get("category", "").strip() if params.get("category") else ""
+
         if pk:
             if User.objects.filter(user_id=pk).exists():
                 user = get_object_or_404(User, user_id=pk)
-                posts = Post.objects.filter(user_id=user).order_by("-created_at")
+                posts = Post.objects.filter(
+                    user_id=user, status=Status.APPROVED
+                ).order_by("-created_at")
                 post_serializer = PostSerializer(
                     posts, many=True, context={"request_type": "detail"}
                 )
@@ -65,25 +68,67 @@ class PostView(APIView):
                 )
 
         else:
-            # if request.user.is_authenticated:
-            #     user_id = request.user
-            #     query = Q(status=Status.APPROVED)
-            #     posts = Post.objects.filter(query).order_by("updated_at")
-            # else:
-            # posts = Post.objects.all().order_by("updated_at") # tất cả bài đăng CHỜ DUYỆT và ĐÃ DUYỆT
+            if not category:
+                query = Q(status=Status.APPROVED)
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            query = Q(status=Status.APPROVED)  # chỉ lấy bài đăng ĐÃ DUYỆT
-            posts = Post.objects.filter(query).order_by("-created_at")
+            elif category == "oldest posts":
+                query = Q(status=Status.APPROVED)
+                posts = Post.objects.filter(query).order_by("created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            post_serializer = PostSerializer(
-                posts, many=True, context={"request_type": "list"}
-            )
+            elif category == "house":
+                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.HOUSE)
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
 
-            return Response(
-                # {"count": posts.count(), "data": post_serializer.data},
-                post_serializer.data,
-                status=status.HTTP_200_OK,
-            )
+            elif category == "land":
+                query = Q(status=Status.APPROVED) & Q(estate_type=EstateType.LAND)
+                posts = Post.objects.filter(query).order_by("-created_at")
+                post_serializer = PostSerializer(
+                    posts, many=True, context={"request_type": "list"}
+                )
+
+            elif category == "popular":
+                recent_months = 6
+                current_date = timezone.now()
+                start_date = current_date - timedelta(days=recent_months * 30)
+
+                # Tính điểm phổ biến của bài đăng dựa trên reactions, comments, view_count, save_count
+                posts = (
+                    Post.objects.filter(
+                        status=Status.APPROVED, created_at__gte=start_date
+                    )
+                    .annotate(
+                        reaction_count=Count("postreaction"),
+                        comment_count=Count("postcomment"),
+                    )
+                    .annotate(
+                        popular_score=(
+                            0.3 * Count("postreaction")  # Trọng số cho reactions
+                            + 0.7 * Count("postcomment")  # Trọng số cho comments
+                            + 0.1 * F("view_count")  # Trọng số cho view_count
+                            + 1.0 * F("save_count")  # Trọng số cho save_count
+                        )
+                    )
+                    .order_by("-popular_score", "-created_at")
+                )
+
+                post_serializer = PostSerializer(posts, many=True)
+
+            else:
+                return Response(
+                    {"message": "Loại bài đăng không hợp lệ"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             return Response(
                 # {"count": posts.count(), "data": post_serializer.data},
                 post_serializer.data,
@@ -93,11 +138,42 @@ class PostView(APIView):
     def post(self, request):
         post_data = request.data.copy()
         post_data["user_id"] = request.user.user_id
+        author = request.user
+
+        # Kiểm tra và xử lý giá trị null cho các trường DecimalField
+        decimal_fields = [
+            "area",
+            "length",
+            "width",
+            "frontage",
+            "longitude",
+            "latitude",
+            "highest_offer_price",
+        ]
+        for field in decimal_fields:
+            if post_data.get(field) == "":
+                post_data[field] = None
+
         post_serializer = PostSerializer(data=post_data)
-        # post_serializer = PostSerializer(data=request.data)
 
         if post_serializer.is_valid():
             post_serializer.save()
+
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã tạo bài đăng mới"
+                author_id = author.user_id
+                author_avatar = author.profile.avatar.url if author.profile.avatar else None
+                additional_info = {
+                    "type": NotificationType.POST,
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = "Bạn đã tạo bài đăng thành công, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti, additional_info)
 
             return Response(
                 {"message": "Tạo bài đăng thành công", "data": post_serializer.data},
@@ -111,10 +187,63 @@ class PostView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
-        post_serializer = PostSerializer(post, data=request.data, partial=True)
+        author = request.user
+
+        # Kiểm tra user hiện tại không phải là người đăng
+        if post.user_id != request.user:
+            return Response(
+                {"message": "Bạn không có quyền cập nhật bài đăng này"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        post_data = request.data.copy()
+
+        # Kiểm tra và xử lý giá trị null cho các trường DecimalField
+        decimal_fields = [
+            "area",
+            "length",
+            "width",
+            "frontage",
+            "longitude",
+            "latitude",
+            "highest_offer_price",
+        ]
+        for field in decimal_fields:
+            if post_data.get(field) == "":
+                post_data[field] = None
+
+        post_serializer = PostSerializer(post, data=post_data, partial=True)
 
         if post_serializer.is_valid():
             post_serializer.save()
+
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã chỉnh sửa 1 bài đăng"
+                author_id = author.user_id
+                author_avatar = author.profile.avatar.url if author.profile.avatar else None
+                additional_info = {
+                    "type": NotificationType.POST,
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post_serializer.data["post_id"]),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = f"Bạn đã chỉnh sửa 1 bài đăng, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti, additional_info)
 
             return Response(
                 {
@@ -134,7 +263,7 @@ class PostView(APIView):
         post.delete()
 
         return Response(
-            {"message": "Xoá bài đăng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xoá bài đăng thành công"}, status=status.HTTP_200_OK
         )
 
 
@@ -220,14 +349,22 @@ class SearchView(APIView):
                     matches_text(post["price"]),
                     matches_text(post["city"]),
                     matches_text(post["district"]),
+                    matches_text(post["ward"]),
                     matches_text(post["street"]),
                     matches_text(post["address"]),
                     matches_text(post["orientation"]),
+                    matches_text(post["land_lot"]),
+                    matches_text(post["map_sheet_number"]),
+                    matches_text(post["land_parcel"]),
                     matches_text(post["area"]),
+                    matches_text(post["length"]),
+                    matches_text(post["width"]),
                     matches_text(post["frontage"]),
                     matches_text(post["bedroom"]),
                     matches_text(post["bathroom"]),
                     matches_text(post["floor"]),
+                    matches_text(post["longitude"]),
+                    matches_text(post["latitude"]),
                     matches_text(post["legal_status"]),
                     matches_text(post["sale_status"]),
                     matches_text(post["description"]),
@@ -323,7 +460,7 @@ class PostReactionView(APIView):
 
         if not created:  # Đã tồn tại, nên hủy like
             reaction.delete()
-            return Response({"detail": "Unliked"}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"detail": "Unliked"}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Liked"}, status=status.HTTP_201_CREATED)
 
@@ -370,6 +507,19 @@ class PostImageView(APIView):
 
     def put(self, request, pk):
         post = get_object_or_404(Post, post_id=pk)
+
+        if post.sale_status in [
+            Sale_status.NEGOTIATING,
+            Sale_status.DEPOSITED,
+            Sale_status.SOLD,
+        ]:
+            return Response(
+                {
+                    "message": "Ảnh bài đăng không thể cập nhật khi đang ở trạng thái đã thương lượng, đã cọc hoặc đã bán"
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         images = PostImage.objects.filter(post_id=post)
         images.delete()
 
@@ -389,9 +539,7 @@ class PostImageView(APIView):
         images = PostImage.objects.filter(post_id=post)
         images.delete()
 
-        return Response(
-            {"message": "Xoá ảnh thành công"}, status=status.HTTP_204_NO_CONTENT
-        )
+        return Response({"message": "Xoá ảnh thành công"}, status=status.HTTP_200_OK)
 
 
 class MarkPostAsSoldView(APIView):
@@ -417,7 +565,7 @@ class MarkPostAsSoldView(APIView):
 
     def post(self, request, post_id):
         sale_status = request.data.get("sale_status")
-        Sale_status = Sale_status.map_display_to_value(sale_status)
+        sale_status = Sale_status.map_display_to_value(sale_status)
 
         post = get_object_or_404(Post, post_id=post_id)
 
@@ -464,3 +612,32 @@ class MarkPostAsSoldView(APIView):
     #     return Response(
     #         {"message": "Mở bài đăng thành công"}, status=status.HTTP_200_OK
     #     )
+
+
+class RecommendedPostView(APIView):
+    permission_classes = [IsAuthenticated, IsUser]
+
+    def get(self, request):
+        user_id = request.user.user_id
+
+        try:
+            num_recommendations = int(
+                request.query_params.get("num_recommendations", 10)
+            )
+        except ValueError:
+            return Response(
+                {"message": "num_recommendations phải là một số nguyên"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if num_recommendations <= 0:
+            return Response(
+                {"message": "num_recommendations phải lớn hơn 0"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Gọi hàm lọc đề xuất
+        recommended_posts = hybrid_filtering(user_id, num_recommendations)
+        serializer = PostSerializer(recommended_posts, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

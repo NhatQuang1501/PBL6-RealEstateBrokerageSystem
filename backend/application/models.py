@@ -12,26 +12,42 @@ class Post(models.Model):
 
     title = models.CharField(max_length=100)
     estate_type = models.CharField(choices=EstateType.choices, max_length=50)
-    price = models.DecimalField(max_digits=30, decimal_places=1)
+    price = models.BigIntegerField()
     status = models.CharField(
         choices=Status.choices, max_length=50, default=Status.PENDING_APPROVAL
     )
 
     city = models.CharField(max_length=50, blank=True, null=True)
     district = models.CharField(max_length=50, blank=True, null=True)
+    ward = models.CharField(max_length=50, blank=True, null=True)
     street = models.CharField(max_length=50, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     orientation = models.CharField(
         choices=Orientation.choices, max_length=50, blank=True, null=True
     )
 
+    # Dành cho đất
+    land_lot = models.CharField(max_length=50, blank=True, null=True)  # Lô đất
+    map_sheet_number = models.CharField(
+        max_length=50, blank=True, null=True
+    )  # Tờ bản đồ số (gồm nhiều thửa đất)
+    land_parcel = models.CharField(max_length=50, blank=True, null=True)  # Thửa đất
+
     area = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
+    length = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
+    width = models.DecimalField(max_digits=20, decimal_places=1, blank=True, null=True)
     frontage = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True
     )  # mặt tiền
     bedroom = models.IntegerField(blank=True, null=True)
     bathroom = models.IntegerField(blank=True, null=True)
     floor = models.IntegerField(blank=True, null=True)
+    longitude = models.DecimalField(
+        max_digits=30, decimal_places=20, blank=True, null=True
+    )
+    latitude = models.DecimalField(
+        max_digits=30, decimal_places=20, blank=True, null=True
+    )
     legal_status = models.CharField(
         choices=Legal_status.choices,
         max_length=50,
@@ -46,16 +62,15 @@ class Post(models.Model):
     description = models.TextField(blank=True, null=True)
 
     view_count = models.IntegerField(default=0)
+    save_count = models.IntegerField(default=0)
 
-    highest_offer_price = models.DecimalField(
-        max_digits=15, decimal_places=2, default=Decimal("0.00"), blank=True, null=True
-    )
-    highest_offer_user = models.ForeignKey(
+    highest_negotiation_price = models.BigIntegerField(blank=True, null=True)
+    highest_negotiation_user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="highest_offer_user",
+        related_name="highest_negotiation_user",
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -73,9 +88,21 @@ class Negotiation(models.Model):
         Post, related_name="negotiations", on_delete=models.CASCADE
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    offer_price = models.DecimalField(max_digits=15, decimal_places=2)
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    negotiation_price = models.BigIntegerField()
+    negotiation_date = models.DateField(null=True, blank=True)
+    payment_method = models.CharField(
+        Payment_method.choices, max_length=50, default=Payment_method.OTHER
+    )
+    negotiation_note = models.TextField(blank=True, null=True)
+
+    is_considered = models.BooleanField(default=False)  # Trạng thái xem xét đồng ý
     is_accepted = models.BooleanField(default=False)  # Trạng thái chấp nhận
+
+    # Tiêu chí đánh giá cho thương lượng
+    average_response_time = models.DurationField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = (
@@ -85,6 +112,27 @@ class Negotiation(models.Model):
 
     def __str__(self):
         return str(self.negotiation_id)
+
+
+class Proposal(models.Model):
+    proposal_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    negotiation = models.ForeignKey(
+        Negotiation, related_name="proposals", on_delete=models.CASCADE
+    )
+    proposal_price = models.BigIntegerField(null=True, blank=True)
+    proposal_date = models.DateField(null=True, blank=True)
+    proposal_method = models.CharField(
+        Payment_method.choices, max_length=50, default=Payment_method.OTHER
+    )
+    proposal_note = models.TextField(null=True, blank=True)
+
+    is_accepted = models.BooleanField(default=False)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.proposal_id)
 
 
 class PostReaction(models.Model):
@@ -121,6 +169,8 @@ class PostComment(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    is_report_removed = models.BooleanField(default=False)
+
     def __str__(self):
         return str(self.comment_id)
 
@@ -132,3 +182,36 @@ class PostImage(models.Model):
 
     def __str__(self):
         return str(self.image_id)
+
+
+class SavedPost(models.Model):
+    savedpost_id = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False
+    )
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="saved_post")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="saved_post_user"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")  # User chỉ được lưu mỗi bài đăng 1 lần
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.post.title}"
+
+
+class Report(models.Model):
+    report_id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    report_type = models.CharField(choices=ReportType.choices, max_length=50)
+    description = models.TextField(blank=True, null=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey(
+        PostComment, on_delete=models.CASCADE, null=True, blank=True
+    )
+    reported_user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reportee = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reportee"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved = models.BooleanField(default=False)

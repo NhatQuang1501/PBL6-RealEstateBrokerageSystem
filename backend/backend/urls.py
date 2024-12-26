@@ -7,7 +7,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/", include("accounts.urls")),
     path("api/", include("application.urls")),
-    path("api/", include("chat.urls")),
+    path("api/", include("friends.urls")),
+    path("api/", include("chatting.urls")),
+    path("api/", include("notification.urls")),
+    path("api/", include("prediction.urls")),
 ]
 
 if settings.DEBUG:

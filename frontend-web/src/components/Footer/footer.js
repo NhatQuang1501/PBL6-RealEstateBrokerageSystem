@@ -9,12 +9,12 @@ import {
 
 function Footer() {
   return (
-    <div className="bg-[#92cbe2]">
+    <div className="bg-blue-200">
       <div className="container mx-auto py-10 main-content">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 font-montserrat">
           <div className="space-y-4">
             <img src={Logo} alt="Logo" className="w-16" />
-            <p className="text-gray-800">
+            <p className="text-gray-800 leading-normal">
               Hệ thống môi giới Nhà-Đất của chúng tôi sử dụng mô hình AI được
               huấn luyện để đưa ra giá cả phù hợp và khớp với giá thị trường
               nhất có thể.
@@ -80,7 +80,7 @@ function Footer() {
             <ul className="space-y-2 text-gray-700">
               <li>
                 Địa chỉ:{" "}
-                <span className="font-semibold">
+                <span className="font-semibold leading-snug">
                   54 Nguyễn Lương Bằng, phường Hòa Khánh Bắc, Quận Liên Chiểu,
                   Đà Nẵng, Việt Nam
                 </span>

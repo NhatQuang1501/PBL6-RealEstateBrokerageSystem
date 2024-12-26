@@ -13,6 +13,10 @@ class User(AbstractUser):
     role = models.CharField(choices=Role.choices, max_length=50)
 
     is_verified = models.BooleanField(default=False)
+    is_locked = models.BooleanField(default=False)
+    locked_reason = models.TextField(blank=True, null=True)
+    locked_date = models.DateTimeField(blank=True, null=True)
+    unlocked_date = models.DateTimeField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,6 +48,15 @@ class UserProfile(models.Model):
         choices=Gender.choices, max_length=50, blank=True, null=True
     )
     avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
+
+    # Tiêu chí đánh giá cho thương lượng
+    reputation_score = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    successful_transactions = models.IntegerField(default=0)  # Số giao dịch thành công
+    response_rate = models.DecimalField(max_digits=5, decimal_places=2, default=0.0)
+    profile_completeness = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0
+    )
+    negotiation_experience = models.IntegerField(default=0)
 
     @property
     def user_id(self):

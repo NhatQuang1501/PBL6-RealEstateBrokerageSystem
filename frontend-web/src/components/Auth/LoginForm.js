@@ -38,7 +38,8 @@ const LoginForm = () => {
 
         if (data.data && role === "admin") {
           setName(data.data.username);
-          setId(data.data.user_id);
+          setId(data.user_id);
+          console.log("Id: ", data.user_id);
         } else if (data.data && role === "user") {
           setName(data.data.user.username);
           setId(data.data.user_id);
@@ -119,16 +120,14 @@ const LoginForm = () => {
               </button>
             </div>
             <p
-              className="text-red-500 pt-1 font-semibold "
-              style={{
-                height: "0.5rem",
-              }}
+              className="text-red-500 pt-1 font-semibold text-center mt-5"
+              
               dangerouslySetInnerHTML={{ __html: error }}
             ></p>
           </form>
         </div>
 
-        <div className="w-1/2 bg-[#3CA9F9] text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
+        <div className="w-1/2 bg-blue-500 text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
           <h2 className="text-2xl font-bold mb-4">Chào mừng trở lại</h2>
           <p className="mb-6 text-[14px]">
             Hãy đăng nhập để tiếp tục Hoặc đăng ký nếu bạn chưa có tài khoản

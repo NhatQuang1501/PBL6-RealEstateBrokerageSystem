@@ -18,16 +18,21 @@ import Error from "./components/error/error";
 
 import PersonalProfile from "./pages/user/PersonalProfile";
 
-import ChatPage from "./components/ChatBox/ChatPage";
-
 import UpdatePost from "./pages/user/UpdatePost";
 import UpdateProfile from "./pages/user/UpdateProfile";
 import UploadImage from "./pages/user/UploadImage";
 import { useState } from "react";
-import ViewPersonProfile from "./pages/user/ViewPersonProfile";
+import PostDetailAdmin from "./pages/Admin/DetailPost/PostDetailAdmin";
+import Chat from "./pages/user/Chat";
+import Predict from "./pages/user/Predict";
+import ReportDetail from "./pages/Admin/ManageReport/ReportDetail";
 
 function App() {
   const [searchValue, setSearchValue] = useState("");
+  const [filterStatusValue, setFilterStatusValue] = useState("");
+  const [filterPriceValue, setFilterPriceValue] = useState("");
+  const [filterAreaValue, setFilterAreaValue] = useState("");
+  const [typePost, setTypePost] = useState("");
 
   return (
     <AppProvider>
@@ -40,8 +45,20 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage setSearchValue={setSearchValue} />
-                  <MainPageUser searchValue={searchValue} />
+                  <HeroPage
+                    setSearchValue={setSearchValue}
+                    setFilterStatusValue={setFilterStatusValue}
+                    setFilterPriceValue={setFilterPriceValue}
+                    setFilterAreaValue={setFilterAreaValue}
+                    setTypePost={setTypePost}
+                  />
+                  <MainPageUser
+                    searchValue={searchValue}
+                    filterStatusValue={filterStatusValue}
+                    filterPriceValue={filterPriceValue}
+                    filterAreaValue={filterAreaValue}
+                    typePost={typePost}
+                  />
                   <Footer />
                 </>
               }
@@ -74,8 +91,20 @@ function App() {
               element={
                 <>
                   <Header />
-                  <HeroPage setSearchValue={setSearchValue} />
-                  <MainPageUser searchValue={searchValue} />
+                  <HeroPage
+                    setSearchValue={setSearchValue}
+                    setFilterStatusValue={setFilterStatusValue}
+                    setFilterPriceValue={setFilterPriceValue}
+                    setFilterAreaValue={setFilterAreaValue}
+                    setTypePost={setTypePost}
+                  />
+                  <MainPageUser
+                    searchValue={searchValue}
+                    filterStatusValue={filterStatusValue}
+                    filterPriceValue={filterPriceValue}
+                    filterAreaValue={filterAreaValue}
+                    typePost={typePost}
+                  />
                   <Footer />
                 </>
               }
@@ -144,10 +173,11 @@ function App() {
             />
 
             <Route
-              path="user/chat-box"
+              path="/user/chat"
               element={
                 <>
-                  <ChatPage />
+                  <Header />
+                  <Chat />
                 </>
               }
             />
@@ -157,14 +187,31 @@ function App() {
               element={
                 <>
                   <Header />
-                  <ViewPersonProfile />
+                  <PersonalProfile />
                   <Footer />
+                </>
+              }
+            />
+
+            <Route
+              path="user/predict"
+              element={
+                <>
+                  <Predict />
                 </>
               }
             />
 
             {/* Admin*/}
             <Route path="admin/dashboard" element={<Adminpage />} />
+            <Route
+              path="/admin/detail-post/:postId"
+              element={<PostDetailAdmin />}
+            />
+            <Route
+              path="/admin/detail-report/:reportId"
+              element={<ReportDetail />}
+            />
 
             <Route path="*" element={<Error />} />
           </Routes>

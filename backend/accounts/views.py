@@ -1,20 +1,35 @@
-import jwt
 from django.conf import settings
-from rest_framework import status, serializers, views
+from django.contrib.auth import logout
+from rest_framework import status, serializers, views, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from application.utils import PaginatedAPIView
 from .serializers import *
 from .models import *
 from .utils import *
 import logging
 from django.db.models import Q
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from .permission import *
 from rest_framework.permissions import IsAuthenticated
 from django.views.generic import View
-from django.shortcuts import render
-from rest_framework_simplejwt.tokens import AccessToken
+from django.utils import timezone
+from datetime import datetime, timedelta
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import (
+    smart_str,
+    force_str,
+    smart_bytes,
+    DjangoUnicodeDecodeError,
+)
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.urls import reverse
+from .utils import send_email_async
 
 
 class BaseView(APIView):
@@ -24,7 +39,6 @@ class BaseView(APIView):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-
         return [permission() for permission in self.permission_classes]
 
     def get(self, request, pk=None):
@@ -72,7 +86,7 @@ class BaseView(APIView):
     def put(self, request, pk):
         user = get_object_or_404(User, user_id=pk)
         instance = get_object_or_404(self.model, user=user)
-        serializer = self.serializer(instance, data=request.data)
+        serializer = self.serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
             serializer.save()
@@ -98,8 +112,15 @@ class BaseView(APIView):
         user.delete()
 
         return Response(
-            {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa người dùng thành công"}, status=status.HTTP_200_OK
         )
+
+
+class UserView(BaseView):
+    model = UserProfile
+    serializer = UserProfileSerializer
+    admin_serializer = UserSerializer
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
 
 class RegisterView(APIView):
@@ -107,6 +128,8 @@ class RegisterView(APIView):
     default_error_message = {
         "username": "Username phải chứa ít nhất một ký tự chữ cái",
         "password": "Password phải chứa ít nhất một ký tự chữ cái",
+        "email_exists": "Email đã được sử dụng.",
+        "username_exists": "Username đã được sử dụng.",
     }
 
     def post(self, request):
@@ -120,10 +143,29 @@ class RegisterView(APIView):
             )
 
         if not any(char.isalpha() for char in user_data.get("username", "")):
-            raise serializers.ValidationError(self.default_error_message["username"])
+            return Response(
+                {"error": self.default_error_message["username"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not any(char.isalpha() for char in user_data.get("password", "")):
-            raise serializers.ValidationError(self.default_error_message["password"])
+            return Response(
+                {"error": self.default_error_message["password"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Kiểm tra xem email và username đã tồn tại chưa
+        if User.objects.filter(email=user_data.get("email")).exists():
+            return Response(
+                {"error": self.default_error_message["email_exists"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(username=user_data.get("username")).exists():
+            return Response(
+                {"error": self.default_error_message["username_exists"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Kiểm tra vai trò hợp lệ
         role = user_data.get("role")
@@ -222,6 +264,12 @@ class LoginView(APIView):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
+                if user.is_locked:
+                    return Response(
+                        {"message": "Tài khoản đã bị khóa"},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
                 token = get_tokens_for_user(user)
                 role = user.role
 
@@ -231,11 +279,13 @@ class LoginView(APIView):
                     serializer = UserProfileSerializer(user_profile)
                 elif role == "admin":
                     serializer = UserSerializer(user)
+                    serializer.data["user_id"] = str(user.user_id)
 
                 # Trả về thông tin đăng nhập thành công cùng với token
                 return Response(
                     {
                         "message": "Đăng nhập thành công",
+                        "user_id": str(user.user_id) if role == "admin" else None,
                         "data": serializer.data,
                         "role": role,
                         "tokens": token,
@@ -256,7 +306,7 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
 
     def post(self, request):
         try:
@@ -267,6 +317,27 @@ class LogoutView(APIView):
             return Response(
                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+    # def post(self, request):
+    #     try:
+    #         refresh_token = request.data.get("refresh", None)
+    #         if refresh_token is None:
+    #             return Response(
+    #                 {"message": "Token refresh không được cung cấp"},
+    #                 status=status.HTTP_400_BAD_REQUEST,
+    #             )
+
+    #         # Kiểm tra và blacklist token refresh
+    #         token = RefreshToken(refresh_token)
+    #         token.blacklist()
+
+    #         return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
+    #     except TokenError as e:
+    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    #     except Exception as e:
+    #         return Response(
+    #             {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+    #         )
 
 
 class VerifyEmailView(View):
@@ -330,13 +401,6 @@ class ReverifyEmailView(APIView):
             )
 
 
-class UserView(BaseView):
-    model = UserProfile
-    serializer = UserProfileSerializer
-    admin_serializer = UserSerializer
-    permission_classes = [IsAuthenticated, IsUser]
-
-
 class AvatarView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
@@ -360,7 +424,7 @@ class AvatarView(APIView):
                 {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
                 status=status.HTTP_200_OK,
             )
-    
+
     def get(self, request, pk=None):
         user = request.user
         if pk:
@@ -371,11 +435,13 @@ class AvatarView(APIView):
             {"avatar_url": avatar_url},
             status=status.HTTP_200_OK,
         )
-    
+
     def put(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
-        serializers = UserProfileSerializer(user_profile, data=request.data, partial=True)
+        serializers = UserProfileSerializer(
+            user_profile, data=request.data, partial=True
+        )
         if serializers.is_valid():
             serializers.save()
             avatar_url = request.build_absolute_uri(serializers.instance.avatar.url)
@@ -387,12 +453,385 @@ class AvatarView(APIView):
             {"message": "Cập nhật avatar thất bại", "error": serializers.errors},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    
+
     def delete(self, request):
         user = request.user
         user_profile = UserProfile.objects.get(user=user)
         user_profile.avatar.delete(save=True)
         return Response(
             {"message": "Avatar đã được xóa"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=status.HTTP_200_OK,
+        )
+
+
+class WelcomeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response(
+            {
+                "message": "Chào mừng bạn đến với Sweet Home! - Hệ thống mạng xã hội và môi giới bất động sản"
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class LockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        locked_users = (
+            User.objects.filter(is_locked=True)
+            .select_related("profile")
+            .order_by("-created_at")
+        )
+        results = []
+
+        for user in locked_users:
+            user_data = UserSerializer(user).data
+            user_profile_data = (
+                UserProfileSerializer(user.profile).data
+                if hasattr(user, "profile")
+                else {}
+            )
+
+            # Thêm thông tin về khóa tài khoản
+            lock_info = {
+                "is_locked": user.is_locked,
+                "locked_reason": user.locked_reason,
+                "locked_date": user.locked_date,
+                "unlocked_date": user.unlocked_date,
+            }
+
+            # Kết hợp tất cả thông tin
+            combined_data = {
+                **user_data,
+                "profile": user_profile_data,
+                "lock_info": lock_info,
+            }
+            results.append(combined_data)
+
+        return Response(
+            {"count": len(results), "data": results},
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+        locked_date = datetime.now()
+        unlock_date_str = request.data.get("unlocked_date")
+        locked_reason = request.data.get("locked_reason", None)
+
+        if not unlock_date_str:
+            unlocked_date = timezone.now() + timedelta(days=100)
+        else:
+            try:
+                unlocked_date = datetime.strptime(unlock_date_str, "%Y-%m-%d %H:%M:%S")
+                unlocked_date = timezone.make_aware(
+                    unlocked_date, timezone.get_current_timezone()
+                )
+            except ValueError:
+                return Response(
+                    {
+                        "error": "Thời gian khóa không đúng định dạng. Định dạng đúng là YYYY-MM-DD HH:MM:SS"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if unlocked_date < timezone.now():
+            return Response(
+                {"error": "Thời gian mở khóa phải sau thời điểm hiện tại"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not locked_reason:
+            return Response(
+                {"error": "Hãy cung cấp lý do khóa tài khoản"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user.is_locked:
+            return Response(
+                {"error": "Tài khoản này đã bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_locked = True
+        user.locked_date = locked_date
+        user.unlocked_date = unlocked_date
+        user.locked_reason = locked_reason
+        user.save()
+
+        send_email_account_lock(user, locked_reason, locked_date, unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã bị khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class UnlockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+
+        if not user.is_locked:
+            return Response(
+                {"error": "Tài khoản này chưa bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        early_unlocked_date = datetime.now()
+
+        user.is_locked = False
+        user.locked_date = None
+        user.unlocked_date = None
+        user.locked_reason = None
+        user.save()
+
+        send_email_account_unlock(user, early_unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã được mở khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class LockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        locked_users = (
+            User.objects.filter(is_locked=True)
+            .select_related("profile")
+            .order_by("-created_at")
+        )
+        results = []
+
+        for user in locked_users:
+            user_data = UserSerializer(user).data
+            user_profile_data = (
+                UserProfileSerializer(user.profile).data
+                if hasattr(user, "profile")
+                else {}
+            )
+
+            # Thêm thông tin về khóa tài khoản
+            lock_info = {
+                "is_locked": user.is_locked,
+                "locked_reason": user.locked_reason,
+                "locked_date": user.locked_date,
+                "unlocked_date": user.unlocked_date,
+            }
+
+            # Kết hợp tất cả thông tin
+            combined_data = {
+                **user_data,
+                "profile": user_profile_data,
+                "lock_info": lock_info,
+            }
+            results.append(combined_data)
+
+        return Response(
+            {"count": len(results), "data": results},
+            status=status.HTTP_200_OK,
+        )
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+        locked_date = datetime.now()
+        unlock_date_str = request.data.get("unlocked_date")
+        locked_reason = request.data.get("locked_reason", None)
+
+        if not unlock_date_str:
+            unlocked_date = timezone.now() + timedelta(days=100)
+        else:
+            try:
+                unlocked_date = datetime.strptime(unlock_date_str, "%Y-%m-%d %H:%M:%S")
+                unlocked_date = timezone.make_aware(
+                    unlocked_date, timezone.get_current_timezone()
+                )
+            except ValueError:
+                return Response(
+                    {
+                        "error": "Thời gian khóa không đúng định dạng. Định dạng đúng là YYYY-MM-DD HH:MM:SS"
+                    },
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        if unlocked_date < timezone.now():
+            return Response(
+                {"error": "Thời gian mở khóa phải sau thời điểm hiện tại"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not locked_reason:
+            return Response(
+                {"error": "Hãy cung cấp lý do khóa tài khoản"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if user.is_locked:
+            return Response(
+                {"error": "Tài khoản này đã bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_locked = True
+        user.locked_date = locked_date
+        user.unlocked_date = unlocked_date
+        user.locked_reason = locked_reason
+        user.save()
+
+        send_email_account_lock(user, locked_reason, locked_date, unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã bị khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class UnlockUserView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def post(self, request, user_id):
+        user = get_object_or_404(User, user_id=user_id)
+
+        if not user.is_locked:
+            return Response(
+                {"error": "Tài khoản này chưa bị khóa"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        early_unlocked_date = datetime.now()
+
+        user.is_locked = False
+        user.locked_date = None
+        user.unlocked_date = None
+        user.locked_reason = None
+        user.save()
+
+        send_email_account_unlock(user, early_unlocked_date)
+
+        return Response(
+            {"message": f"Tài khoản của người dùng {user.username} đã được mở khóa"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class AdminPostCommentView(APIView):
+    permission_classes = [IsAuthenticated, IsAdmin]
+
+    def put(self, request, pk):
+        comment = get_object_or_404(PostComment, comment_id=pk)
+        comment.is_report_removed = True
+        comment.save()
+        return Response(
+            {"message": "Ẩn bình luận thành công"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated, IsAdminOrUser]
+
+    def post(self, request):
+        user = request.user
+        old_password = request.data.get("old_password")
+        new_password = request.data.get("new_password")
+
+        if not user.check_password(old_password):
+            return Response(
+                {"message": "Mật khẩu không chính xác"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if old_password == new_password:
+            return Response(
+                {"message": "Mật khẩu mới không được giống mật khẩu cũ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {"message": "Đổi mật khẩu thành công"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class RequestPasswordResetEmail(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = ResetPasswordEmailRequestSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        email = request.data.get("email", None)
+
+        if not User.objects.filter(email=email).exists():
+            return Response(
+                {"error": "Không tìm thấy tài khoản với email này"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        else:
+            user = User.objects.get(email=email)
+            if user.is_locked:
+                return Response(
+                    {"error": "Tài khoản của bạn đã bị khóa"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            uidb64 = urlsafe_base64_encode(smart_bytes(user.user_id))
+            token = PasswordResetTokenGenerator().make_token(user)
+            current_site = get_current_site(request=request).domain
+            relativeLink = reverse(
+                "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
+            )
+            absurl = f"http://{current_site}{relativeLink}"
+            email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
+            send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)
+        return Response(
+            {"message": "Email reset mật khẩu đã được gửi"},
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordTokenCheckAPI(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, uidb64, token):
+        try:
+            id = smart_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(user_id=id)
+
+            if not PasswordResetTokenGenerator().check_token(user, token):
+                return Response(
+                    {"error": "Token không hợp lệ"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            return Response(
+                {"message": "Token hợp lệ", "uidb64": uidb64, "token": token},
+                status=status.HTTP_200_OK,
+            )
+
+        except DjangoUnicodeDecodeError as identifier:
+            return Response(
+                {"error": str(identifier), "message": "Token không hợp lệ"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+class SetNewPasswordAPIView(generics.GenericAPIView):
+    permission_classes = [AllowAny]
+    serializer_class = SetNewPasswordSerializer
+
+    def patch(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(
+            {"message": "Mật khẩu đã được đặt lại"},
+            status=status.HTTP_200_OK,
         )

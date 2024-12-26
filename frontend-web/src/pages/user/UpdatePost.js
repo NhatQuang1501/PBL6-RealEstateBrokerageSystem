@@ -22,6 +22,9 @@ import {
   faCity,
   faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import MapUpdate from "../../components/map_api/MapUpdate";
 
 const UpdatePost = () => {
   const { sessionToken } = useAppContext();
@@ -41,6 +44,9 @@ const UpdatePost = () => {
   const [description, setDescription] = useState("");
   const [saleStatus, setSaleStatus] = useState("");
   const { postId } = useParams();
+  const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [estateType, setEstateType] = useState("");
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -76,6 +82,9 @@ const UpdatePost = () => {
         setCity(data.city);
         setDescription(data.description);
         setSaleStatus(data.sale_status);
+        setLongitude(data.longitude);
+        setLatitude(data.latitude);
+        setEstateType(data.estate_type);
       } catch (error) {
         console.error("Error fetching post:", error);
       }
@@ -100,6 +109,8 @@ const UpdatePost = () => {
       city,
       description,
       sale_status: saleStatus,
+      longitude,
+      latitude,
     };
 
     try {
@@ -119,10 +130,21 @@ const UpdatePost = () => {
         navigate(`/user/detail-post/${postId}`);
       } else {
         console.error("Failed to update the post");
+        alert("Cập nhật bài đăng thất bại !");
       }
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCoordinatesChange = (lng, lat) => {
+    setLongitude(lng);
+    setLatitude(lat);
+  };
+
+  const handleConfirmedCoordinates = (lng, lat) => {
+    setLongitude(lng);
+    setLatitude(lat);
   };
 
   return (
@@ -162,7 +184,7 @@ const UpdatePost = () => {
                 Nhập tình trạng bán
               </option>
               <option value="Đang bán">Đang bán</option>
-              <option value="Đang thương lượng">Đang thương lượng</option>
+              {/* <option value="Đang thương lượng">Đang thương lượng</option> */}
               <option value="Đã cọc">Đã cọc</option>
               <option value="Đã bán">Đã bán</option>
             </select>
@@ -172,7 +194,7 @@ const UpdatePost = () => {
         <div className="grid grid-cols-2 gap-10 pt-5">
           {[
             {
-              label: "Giá",
+              label: "Giá (VNĐ)",
               icon: faDollarSign,
               color: "text-yellow-600",
               bg: "bg-yellow-100",
@@ -324,7 +346,7 @@ const UpdatePost = () => {
                   ))}
                 </select>
               )}
-              {field.type === "number" && (
+              {field.type === "number" && field.label === "Giá (VNĐ)" && (
                 <input
                   type="number"
                   min="0"
@@ -334,26 +356,105 @@ const UpdatePost = () => {
                   className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
                 />
               )}
+              {field.type === "number" && field.label === "Diện tích" && (
+                <input
+                  type="number"
+                  min="0"
+                  placeholder={field.label}
+                  value={field.value}
+                  onChange={(e) => field.setter(e.target.value)}
+                  className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+                />
+              )}
+              {field.type === "number" && field.label === "Mặt tiền" && (
+                <input
+                  type="number"
+                  min="0"
+                  placeholder={field.label}
+                  value={field.value}
+                  onChange={(e) => field.setter(e.target.value)}
+                  className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+                />
+              )}
+              {field.type === "number" &&
+                field.label === "Số phòng ngủ" &&
+                estateType === "Nhà" && (
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder={field.label}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
+                    className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+                  />
+                )}
+              {field.type === "number" &&
+                field.label === "Số phòng tắm" &&
+                estateType === "Nhà" && (
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder={field.label}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
+                    className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+                  />
+                )}
+              {field.type === "number" &&
+                field.label === "Số tầng" &&
+                estateType === "Nhà" && (
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder={field.label}
+                    value={field.value}
+                    onChange={(e) => field.setter(e.target.value)}
+                    className="input-style border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+                  />
+                )}
             </div>
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="bg-gray-200 text-gray-700 rounded-full p-2">
-            <FontAwesomeIcon icon={faInfoCircle} />
+        <div className="flex flex-col items-center justify-center gap-3">
+          <div className="flex items-center gap-3 justify-center bg-blue-100 px-5 py-2 rounded-2xl">
+            <div className="bg-white text-blue-600 rounded-full p-2">
+              <FontAwesomeIcon icon={faInfoCircle} />
+            </div>
+            <label className="text-blue-600 font-bold text-center">Mô tả</label>
           </div>
-          <label className="text-gray-700 font-bold w-1/6">Mô tả</label>
-          <textarea
-            placeholder="Nhập mô tả chi tiết"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="input-style h-32 border-gray-300 border-[1px] border-double p-2 rounded-lg bg-blue-50 focus:border-blue-400 focus:bg-white flex-grow"
+
+          <div className="w-full">
+            <ReactQuill
+              value={description}
+              onChange={setDescription}
+              placeholder="Nhập mô tả chi tiết"
+              className="h-[50rem] overflow-y-auto mb-[5rem] border-gray-300 border-[1px] border-double p-2 rounded-lg focus:border-blue-400"
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center gap-3 ">
+          <div className="flex items-center gap-3 justify-center bg-red-100 px-5 py-2 rounded-2xl mb-[-3rem]">
+            <div className="bg-white text-red-700 rounded-full p-2">
+              <FontAwesomeIcon icon={faMapMarkerAlt} />
+            </div>
+            <label className="text-red-700 font-bold text-center">
+              Bản đồ
+            </label>
+          </div>
+          <MapUpdate
+            longitude={post.longitude}
+            latitude={post.latitude}
+            onCoordinatesChange={handleCoordinatesChange}
+            onConfirmedCoordinates={handleConfirmedCoordinates}
           />
         </div>
 
         <ImageCard
-          title="Hình ảnh mô tả:"
-          imageUrl="https://th.bing.com/th/id/OIP.jbWA3pC_GsfnBH5IohOa8gHaFB?rs=1&pid=ImgDetMain"
+          type="detail"
+          postId={postId}
+          // images={images}
         />
 
         <DetailDescription description={description} maxLength={5000000} />

@@ -68,8 +68,7 @@ class Sale_status(Enum):
 
 
 class Legal_status(Enum):
-    REDBOOK = "sổ đỏ", "Sổ đỏ"
-    PINKBOOK = "sổ hồng", "Sổ hồng"
+    REDANDPINKBOOK = "sổ đỏ/sổ hồng", "Sổ đỏ/Sổ hồng"
     NOTYET = "chưa có", "Chưa có"
     OTHER = "khác", "Khác"
 
@@ -78,3 +77,40 @@ class FriendRequest_status(Enum):
     PENDING = "đang chờ", "Đang chờ"
     ACCEPTED = "đã kết bạn", "Đã kết bạn"
     DECLINED = "đã từ chối", "Đã từ chối"
+
+
+class Payment_method(Enum):
+    ONETIME = "một lần", "Một lần"
+    INSTALMENT = "trả góp", "Trả góp"
+    UPFRONT = "trả trước", "Trả trước"
+    OTHER = "khác", "Khác"
+
+
+class ReportType(Enum):
+    POST = "post", "Bài đăng"
+    COMMENT = "comment", "Bình luận"
+    USER = "user", "Người dùng"
+
+
+class HouseType(Enum):
+    STREET = "3", "Nhà mặt phố, mặt tiền"
+    ALLEY = "1", "Nhà ngõ, hẻm"
+    VILLA = "4", "Nhà biệt thự"
+    TOWNHOUSE = "2", "Nhà phố liền kề"
+
+
+class FurnishingSell(Enum):
+    BASIC = "2", "Hoàn thiện cơ bản"
+    UNFURNISHED = "1", "Bàn giao thô"
+    FULL = "3", "Nội thất đầy đủ"
+    LUXURY = "4", "Nội thất cao cấp"
+
+
+class NotificationType:
+    ADMINPOST = "adminpost"
+    POST = "post"
+    REPORT = "report"
+    NEGOTIATION = "negotiation"
+    PROPOSAL = "proposal"
+    CONSIDERATION = "consideration"
+    ACCEPTANCE = "acceptance"

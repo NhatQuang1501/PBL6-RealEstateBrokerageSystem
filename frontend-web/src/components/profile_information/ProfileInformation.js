@@ -3,14 +3,26 @@ import axios from "axios";
 import {
   faEllipsisV,
   faUser,
-  faComment,
   faFlag,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-const ProfileInformation = ({ name, date, user_id }) => {
+import { useAppContext } from "../../AppProvider";
+import ReportPopup from "../report/ReportPopup ";
+import User from "../../assets/image/User.png";
+
+const ProfileInformation = ({ name, date, user_id, post_id }) => {
   let navigate = useNavigate();
+  const { role, sessionToken, id } = useAppContext();
   const [ava, setAva] = useState("");
+  const [isReportOptionsVisible, setIsReportOptionsVisible] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [reportType, setReportType] = useState("");
+  const [reportedUserId, setReportedUserId] = useState(null);
+  const [postId, setPostId] = useState(null);
+  const [commentId, setCommentId] = useState(null);
+
   const postDate = new Date(date);
   const currentDate = new Date();
   const timeDifference = currentDate - postDate; // Thời gian chênh lệch tính bằng milliseconds
@@ -49,7 +61,6 @@ const ProfileInformation = ({ name, date, user_id }) => {
     })}`;
   }
   const [isOpen, setIsOpen] = useState(false);
-
   const menuRef = useRef(null);
 
   const toggleMenu = () => {
@@ -98,14 +109,31 @@ const ProfileInformation = ({ name, date, user_id }) => {
     navigate(`/user/profile/${user_id}`);
   };
 
+  // Report
+  const toggleReportOptions = () => {
+    setIsReportOptionsVisible(!isReportOptionsVisible);
+  };
+
+  const openReportPopup = (type) => {
+    setReportType(type);
+    setReportedUserId(user_id);
+    setPostId(type === "post" ? post_id : null);
+    setCommentId(type === "comment" ? "67890" : null);
+    setIsPopupOpen(true);
+  };
+
+  const closeReportPopup = () => {
+    setIsPopupOpen(false);
+  };
+
   return (
     <div>
       {/* Profile Info */}
 
       <div className="flex items-center mt-1">
         <img
-          className="w-10 h-10 rounded-full mr-3 object-contain bg-gray-500"
-          src={ava}
+          className="w-10 h-10 rounded-full mr-3 object-cover"
+          src={ava ? ava : User}
           alt="avatar"
         />
         <div className="flex flex-col ">
@@ -115,41 +143,99 @@ const ProfileInformation = ({ name, date, user_id }) => {
           </p>
         </div>
 
-        <div className="relative flex items-center  ml-9">
-          {/* Icon dấu ba chấm dọc */}
-          <button onClick={toggleMenu} className="focus:outline-none p-3">
-            <FontAwesomeIcon
-              icon={faEllipsisV}
-              className="text-gray-600 text-xl cursor-pointer opacity-50"
-            />
-          </button>
+        {sessionToken && user_id !== id && (
+          <div className="relative flex items-center ml-9">
+            {/* Icon dấu ba chấm dọc */}
+            <button onClick={toggleMenu} className="focus:outline-none p-3">
+              <FontAwesomeIcon
+                icon={faEllipsisV}
+                className="text-gray-600 text-xl cursor-pointer opacity-50"
+              />
+            </button>
 
-          {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
-          {isOpen && (
-            <div
-              ref={menuRef}
-              className="absolute left-5 bottom-3 mt-2 w-56 p-2 bg-white border border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
-            >
-              <button
-                className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
-                onClick={() => {
-                  handlePersonalProfileClick(user_id);
-                }}
+            {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
+            {isOpen && role !== "admin" && (
+              <div
+                ref={menuRef}
+                className="absolute left-5 bottom-3 mt-2 w-[18rem] font-semibold p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
               >
-                <FontAwesomeIcon icon={faUser} className="text-blue-500" />
-                <span className="text-gray-700">Thông tin cá nhân</span>
-              </button>
-              <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
-                <FontAwesomeIcon icon={faComment} className="text-green-500" />
-                <span className="text-gray-700">Nhắn tin với người này</span>
-              </button>
-              <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
-                <FontAwesomeIcon icon={faFlag} className="text-red-500" />
-                <span className="text-gray-700">Báo cáo</span>
-              </button>
-            </div>
-          )}
-        </div>
+                <button
+                  className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                  onClick={() => {
+                    handlePersonalProfileClick(user_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                  <span className="text-gray-700">Thông tin cá nhân</span>
+                </button>
+
+                <div className="relative">
+                  <button
+                    className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                    onClick={toggleReportOptions}
+                  >
+                    <FontAwesomeIcon icon={faFlag} className="text-red-500" />
+                    <span className="text-gray-700">Báo cáo</span>
+                  </button>
+
+                  {isReportOptionsVisible && (
+                    <div className="w-full bg-blue-50 border border-gray-300 rounded-md shadow-lg z-50">
+                      <button
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                        onClick={() => openReportPopup("user")}
+                      >
+                        Báo cáo người dùng
+                      </button>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-200"
+                        onClick={() => openReportPopup("post")}
+                      >
+                        Báo cáo bài đăng
+                      </button>
+                      <ReportPopup
+                        isOpen={isPopupOpen}
+                        onClose={closeReportPopup}
+                        reportType={reportType}
+                        reportedUserId={reportedUserId}
+                        postId={postId}
+                        commentId={commentId}
+                        reporteeId={id}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            {isOpen && role === "admin" && (
+              <div
+                ref={menuRef}
+                className="absolute left-5 bottom-3 mt-2 w-[18rem] p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+              >
+                <button
+                  className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                  onClick={() => {
+                    handlePersonalProfileClick(user_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                  <span className="text-gray-700 font-semibold">
+                    Thông tin cá nhân
+                  </span>
+                </button>
+                {/* <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                  <FontAwesomeIcon icon={faLock} className="text-gray-500" />
+                  <span className="text-gray-700">Khóa tài khoản này</span>
+                </button> */}
+                <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                  <FontAwesomeIcon icon={faTrash} className="text-red-500" />
+                  <span className="text-gray-700 font-semibold">
+                    Xóa bài đăng
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

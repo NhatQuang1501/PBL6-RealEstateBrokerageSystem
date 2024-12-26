@@ -4,10 +4,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f6f6f6;
-
 }
 ::-webkit-scrollbar {
-  width: 3px; /* Độ rộng của thanh cuộn */
+  width: 5px; /* Độ rộng của thanh cuộn */
 }
 
 ::-webkit-scrollbar-track {
@@ -16,7 +15,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3CA9F9; /* Màu của thanh cuộn */
+  background: gray; /* Màu của thanh cuộn */
   border-radius: 10px; /* Bo góc cho thanh cuộn */
 }
 
@@ -61,3 +60,47 @@
     transform: rotate(360deg);
   }
 }
+
+/* glossy */
+/* @keyframes glossyAnimation {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.glossy-effect {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(110deg, #fde68a, #fca5a5, #fdba74);
+  background-size: 200% 200%;
+  animation: glossyAnimation 3s infinite linear;
+}
+
+.glossy-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 150%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  animation: glossEffect 2.5s infinite linear;
+}
+
+@keyframes glossEffect {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+} */
+
