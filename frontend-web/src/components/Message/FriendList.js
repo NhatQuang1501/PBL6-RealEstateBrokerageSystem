@@ -122,8 +122,8 @@ export default function FriendList({ selectFriend }) {
   return (
     <div className="flex flex-col w-[30rem] gap-5 overflow-y-auto">
       {/* Danh sách người mua */}
-      <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
-        <h2 className="text-lg mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
+      <div className="bg-white text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
+        <h2 className=" mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người mua ({buyers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
@@ -135,7 +135,7 @@ export default function FriendList({ selectFriend }) {
             return (
               <div
                 key={participant.chatroom_id}
-                className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-semibold relative shadow-md"
+                className="p-2 rounded-lg flex items-center bg-gray-200 text-black font-semibold relative shadow-md border-[1px] border-gray-300 border-solid"
               >
                 {/* Avatar */}
                 <img
@@ -145,7 +145,7 @@ export default function FriendList({ selectFriend }) {
                       : User
                   }
                   alt={`${participant.username} avatar`}
-                  className="w-12 h-12 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
+                  className="w-10 h-10 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
                   onClick={() => toggleMenu(participant.user_id)}
                   data-userid={participant.user_id}
                   aria-label={`${participant.username}'s avatar`}
@@ -153,7 +153,7 @@ export default function FriendList({ selectFriend }) {
 
                 {/* Username */}
                 <p
-                  className="flex-1 truncate"
+                  className="flex-1 truncate text-sm"
                   onMouseEnter={(e) => showTooltip(participant.username, e)}
                   onMouseLeave={hideTooltip}
                 >
@@ -162,7 +162,7 @@ export default function FriendList({ selectFriend }) {
 
                 {/* Chat Button */}
                 <button
-                  className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
+                  className="ml-auto bg-gradient-to-r from-blue-400 to-blue-500 text-white text-sm p-1 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
                   onClick={() =>
                     selectFriend(
                       participant.chatroom_id,
@@ -227,8 +227,8 @@ export default function FriendList({ selectFriend }) {
       </div>
 
       {/* Danh sách người bán */}
-      <div className="bg-gray-100 text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
-        <h2 className="text-lg mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
+      <div className="bg-white text-black p-6 rounded-lg shadow-lg h-[50rem] overflow-y-auto border-solid border-gray-300 border-[1px]">
+        <h2 className="mb-4 font-bold text-center text-black border-solid border-gray-300 border-b-[2px] pb-2">
           Danh sách người bán ({sellers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
@@ -240,7 +240,7 @@ export default function FriendList({ selectFriend }) {
             return (
               <div
                 key={participant.chatroom_id}
-                className="p-4 rounded-lg flex items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2] text-black font-semibold relative shadow-md"
+                className="p-2 rounded-lg flex items-center bg-gray-200 text-black font-semibold relative shadow-md border-[1px] border-gray-300 border-solid"
               >
                 {/* Avatar */}
                 <img
@@ -250,7 +250,7 @@ export default function FriendList({ selectFriend }) {
                       : User
                   }
                   alt={`${participant.username} avatar`}
-                  className="w-12 h-12 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
+                  className="w-10 h-10 rounded-full mr-4 object-cover bg-slate-200 border-[1px] border-[#3CA9F9] cursor-pointer"
                   onClick={() => toggleMenu(participant.user_id)}
                   data-userid={participant.user_id}
                   aria-label={`${participant.username}'s avatar`}
@@ -258,7 +258,7 @@ export default function FriendList({ selectFriend }) {
 
                 {/* Username */}
                 <p
-                  className="flex-1 truncate"
+                  className="flex-1 truncate text-sm"
                   onMouseEnter={(e) => showTooltip(participant.username, e)}
                   onMouseLeave={hideTooltip}
                 >
@@ -267,7 +267,7 @@ export default function FriendList({ selectFriend }) {
 
                 {/* Chat Button */}
                 <button
-                  className="ml-auto bg-gradient-to-r from-blue-400 to-blue-600 text-white p-2 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-700 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
+                  className="ml-auto bg-gradient-to-r from-blue-400 to-blue-500 text-white text-sm p-1 rounded-lg shadow-lg hover:shadow-xl hover:from-blue-500 hover:to-blue-600 transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center"
                   onClick={() =>
                     selectFriend(
                       participant.chatroom_id,

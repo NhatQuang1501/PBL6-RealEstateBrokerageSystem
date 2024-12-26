@@ -49,7 +49,7 @@ const HeroSection = ({
 
   const handleSearchSubmit = () => {
     setSearchValue(inputValue);
-    alert(`Đang tìm kiếm theo: ${inputValue}`);
+    setIsPopupOpen(false);
     window.scrollBy({
       top: 300,
       behavior: "smooth",
@@ -108,6 +108,16 @@ const HeroSection = ({
             <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-500 border-double">
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
+                  type === ""
+                    ? "bg-blue-500 text-white scale-105"
+                    : "text-black hover:bg-blue-500 hover:text-white"
+                }`}
+                onClick={() => setType("")}
+              >
+                Tất cả
+              </button>
+              <button
+                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "house"
                     ? "bg-blue-500 text-white scale-105"
                     : "text-black hover:bg-blue-500 hover:text-white"
@@ -125,16 +135,6 @@ const HeroSection = ({
                 onClick={() => setType("land")}
               >
                 Đất
-              </button>
-              <button
-                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
-                  type === "news"
-                    ? "bg-blue-500 text-white scale-105"
-                    : "text-black hover:bg-blue-500 hover:text-white"
-                }`}
-                onClick={() => setType("news")}
-              >
-                Tin tức
               </button>
             </div>
 
@@ -187,8 +187,19 @@ const HeroSection = ({
                             type="text"
                             value={popupValue}
                             onChange={handlePopupChange}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                // Create synthetic event object
+                                const syntheticEvent = {
+                                  target: e.target,
+                                  currentTarget: e.currentTarget,
+                                };
+                                handleOutsideClick(syntheticEvent);
+                              }
+                            }}
                             placeholder="Nhập nội dung tìm kiếm..."
                             className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                            autoFocus
                           />
                         </div>
 

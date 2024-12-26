@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import User from "../../../assets/image/User.png";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
@@ -109,7 +110,12 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        src={`http://127.0.0.1:8000${report.reportee_avt}`}
+                        // src={`http://127.0.0.1:8000${report.reportee_avt}`}
+                        src={
+                          report.reportee_avt
+                            ? `http://127.0.0.1:8000${report.reportee_avt}`
+                            : User
+                        }
                         alt={report.reportee_name}
                         className="w-14 h-14 rounded-full mr-4 object-cover border-2 border-blue-400"
                       />
@@ -134,7 +140,12 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        src={`http://127.0.0.1:8000${report.reported_user_avt}`}
+                        // src={`http://127.0.0.1:8000${report.reported_user_avt}`}
+                        src={
+                          report.reported_user_avt
+                            ? `http://127.0.0.1:8000${report.reported_user_avt}`
+                            : User
+                        }
                         alt={report.reported_user_name}
                         className="w-14 h-14 rounded-full mr-4 object-cover border-2 border-red-400"
                       />

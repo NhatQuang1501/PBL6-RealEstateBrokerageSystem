@@ -9,6 +9,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
+import User from "../../assets/image/User.png";
 
 const NotifyAdmin = () => {
   const [notifications, setNotifications] = useState([]);
@@ -140,13 +141,23 @@ const NotifyAdmin = () => {
                 >
                   {notification.data.additional_info?.post_id ? (
                     <img
-                      src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      // src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      src={
+                        notification.data.additional_info.author_avatar
+                          ? `http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`
+                          : User
+                      }
                       alt="Avatar"
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />
                   ) : (
                     <img
-                      src={`http://127.0.0.1:8000${notification.data.additional_info.reportee_avatar}`}
+                      // src={`http://127.0.0.1:8000${notification.data.additional_info.reportee_avatar}`}
+                      src={
+                        notification.data.additional_info.reportee_avatar
+                          ? `http://127.0.0.1:8000${notification.data.additional_info.reportee_avatar}`
+                          : User
+                      }
                       alt="Avatar"
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />

@@ -64,6 +64,7 @@ const UpdateProfile = () => {
 
   useEffect(() => {
     fetchUserData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
@@ -10,6 +10,10 @@ function UploadImage() {
   const { postId } = useParams();
   const { sessionToken } = useAppContext();
   let navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   // Handle image selection
   const handleImageChange = (e) => {
@@ -56,7 +60,7 @@ function UploadImage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-blue-200 p-6 font-montserrat">
-      <div className="bg-white shadow-lg rounded-lg p-8 w-[45rem] h-[20rem] mb-[10rem]">
+      <div className="bg-white shadow-lg rounded-lg p-8 w-[45rem] h-[22rem] mb-[10rem]">
         <h2 className="text-2xl font-bold text-center text-black mb-4 border-b-2 border-gray-600 border-solid pb-2">
           Tải Ảnh Lên
         </h2>
@@ -78,14 +82,14 @@ function UploadImage() {
         {/* Upload Button */}
         <button
           onClick={handleUpload}
-          className="w-full bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-blue-500"
+          className="w-full bg-blue-400 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-blue-500"
         >
           Tải Lên
         </button>
         {canBack && (
           <button
             onClick={handleBack}
-            className="w-full bg-[#3CA9F9] text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-gray-400 text-white font-semibold rounded-lg px-4 py-2 mt-4 transition duration-300 ease-in-out transform hover:shadow-lg hover:-translate-y-1 focus:ring-2 focus:ring-blue-500"
           >
             Trở lại xem chi tiết bài đăng
           </button>

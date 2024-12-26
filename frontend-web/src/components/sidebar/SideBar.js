@@ -17,11 +17,65 @@ const SideBar = ({
   setFilterBathroomValue,
   setFilterDistrictValue,
 }) => {
-  const [selectedLegals, setSelectedLegals] = useState([]);
-  const [selectedOrientations, setSelectedOrientations] = useState([]);
-  const [selectedBedrooms, setSelectedBedrooms] = useState([]);
-  const [selectedBathrooms, setSelectedBathrooms] = useState([]);
-  const [selectedDistricts, setSelectedDistricts] = useState([]);
+  const [selectedLegals, setSelectedLegals] = useState(() => {
+    const saved = localStorage.getItem("selectedLegals");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedOrientations, setSelectedOrientations] = useState(() => {
+    const saved = localStorage.getItem("selectedOrientations");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedBedrooms, setSelectedBedrooms] = useState(() => {
+    const saved = localStorage.getItem("selectedBedrooms");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedBathrooms, setSelectedBathrooms] = useState(() => {
+    const saved = localStorage.getItem("selectedBathrooms");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedDistricts, setSelectedDistricts] = useState(() => {
+    const saved = localStorage.getItem("selectedDistricts");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Save to localStorage when filters change
+  useEffect(() => {
+    localStorage.setItem("selectedLegals", JSON.stringify(selectedLegals));
+    setFilterLegalValue(selectedLegals);
+  }, [selectedLegals, setFilterLegalValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedOrientations",
+      JSON.stringify(selectedOrientations)
+    );
+    setFilterOrientationValue(selectedOrientations);
+  }, [selectedOrientations, setFilterOrientationValue]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedBedrooms", JSON.stringify(selectedBedrooms));
+    setFilterBedroomValue(selectedBedrooms);
+  }, [selectedBedrooms, setFilterBedroomValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedBathrooms",
+      JSON.stringify(selectedBathrooms)
+    );
+    setFilterBathroomValue(selectedBathrooms);
+  }, [selectedBathrooms, setFilterBathroomValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedDistricts",
+      JSON.stringify(selectedDistricts)
+    );
+    setFilterDistrictValue(selectedDistricts);
+  }, [selectedDistricts, setFilterDistrictValue]);
 
   const handleFilterLegal = (legal) => {
     setSelectedLegals((prevSelected) => {

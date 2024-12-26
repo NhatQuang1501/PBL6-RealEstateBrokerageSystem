@@ -151,7 +151,12 @@ const NotifyUser = () => {
                     "acceptnegotiation",
                   ].includes(notification.data.additional_info.type) && (
                     <img
-                      src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      // src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      src={
+                        notification.data.additional_info.author_avatar
+                          ? `http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`
+                          : User
+                      }
                       alt="Avatar"
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />
@@ -160,7 +165,12 @@ const NotifyUser = () => {
                     notification.data.additional_info.type
                   ) && (
                     <img
-                      src={`http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`}
+                      // src={`http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`}
+                      src={
+                        notification.data.additional_info.negotiator_avatar
+                          ? `http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`
+                          : User
+                      }
                       alt="Avatar"
                       className="h-12 w-12 rounded-full mr-3 object-cover border-[1px] border-gray-400 border-solid"
                     />

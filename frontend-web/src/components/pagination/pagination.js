@@ -59,7 +59,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
     <div className="flex justify-between items-center mt-2 bg-gray-200 p-2 rounded-lg w-full border-2 border-black">
       <button
-        className="px-4 py-2 bg-gray-300 text-gray-800 rounded-l-lg font-bold"
+        className="px-4 py-2 bg-gray-300 text-gray-800 text-sm rounded-l-lg font-bold"
         onClick={handlePreviousPage}
         disabled={currentPage === 1}
         style={{ minWidth: "100px", textAlign: "center" }}
@@ -67,13 +67,13 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         &lt; Trang trước
       </button>
 
-      <div className="flex-1 flex justify-center mx-4 space-x-10">
+      <div className="flex-1 flex justify-center text-sm mx-4 space-x-10">
         {generatePageNumbers().map((page, index) => (
           <button
             key={index}
             className={`w-12 h-10 flex items-center justify-center rounded-full ${
               currentPage === page
-                ? "bg-blue-500 text-white"
+                ? "bg-blue-400 text-white"
                 : "bg-gray-300 text-gray-800"
             } ${page === "..." ? "cursor-default" : ""}`}
             onClick={() => page !== "..." && updatePage(page)}
@@ -85,7 +85,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       </div>
 
       <button
-        className="px-4 py-2 bg-gray-300 text-gray-800 rounded-r-lg font-bold"
+        className="px-4 py-2 bg-gray-300 text-gray-800 text-sm rounded-r-lg font-bold"
         onClick={handleNextPage}
         disabled={currentPage === totalPages}
         style={{ minWidth: "100px", textAlign: "center" }}

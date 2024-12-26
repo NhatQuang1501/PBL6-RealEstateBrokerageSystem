@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import { useAppContext } from "../../AppProvider";
 import ReportPopup from "../report/ReportPopup ";
+import User from "../../assets/image/User.png";
 
 const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
   const [comment, setComment] = useState("");
@@ -214,7 +215,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
             >
               <div className="flex items-center w-full">
                 <img
-                  src={comment.avatar_url}
+                  src={comment.avatar_url ? comment.avatar_url : User}
                   alt={comment.username}
                   className="w-12 h-12 rounded-full mr-3 object-cover border-gray-100 border-solid border-[1px] bg-gray-500"
                 />

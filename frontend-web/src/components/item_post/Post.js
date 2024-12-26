@@ -32,7 +32,6 @@ import {
 
 import ProfileInformation from "../profile_information/ProfileInformation";
 import { useAppContext } from "../../AppProvider";
-// import DetailDescription from "../detail_description/DetailDescription";
 import axios from "axios";
 import ImageCard from "../image_card/ImageCard";
 import DetailDescription from "../detail_description/DetailDescription";
@@ -69,14 +68,14 @@ function Post({ post, type }) {
     }
   };
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setReactionsCount(post.reactions_count);
-  //     setSavesCount(post.save_count);
-  //   }, 2000);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setReactionsCount(post.reactions_count);
+      setSavesCount(post.save_count);
+    }, 2000);
 
-  //   return () => clearInterval(interval);
-  // }, [post.reactions_count, post.save_count]);
+    return () => clearInterval(interval);
+  }, [post.reactions_count, post.save_count]);
 
   useEffect(() => {
     setIsClicked(false);

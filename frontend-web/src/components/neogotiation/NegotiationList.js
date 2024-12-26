@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import axios from "axios";
@@ -19,11 +20,14 @@ import {
   faTimesCircle,
   faStickyNote,
   faCreditCard,
+  faEllipsisV,
+  faFlag,
 } from "@fortawesome/free-solid-svg-icons";
+import ReportPopup from "../report/ReportPopup ";
 
 const NegotiationList = ({ type }) => {
   const { postId } = useParams();
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
   let navigate = useNavigate();
 
   const [negotiations, setNegotiations] = useState([]);
@@ -41,6 +45,28 @@ const NegotiationList = ({ type }) => {
   const [sortBy, setSortBy] = useState("average_response_time");
   const [order, setOrder] = useState("desc");
   const [amount, setAmount] = useState("5");
+
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+  const [reportType, setReportType] = useState("");
+  const [isReportPopupOpen, setIsReportPopupOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const closeReportPopup = () => {
+    setIsReportPopupOpen(false);
+  };
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
+  };
+
+  const openReportPopup = (type) => {
+    setReportType(type);
+    setIsReportPopupOpen(true);
+  };
 
   useEffect(() => {
     const fetchNegotiations = async () => {
@@ -93,10 +119,10 @@ const NegotiationList = ({ type }) => {
     }
   };
 
-  const openModal = (negotiationId) => {
-    setSelectedNegotiationId(negotiationId);
-    setIsModalOpen(true);
-  };
+  // const openModal = (negotiationId) => {
+  //   setSelectedNegotiationId(negotiationId);
+  //   setIsModalOpen(true);
+  // };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -439,6 +465,70 @@ const NegotiationList = ({ type }) => {
                   <span className="text-sm text-gray-500">
                     (@{negotiation.user?.username || "Chưa có thông tin"})
                   </span>
+                  {sessionToken && negotiation.user.user_id !== id && (
+                    <div className="relative flex items-center ml-9">
+                      {/* Icon dấu ba chấm dọc */}
+                      <button
+                        onClick={toggleMenu}
+                        className="focus:outline-none p-3"
+                      >
+                        <FontAwesomeIcon
+                          icon={faEllipsisV}
+                          className="text-gray-600 text-xl cursor-pointer opacity-50"
+                        />
+                      </button>
+
+                      {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
+                      {isOpen && role !== "admin" && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-5 top-8 mt-2 w-[15rem] text-sm font-semibold p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                        >
+                          <button
+                            className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                            onClick={() => {
+                              handlePersonalProfileClick(
+                                negotiation.user.user_id
+                              );
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faUser}
+                              className="text-blue-500"
+                            />
+                            <span className="text-gray-700">
+                              Thông tin cá nhân
+                            </span>
+                          </button>
+
+                          <div className="relative">
+                            <button
+                              className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                              onClick={() => openReportPopup("user")}
+                            >
+                              <FontAwesomeIcon
+                                icon={faFlag}
+                                className="text-red-500"
+                              />
+                              <span className="text-gray-700">
+                                Báo cáo người dùng
+                              </span>
+                            </button>
+
+                            <ReportPopup
+                              isOpen={isReportPopupOpen}
+                              onClose={closeReportPopup}
+                              reportType={reportType}
+                              reportedUserId={negotiation.user.user_id}
+                              postId={null}
+                              commentId={null}
+                              reporteeId={id}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </h3>
               </div>
 
@@ -884,19 +974,19 @@ const NegotiationList = ({ type }) => {
               <div className="flex justify-center gap-4">
                 <button
                   type="button"
+                  className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                  onClick={closeModalViewProposal}
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
                   className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300 ease-in-out"
                   onClick={() =>
                     handleNeogotiate(proposalData.proposals[0].proposal_id)
                   }
                 >
                   Gửi lại thương lượng
-                </button>
-                <button
-                  type="button"
-                  className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                  onClick={closeModalViewProposal}
-                >
-                  Đóng
                 </button>
               </div>
             </div>

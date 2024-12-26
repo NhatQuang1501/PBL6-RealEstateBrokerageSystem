@@ -10,6 +10,7 @@ import {
   faX,
 } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import User from "../../assets/image/User.png";
 
 const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   const { sessionToken, id } = useAppContext();
@@ -211,13 +212,18 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
   return (
     <div className="w-full mx-auto rounded-lg">
       <div className="">
-        <div className="flex items-center mb-4 bg-gradient-to-r from-blue-100 to-blue-200 p-2 rounded-lg shadow-md">
+        <div className="flex items-center mb-4 bg-white  border-solid border-gray-300 border-[1px] p-2 rounded-lg shadow-md">
           <img
-            src={"http://127.0.0.1:8000" + friendInfo.avatar}
+            // src={"http://127.0.0.1:8000" + friendInfo.avatar}
+            src={
+              friendInfo.avatar
+                ? `http://127.0.0.1:8000${friendInfo.avatar}`
+                : User
+            }
             alt="Avatar"
-            className="w-12 h-12 rounded-full mr-4 object-cover bg-gray-200 border-[1px] border-[#3CA9F9] border-solid"
+            className="w-12 h-12 rounded-full mr-4 object-cover bg-gray-200 border-[1px] border-blue-400 border-solid"
           />
-          <h2 className="text-lg font-bold text-black flex items-center">
+          <h2 className="text-[1rem] font-bold text-black flex items-center">
             {friendInfo.userName} -{" "}
             {friendInfo.type === "buyer" ? "Người mua" : "Người bán"}
           </h2>
@@ -225,7 +231,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
             {friendInfo.type === "buyer" && (
               <div className="flex items-center gap-2">
                 <button
-                  className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                  className="text-white text-sm bg-red-500 hover:bg-red-600 px-2 py-1 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
                   onClick={openCancel}
                 >
                   <FontAwesomeIcon icon={faSignOut} />
@@ -233,7 +239,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
                 </button>
 
                 <button
-                  className="text-white bg-yellow-500 hover:bg-yellow-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                  className="text-white text-sm bg-yellow-500 hover:bg-yellow-600 px-2 py-1 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
                   onClick={openConfirm}
                 >
                   <FontAwesomeIcon icon={faCheck} />
@@ -243,7 +249,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
             )}
             {friendInfo.type === "seller" && (
               <button
-                className="text-white bg-red-500 hover:bg-red-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+                className="text-white text-sm bg-red-500 hover:bg-red-600 px-2 py-1 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
                 onClick={openDelete}
               >
                 <FontAwesomeIcon icon={faX} />
@@ -251,7 +257,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
               </button>
             )}
             <button
-              className="text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
+              className="text-white text-sm bg-blue-500 hover:bg-blue-600 px-2 py-1 rounded-lg shadow-md transition-colors duration-300 flex items-center space-x-2"
               onClick={() => {
                 handleDetailPost(friendInfo.postId);
               }}
@@ -396,7 +402,7 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
             </div>
           )}
         </div>
-        <div className="h-[30rem] overflow-y-auto flex flex-col gap-3 bg-gray-50 p-4 rounded-lg border-[2px] border-solid border-gray-200">
+        <div className="h-[33rem] overflow-y-auto flex flex-col gap-3 bg-white p-4 rounded-lg border-[1px] border-solid border-gray-300">
           {messages.length > 0 ? (
             messages.map((message, index) => (
               <React.Fragment
@@ -429,8 +435,8 @@ const ChatWindow = ({ chatroomId, messages, setMessages, friendInfo }) => {
                   <div
                     className={`max-w-2xl p-3 rounded-3xl shadow-lg break-words whitespace-pre-wrap ${
                       isOwnMessage(message.sender)
-                        ? "bg-green-100 text-green-900"
-                        : "bg-blue-100 text-blue-900"
+                        ? "bg-green-100 text-black text-sm"
+                        : "bg-blue-100 text-black text-sm"
                     }`}
                   >
                     <p className="text-md font-semibold">{message.content}</p>

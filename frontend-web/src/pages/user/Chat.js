@@ -51,7 +51,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex gap-7 h-[39rem] px-5 py-2 font-montserrat">
+    <div className="flex gap-7 h-[42.5rem] bg-gradient-to-r from-blue-100 to-blue-200 px-5 py-2 font-montserrat">
       <FriendList selectFriend={handleSelectFriend} />
       {selectedFriend ? (
         <div className="w-full flex flex-col justify-between">

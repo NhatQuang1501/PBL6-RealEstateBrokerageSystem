@@ -115,7 +115,7 @@ const ImageCard = ({ postId, type, auth }) => {
               {auth === "owner" && (
                 <>
                   <button
-                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="text-sm mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[6rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                     onClick={() => setShowPopup(true)}
                   >
                     Xóa ảnh
@@ -163,13 +163,13 @@ const ImageCard = ({ postId, type, auth }) => {
                 </div>
               ))}
               <button
-                className="absolute left-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
+                className="absolute left-0 bg-gray-500 opacity-50 hover:opacity-100 text-white px-2.5 py-2 rounded-full focus:outline-none z-20"
                 onClick={handlePrevClick}
               >
                 &#9664;
               </button>
               <button
-                className="absolute right-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
+                className="absolute right-0 bg-gray-500 opacity-50 hover:opacity-100 text-white px-2.5 py-2 rounded-full focus:outline-none z-20"
                 onClick={handleNextClick}
               >
                 &#9654;

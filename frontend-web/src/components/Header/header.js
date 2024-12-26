@@ -12,6 +12,7 @@ import {
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
 import NotifyUser from "../Notification/NotifyUser";
+import User from "../../assets/image/User.png";
 
 function Header() {
   let navigate = useNavigate();
@@ -59,10 +60,10 @@ function Header() {
             },
           }
         );
-        if (response.data.avatar_url === null) {
-          response.data.avatar_url =
-            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
-        }
+        // if (response.data.avatar_url === null) {
+        //   response.data.avatar_url =
+        //     "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
+        // }
         setAva(response.data.avatar_url);
       } catch (error) {
         console.error("Error fetching avatar:", error);
@@ -268,20 +269,16 @@ function Header() {
               <NotifyUser />
               <div className="flex items-center gap-4">
                 <img
-                  src={
-                    ava
-                      ? ava
-                      : `https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain`
-                  }
+                  src={ava ? ava : User}
                   alt="avatar"
-                  className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover bg-gray-500"
+                  className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover"
                 />
                 <Link to="/user/personal-page">
                   <p className="text-blue-400 font-semibold">{name}</p>
                 </Link>
               </div>
               <button
-                className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-gray-400 text-white"
+                className="bg-custom_yellow w-[112px] px-1 py-1 font-semibold font-montserrat rounded-md bg-gray-400 text-white"
                 onClick={handleLogout}
               >
                 Đăng xuất

@@ -3,15 +3,15 @@ import axios from "axios";
 import {
   faEllipsisV,
   faUser,
-  faComment,
   faFlag,
-  faLock,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import ReportPopup from "../report/ReportPopup ";
+import User from "../../assets/image/User.png";
+
 const ProfileInformation = ({ name, date, user_id, post_id }) => {
   let navigate = useNavigate();
   const { role, sessionToken, id } = useAppContext();
@@ -132,8 +132,8 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
 
       <div className="flex items-center mt-1">
         <img
-          className="w-10 h-10 rounded-full mr-3 object-cover bg-gray-500"
-          src={ava}
+          className="w-10 h-10 rounded-full mr-3 object-cover"
+          src={ava ? ava : User}
           alt="avatar"
         />
         <div className="flex flex-col ">
