@@ -30,7 +30,7 @@ urlpatterns = [
         name="received_friend_requests",
     ),
     path(
-        "friendlist/",
+        "friendlist/<str:user_id>/",
         FriendListView.as_view(),
         name="accept_friend_requests",
     ),
