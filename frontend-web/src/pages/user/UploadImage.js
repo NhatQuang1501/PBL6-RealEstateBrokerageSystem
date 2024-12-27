@@ -33,7 +33,7 @@ function UploadImage() {
         formData.append("image", image);
 
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/images/`,
           formData,
           {
             headers: {

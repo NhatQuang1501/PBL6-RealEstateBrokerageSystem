@@ -85,7 +85,7 @@ const DetailPost = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "DELETE",
           headers: {
@@ -110,7 +110,8 @@ const DetailPost = () => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${postId}/`;
+        // let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
+        let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -138,7 +139,7 @@ const DetailPost = () => {
     const checkLiked = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/user-posts-like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-posts-like/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -177,7 +178,7 @@ const DetailPost = () => {
     } else {
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${postId}/like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/like/`,
           {},
           {
             headers: {
@@ -228,7 +229,7 @@ const DetailPost = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${post.post_id}/`,
         {
           negotiation_price: parseInt(numericPrice, 10),
           negotiation_date: negotiationDate,

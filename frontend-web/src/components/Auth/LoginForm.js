@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
+import House_Login from "../../assets/image/House_Login.jpg";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -14,16 +15,19 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/login/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -66,10 +70,9 @@ const LoginForm = () => {
     <div
       className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto relative"
       style={{
-        backgroundImage: `url('https://ww1.prweb.com/prfiles/2015/03/02/12556168/Geneva_Q1_Facade.jpg')`,
+        backgroundImage: `url(${House_Login})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        // filter: "blur(8px)",
       }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>

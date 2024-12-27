@@ -28,7 +28,7 @@ const UpdateProfile = () => {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/auth/users/${id}/`
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`
       );
       setProfileData(response.data);
       setLoading(false);
@@ -49,7 +49,7 @@ const UpdateProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://127.0.0.1:8000/auth/users/${id}/`, profileData, {
+      await axios.put(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`, profileData, {
         headers: {
           Authorization: `Bearer ${sessionToken}`,
           "Content-Type": "application/json",

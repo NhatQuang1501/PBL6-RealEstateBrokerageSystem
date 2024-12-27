@@ -26,7 +26,7 @@ const ReportList = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/report/", {
+        const response = await fetch(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -49,7 +49,7 @@ const ReportList = () => {
     console.log("Resolving report with ID:", reportId);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/report/${reportId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/${reportId}/`,
         {
           method: "PUT",
           headers: {
@@ -90,7 +90,7 @@ const ReportList = () => {
 
   return (
     <div className="p-2">
-      <h1 className="text-2xl font-bold mb-6">Danh Sách Báo Cáo</h1>
+      <h1 className="text-xl text-center font-bold mb-6">Danh Sách Báo Cáo</h1>
       {reports.length === 0 ? (
         <p>Không có báo cáo nào.</p>
       ) : (
@@ -110,10 +110,10 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        // src={`http://127.0.0.1:8000${report.reportee_avt}`}
+                        // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`}
                         src={
                           report.reportee_avt
-                            ? `http://127.0.0.1:8000${report.reportee_avt}`
+                            ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`
                             : User
                         }
                         alt={report.reportee_name}
@@ -140,10 +140,10 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        // src={`http://127.0.0.1:8000${report.reported_user_avt}`}
+                        // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`}
                         src={
                           report.reported_user_avt
-                            ? `http://127.0.0.1:8000${report.reported_user_avt}`
+                            ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`
                             : User
                         }
                         alt={report.reported_user_name}

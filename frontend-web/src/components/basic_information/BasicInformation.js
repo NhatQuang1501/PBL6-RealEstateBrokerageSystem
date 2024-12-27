@@ -34,25 +34,21 @@ const BasicInformation = ({
   length,
   width,
 }) => {
-  const formatPrice = (price) => {
-    if (price >= 1_000_000_000) {
-      const billionValue = price / 1_000_000_000;
-      return Number.isInteger(billionValue)
-        ? `${billionValue} tỷ`
-        : `${billionValue.toFixed(1)} tỷ`;
-    } else if (price >= 1_000_000) {
-      const millionValue = price / 1_000_000;
-      return Number.isInteger(millionValue)
-        ? `${millionValue} triệu`
-        : `${millionValue.toFixed(1)} triệu`;
-    } else {
-      return `${price}`;
-    }
-  };
+const formatPrice = (price) => {
+  if (price >= 1_000_000_000) {
+    const billionValue = parseFloat((price / 1_000_000_000).toFixed(5));
+    return `${billionValue} tỷ VNĐ`;
+  } else if (price >= 1_000_000) {
+    const millionValue = parseFloat((price / 1_000_000).toFixed(5));
+    return `${millionValue} triệu VNĐ`;
+  } else {
+    return `${price} VNĐ`;
+  }
+};
 
   const calculatePricePerSquareMeter = () => {
     if (!price || !area) return null;
-    const pricePerM2 = (price / area).toFixed(2);
+    const pricePerM2 = (price / area).toFixed(5);
     return formatPrice(Number(pricePerM2));
   };
 

@@ -27,6 +27,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { FaSpinner, FaTimesCircle, FaCheckCircle } from "react-icons/fa";
+import House from "../../assets/image/House.jpg";
+import Land from "../../assets/image/Land.webp";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -209,39 +211,42 @@ const BasicInformation = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/posts/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-          "Content-Type": "application/json",
-        },
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
 
-        body: JSON.stringify({
-          estate_type: estate_type,
-          address: address,
-          ward: ward,
-          district: district,
-          city: city,
-          price: price.replace(/,/g, ""),
-          area: area,
-          legal_status: legal_status,
-          land_lot: land_lot,
-          land_parcel: land_parcel,
-          map_sheet_number: map_sheet_number,
-          orientation: orientation,
-          floor: floor,
-          bedroom: bedroom,
-          bathroom: bathroom,
-          description: description,
-          frontage: frontage,
-          title: title,
-          sale_status: sale_status,
-          longitude: longitude,
-          latitude: latitude,
-          width: width,
-          length: length,
-        }),
-      });
+          body: JSON.stringify({
+            estate_type: estate_type,
+            address: address,
+            ward: ward,
+            district: district,
+            city: city,
+            price: price.replace(/,/g, ""),
+            area: area,
+            legal_status: legal_status,
+            land_lot: land_lot,
+            land_parcel: land_parcel,
+            map_sheet_number: map_sheet_number,
+            orientation: orientation,
+            floor: floor,
+            bedroom: bedroom,
+            bathroom: bathroom,
+            description: description,
+            frontage: frontage,
+            title: title,
+            sale_status: sale_status,
+            longitude: longitude,
+            latitude: latitude,
+            width: width,
+            length: length,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -495,7 +500,7 @@ const BasicInformation = () => {
         setLoading(true);
         try {
           const response = await axios.post(
-            "http://127.0.0.1:8000/api/predict-price/",
+            `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/predict-price/`,
             {
               width,
               length,
@@ -600,8 +605,8 @@ const BasicInformation = () => {
             }}
           >
             <img
-              src="https://th.bing.com/th/id/R.d2a57ccd3e425a765264c5f40c30ee59?rik=H5TNgjOrf5EDRA&pid=ImgRaw&r=0"
-              alt="room_image"
+              src={House}
+              alt="house_image"
               className="w-[30rem] h-[20rem] object-cover rounded-[6rem] shadow-2xl m-5 group-hover:opacity-50"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -629,8 +634,8 @@ const BasicInformation = () => {
             }}
           >
             <img
-              src="https://static.chotot.com/storage/chotot-kinhnghiem/nha/2021/12/b039cc56-ban-dat-1-e1638373452143.webp"
-              alt="room_image"
+              src={Land}
+              alt="land_image"
               className="w-[30rem] h-[20rem] object-cover rounded-[6rem] shadow-2xl m-5 group-hover:opacity-50"
             />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100">
@@ -936,10 +941,10 @@ const BasicInformation = () => {
                         <option value="Tây">Tây</option>
                         <option value="Nam">Nam</option>
                         <option value="Bắc">Bắc</option>
-                        <option value="Đông-Bắc">Đông-Bắc</option>
-                        <option value="Đông-Nam">Đông-Nam</option>
-                        <option value="Tây-Bắc">Tây-Bắc</option>
-                        <option value="Tây-Nam">Tây-Nam</option>
+                        <option value="Đông Bắc">Đông-Bắc</option>
+                        <option value="Đông Nam">Đông-Nam</option>
+                        <option value="Tây Bắc">Tây-Bắc</option>
+                        <option value="Tây Nam">Tây-Nam</option>
                       </select>
                       <FontAwesomeIcon
                         icon={faCompass}
@@ -1079,8 +1084,6 @@ const BasicInformation = () => {
                       />
                     </div>
                   </div>
-
-
 
                   {/* Mặt tiền */}
                   <div className="relative mb-6">
@@ -1237,7 +1240,7 @@ const BasicInformation = () => {
 
         {showForm && selectedProperty === "land" && (
           <div className="transition-all transform translate-y-[-20px]">
-            <h2 className="text-xl font-bold text-gray-500 mb-10">
+            <h2 className="text-2xl font-bold text-gray-600 mb-10 text-center">
               Thông tin cơ bản
             </h2>
             <form className="p-6 rounded-lg" onSubmit={handleSubmit}>
@@ -1529,10 +1532,10 @@ const BasicInformation = () => {
                         <option value="Tây">Tây</option>
                         <option value="Nam">Nam</option>
                         <option value="Bắc">Bắc</option>
-                        <option value="Đông-Bắc">Đông-Bắc</option>
-                        <option value="Đông-Nam">Đông-Nam</option>
-                        <option value="Tây-Bắc">Tây-Bắc</option>
-                        <option value="Tây-Nam">Tây-Nam</option>
+                        <option value="Đông Bắc">Đông-Bắc</option>
+                        <option value="Đông Nam">Đông-Nam</option>
+                        <option value="Tây Bắc">Tây-Bắc</option>
+                        <option value="Tây Nam">Tây-Nam</option>
                       </select>
                       <FontAwesomeIcon
                         icon={faCompass}

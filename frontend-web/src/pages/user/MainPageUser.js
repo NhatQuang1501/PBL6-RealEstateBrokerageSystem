@@ -55,32 +55,32 @@ const MainPageUser = ({
       let url;
       if (searchValue) {
         url = searchValue
-          ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
-              searchValue
-            )}`
-          : "http://127.0.0.1:8000/api/posts/";
+          ? `${
+              process.env.REACT_APP_SWEETHOME_API_ENDPOINT
+            }/api/search/?text=${encodeURIComponent(searchValue)}`
+          : `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`;
       } else if (typePost) {
         if (typePost === "house") {
-          url = "http://127.0.0.1:8000/api/posts/?category=house";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=house`;
         } else if (typePost === "land") {
-          url = "http://127.0.0.1:8000/api/posts/?category=land";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=land`;
         }
       } else {
         if (sortOption === "Mới nhất") {
-          url = "http://127.0.0.1:8000/api/posts/";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`;
         } else if (sortOption === "Cũ nhất") {
-          url = `http://127.0.0.1:8000/api/posts/?category=oldest posts`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=oldest posts`;
         } else if (sortOption === "Nổi bật") {
-          url = `http://127.0.0.1:8000/api/posts/?category=popular`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=popular`;
         } else if (sortOption === "Đề xuất") {
-          url = `http://127.0.0.1:8000/api/posts-recommendation/?num_recommendations=10`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts-recommendation/?num_recommendations=10`;
         }
       }
       try {
         let response;
         if (
           url ===
-          `http://127.0.0.1:8000/api/posts-recommendation/?num_recommendations=10`
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts-recommendation/?num_recommendations=10`
         ) {
           response = await fetch(url, {
             method: "GET",

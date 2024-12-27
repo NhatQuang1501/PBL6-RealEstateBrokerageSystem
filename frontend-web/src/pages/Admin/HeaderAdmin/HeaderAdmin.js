@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import avatar from "../../../assets/image/hero-bg12.jpg";
 
 import { useNavigate } from "react-router-dom";
 import NotifyAdmin from "../../../components/Notification/NotifyAdmin";
+import User from "../../../assets/image/User.png";
 
 const HeaderAdmin = ({ isCollapsed }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -33,8 +33,8 @@ const HeaderAdmin = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`absolute top-3 flex justify-between items-center right-2 h-[58px] p-3 rounded-xl transition-width duration-300 bg-white ${
-        isCollapsed ? "w-[92vw]" : "w-[76vw]"
+      className={`absolute top-3 flex justify-between items-center right-2 h-[48px] p-3 rounded-md transition-width duration-300 bg-white ${
+        isCollapsed ? "w-[92vw]" : "w-[75.5vw]"
       }`}
     >
       <div className="relative flex items-center w-[33%]">
@@ -48,15 +48,15 @@ const HeaderAdmin = ({ isCollapsed }) => {
         <input
           type="text"
           placeholder="Tìm kiếm ..."
-          className="pl-10 p-3 bg-[#9EBBD8] text-white placeholder-white placeholder-opacity-75 w-full rounded-md"
+          className="pl-10 p-2 bg-[#9EBBD8] text-white placeholder-white placeholder-opacity-75 w-full rounded-md"
         />
       </div>
 
       <div className="relative flex items-center w-[150px]" ref={dropdownRef}>
         <NotifyAdmin />
         <img
-          className="w-[45px] h-[45px] object-cover rounded-full bg-white mr-3 ml-5 cursor-pointer"
-          src={avatar}
+          className="w-[40px] h-[40px] object-cover rounded-full bg-white mr-3 ml-5 cursor-pointer"
+          src={User}
           alt=""
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         />

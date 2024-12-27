@@ -40,7 +40,7 @@ const DashboardAdmin = () => {
     const fetchInteractions = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/statistics?category=interactions_summary`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/statistics?category=interactions_summary`,
           {
             method: "GET",
             headers: {
@@ -65,7 +65,7 @@ const DashboardAdmin = () => {
     const fetchNewPostsStatistics = async (period) => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/statistics?category=new_posts_statistics&period=${period}`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/statistics?category=new_posts_statistics&period=${period}`,
           {
             method: "GET",
             headers: {
@@ -93,7 +93,7 @@ const DashboardAdmin = () => {
     const fetchPostsSummary = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/statistics?category=posts_summary`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/statistics?category=posts_summary`,
           {
             method: "GET",
             headers: {

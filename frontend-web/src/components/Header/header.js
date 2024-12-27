@@ -16,7 +16,7 @@ import User from "../../assets/image/User.png";
 
 function Header() {
   let navigate = useNavigate();
-  const location = useLocation(); // Lấy đường dẫn hiện tại
+  const location = useLocation();
   const [ava, setAva] = useState("");
 
   const { sessionToken, setSessionToken, setRole, role, name } =
@@ -27,13 +27,16 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/logout/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/logout/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         setSessionToken(null);
@@ -53,17 +56,14 @@ function Header() {
     const fetchAvatar = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/auth/users-avatar/${id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${id}/`,
           {
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
-        // if (response.data.avatar_url === null) {
-        //   response.data.avatar_url =
-        //     "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
-        // }
+
         setAva(response.data.avatar_url);
       } catch (error) {
         console.error("Error fetching avatar:", error);
@@ -73,7 +73,7 @@ function Header() {
   }, [id]);
 
   useEffect(() => {
-    setActiveLink(location.pathname); // Cập nhật activeLink khi đường dẫn thay đổi
+    setActiveLink(location.pathname);
   }, [location]);
 
   const linkStyle =
@@ -185,31 +185,7 @@ function Header() {
                     Trang chủ
                   </span>
                 </li>
-                {/* <li>
-                  <a
-                    href="#!"
-                    className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-blue-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    Tin tức
-                  </a>
-                </li> */}
-                {/* <li className="relative group">
-                  <Link
-                    to="/news"
-                    className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-blue-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
-                  </Link>
-                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Tin tức
-                  </span>
-                </li> */}
+
                 <li className="relative group">
                   <Link
                     to="/user/predict"
@@ -238,17 +214,7 @@ function Header() {
                     Nhắn tin
                   </span>
                 </li>
-                {/* <li>
-                  <Link
-                    to="/user/create-post"
-                    className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-blue-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/user/create-post")}
-                  >
-                    Đăng tin
-                  </Link>
-                </li> */}
+  
                 <li className="relative group">
                   <Link
                     to="/user/create-post"

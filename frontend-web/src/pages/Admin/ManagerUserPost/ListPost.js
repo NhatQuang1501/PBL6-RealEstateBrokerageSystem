@@ -32,9 +32,12 @@ const ListPosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:8000/api/posts/", {
-          headers: { Authorization: `Bearer ${sessionToken}` },
-        });
+        const response = await axios.get(
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`,
+          {
+            headers: { Authorization: `Bearer ${sessionToken}` },
+          }
+        );
 
         console.log("Fetched posts:", response.data);
 
@@ -71,6 +74,7 @@ const ListPosts = () => {
 
   return (
     <div className="">
+      {/* Phần tiêu đề này cần sửa lại */}
       <h1 className="text-xl font-bold mb-1 text-center">
         Danh Sách Bài Đăng Đã Duyệt
       </h1>

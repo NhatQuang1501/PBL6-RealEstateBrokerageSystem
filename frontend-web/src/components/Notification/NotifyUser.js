@@ -151,10 +151,10 @@ const NotifyUser = () => {
                     "acceptnegotiation",
                   ].includes(notification.data.additional_info.type) && (
                     <img
-                      // src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.author_avatar}`}
                       src={
                         notification.data.additional_info.author_avatar
-                          ? `http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`
+                          ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.author_avatar}`
                           : User
                       }
                       alt="Avatar"
@@ -165,10 +165,10 @@ const NotifyUser = () => {
                     notification.data.additional_info.type
                   ) && (
                     <img
-                      // src={`http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`}
+                      // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.negotiator_avatar}`}
                       src={
                         notification.data.additional_info.negotiator_avatar
-                          ? `http://127.0.0.1:8000${notification.data.additional_info.negotiator_avatar}`
+                          ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.negotiator_avatar}`
                           : User
                       }
                       alt="Avatar"

@@ -44,23 +44,23 @@ export default function Portfolio() {
 
         let url;
         if (filterStatus === "Đã duyệt") {
-          url = `http://127.0.0.1:8000/api/posts/${author}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${author}/`;
         }
         if (filterStatus === "Đang chờ duyệt" && id === author) {
-          url = `http://127.0.0.1:8000/api/pending-posts/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/pending-posts/${id}/`;
         }
         if (filterStatus === "Đã lưu") {
           if (author !== "") {
-            url = `http://127.0.0.1:8000/api/saved-posts/${author}/`;
+            url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${author}/`;
           } else {
-            url = `http://127.0.0.1:8000/api/saved-posts/${id}/`;
+            url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${id}/`;
           }
         }
         if (filterStatus === "Đang thương lượng") {
-          url = `http://127.0.0.1:8000/api/user-negotiations/?type=author`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-negotiations/?type=author`;
         }
         if (filterStatus === "Đang tham gia thương lượng") {
-          url = `http://127.0.0.1:8000/api/user-negotiations/?type=negotiator`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-negotiations/?type=negotiator`;
         }
 
         const response = await fetch(url, {

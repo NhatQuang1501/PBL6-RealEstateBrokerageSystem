@@ -43,9 +43,9 @@ const ProfileCard = ({ openLockPopup_, openUnLockPopup_ }) => {
       try {
         let url;
         if (userId) {
-          url = `http://127.0.0.1:8000/auth/users/${userId}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${userId}/`;
         } else {
-          url = `http://127.0.0.1:8000/auth/users/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`;
         }
 
         const response = await fetch(url, {
@@ -74,9 +74,9 @@ const ProfileCard = ({ openLockPopup_, openUnLockPopup_ }) => {
       try {
         let url;
         if (userId) {
-          url = `http://127.0.0.1:8000/auth/users-avatar/${userId}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${userId}/`;
         } else {
-          url = `http://127.0.0.1:8000/auth/users-avatar/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${id}/`;
         }
         const response = await axios.get(url, {
           headers: {
@@ -98,7 +98,7 @@ const ProfileCard = ({ openLockPopup_, openUnLockPopup_ }) => {
     // Fetch locked accounts
     const fetchLockedAccounts = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/lock-users/", {
+        const res = await fetch(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/lock-users/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -161,7 +161,7 @@ const ProfileCard = ({ openLockPopup_, openUnLockPopup_ }) => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/auth/users-avatar/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/`,
         formData,
         {
           headers: {

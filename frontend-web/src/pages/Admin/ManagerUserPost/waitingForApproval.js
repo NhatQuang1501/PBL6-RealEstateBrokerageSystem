@@ -33,7 +33,7 @@ const PenddingPosts = () => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/admin/posts/",
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
           {
             headers: { Authorization: `Bearer ${sessionToken}` },
           }

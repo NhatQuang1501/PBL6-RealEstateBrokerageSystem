@@ -85,7 +85,7 @@ function Post({ post, type }) {
       if (role !== "admin" && role) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/user-posts-like/`,
+            `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-posts-like/`,
             {
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
@@ -110,7 +110,7 @@ function Post({ post, type }) {
       if (role !== "admin" && role) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/saved-posts/${id}/`,
+            `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${id}/`,
             {
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
@@ -147,7 +147,7 @@ function Post({ post, type }) {
       });
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${post.post_id}/like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${post.post_id}/like/`,
           {},
           {
             headers: {
@@ -183,7 +183,7 @@ function Post({ post, type }) {
       });
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/saved-posts/${post.post_id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${post.post_id}/`,
           {},
           {
             headers: {
@@ -198,21 +198,17 @@ function Post({ post, type }) {
     }
   }, [sessionToken, post.post_id]);
 
-  const formatPrice = (price) => {
-    if (price >= 1_000_000_000) {
-      const billionValue = price / 1_000_000_000;
-      return Number.isInteger(billionValue)
-        ? `${billionValue} tỷ VND`
-        : `${billionValue.toFixed(1)} tỷ VNĐ`;
-    } else if (price >= 1_000_000) {
-      const millionValue = price / 1_000_000;
-      return Number.isInteger(millionValue)
-        ? `${millionValue} triệu VNĐ`
-        : `${millionValue.toFixed(3)} triệu VNĐ`;
-    } else {
-      return `${price} VNĐ`;
-    }
-  };
+const formatPrice = (price) => {
+  if (price >= 1_000_000_000) {
+    const billionValue = parseFloat((price / 1_000_000_000).toFixed(5));
+    return `${billionValue} tỷ VNĐ`;
+  } else if (price >= 1_000_000) {
+    const millionValue = parseFloat((price / 1_000_000).toFixed(5));
+    return `${millionValue} triệu VNĐ`;
+  } else {
+    return `${price} VNĐ`;
+  }
+};
   const handleDetailClick = () => {
     if (!sessionToken) {
       alert("Bạn cần đăng nhập để thực hiện hành động này.");
@@ -234,7 +230,7 @@ function Post({ post, type }) {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "DELETE",
           headers: {
@@ -286,7 +282,7 @@ function Post({ post, type }) {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${post.post_id}/`,
         {
           negotiation_price: parseInt(numericPrice, 10),
           negotiation_date: negotiationDate,
@@ -328,7 +324,7 @@ function Post({ post, type }) {
     setShowPopupD(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "đã duyệt",
@@ -355,7 +351,7 @@ function Post({ post, type }) {
     setShowPopUpConfirm(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "bị từ chối",
@@ -382,7 +378,7 @@ function Post({ post, type }) {
     setShowPopUpDelete(false);
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/${postId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -446,7 +442,7 @@ function Post({ post, type }) {
                 </button>
                 {isPopupOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                    <div className="bg-white text-black p-8 rounded-xl shadow-2xl max-w-3xl w-full">
                       <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
                         Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                       </h2>
@@ -625,7 +621,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={45}
+                    maxLength={52}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />
@@ -840,7 +836,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={45}
+                    maxLength={52}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />

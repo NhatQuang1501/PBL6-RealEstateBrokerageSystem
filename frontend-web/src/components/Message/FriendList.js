@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
-import User from "../../assets/image/User.webp";
+import User from "../../assets/image/User.png";
 
 export default function FriendList({ selectFriend }) {
   const { id, sessionToken } = useAppContext();
@@ -31,7 +31,7 @@ export default function FriendList({ selectFriend }) {
     const fetchUsers = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/negotiation-chatrooms/?user_id=${id}`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/negotiation-chatrooms/?user_id=${id}`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -127,6 +127,11 @@ export default function FriendList({ selectFriend }) {
           Danh sách người mua ({buyers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
+          {buyers.length === 0 && (
+            <div className="p-2 pt-[6rem] text-center text-gray-500 font-semibold">
+              Danh sách trống
+            </div>
+          )}
           {buyers.map((participant) => {
             if (!participant) {
               return null;
@@ -141,7 +146,7 @@ export default function FriendList({ selectFriend }) {
                 <img
                   src={
                     participant.avatar
-                      ? `http://127.0.0.1:8000${participant.avatar}`
+                      ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${participant.avatar}`
                       : User
                   }
                   alt={`${participant.username} avatar`}
@@ -232,6 +237,11 @@ export default function FriendList({ selectFriend }) {
           Danh sách người bán ({sellers.length})
         </h2>
         <div className="grid grid-cols-1 gap-4">
+          {sellers.length === 0 && (
+            <div className="p-2 pt-[6rem] text-center text-gray-500 font-semibold">
+              Danh sách trống
+            </div>
+          )}
           {sellers.map((participant) => {
             if (!participant) {
               return null;
@@ -246,7 +256,7 @@ export default function FriendList({ selectFriend }) {
                 <img
                   src={
                     participant.avatar
-                      ? `http://127.0.0.1:8000${participant.avatar}`
+                      ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${participant.avatar}`
                       : User
                   }
                   alt={`${participant.username} avatar`}

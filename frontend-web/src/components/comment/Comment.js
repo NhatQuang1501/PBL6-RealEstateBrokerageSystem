@@ -70,7 +70,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
     const fetchComments = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/posts/${post_id}/comments/`
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${post_id}/comments/`
         );
         const data = await response.json();
 
@@ -79,7 +79,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
           data.map(async (item) => {
             try {
               const avatarResponse = await axios.get(
-                `http://127.0.0.1:8000/auth/users-avatar/${item.user_id}/`,
+                `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${item.user_id}/`,
                 {
                   headers: {
                     "Content-Type": "application/json",
@@ -124,7 +124,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
       e.preventDefault();
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/posts/${post_id}/comments/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${post_id}/comments/`,
           {
             method: "POST",
             headers: {
@@ -176,7 +176,7 @@ const Comment = ({ post_id, sessionToken, reportedCmtId }) => {
   const handleDelete = async (commentId) => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/auth/report-comment/${commentId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/report-comment/${commentId}/`,
         {
           method: "PUT",
           headers: {

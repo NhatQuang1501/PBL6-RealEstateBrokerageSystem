@@ -38,7 +38,7 @@ const PersonalProfile = () => {
     const formattedUnlockDate = formatDateTime(unlockDate);
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/auth/lock-users/${userId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/lock-users/${userId}/`,
         {
           method: "POST",
           headers: {
@@ -113,7 +113,7 @@ const PersonalProfile = () => {
   const handleUnLockAccount = async (userId) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/auth/unlock-users/${userId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/unlock-users/${userId}/`,
         {
           method: "POST",
           headers: {

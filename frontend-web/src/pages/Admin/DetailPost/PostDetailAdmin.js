@@ -56,7 +56,7 @@ const PostDetailAdmin = () => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/admin/posts/${postId}/`;
+        let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -88,7 +88,7 @@ const PostDetailAdmin = () => {
     setShowPopupD(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "đã duyệt",
@@ -115,7 +115,7 @@ const PostDetailAdmin = () => {
     setShowPopUpConfirm(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "bị từ chối",
@@ -142,7 +142,7 @@ const PostDetailAdmin = () => {
     setShowPopUpConfirm(false);
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/${postId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,

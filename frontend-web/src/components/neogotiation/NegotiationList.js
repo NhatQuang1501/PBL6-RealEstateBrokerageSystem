@@ -22,6 +22,8 @@ import {
   faCreditCard,
   faEllipsisV,
   faFlag,
+  faX,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import ReportPopup from "../report/ReportPopup ";
 
@@ -72,7 +74,7 @@ const NegotiationList = ({ type }) => {
     const fetchNegotiations = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/post-negotiations/${postId}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${postId}/`,
           {
             params: {
               sort_by: sortBy,
@@ -99,7 +101,7 @@ const NegotiationList = ({ type }) => {
   const handleAcceptNegotiation = async (negotiationId) => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/accept-negotiations/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/accept-negotiations/`,
         {
           negotiation_id: negotiationId,
           is_accepted: true,
@@ -177,7 +179,7 @@ const NegotiationList = ({ type }) => {
     const numericPrice = proposalPrice.replace(/,/g, "");
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/send-proposal/${negotiationId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/send-proposal/${negotiationId}/`,
         {
           proposal_price: parseInt(numericPrice, 10),
           proposal_date: proposalDate,
@@ -221,7 +223,7 @@ const NegotiationList = ({ type }) => {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/negotiation-proposal/${negotiationId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/negotiation-proposal/${negotiationId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -274,7 +276,7 @@ const NegotiationList = ({ type }) => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/accept-proposal/${proposalID}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/accept-proposal/${proposalID}/`,
         {
           is_accepted: true,
           negotiation_price: parseInt(numericPrice, 10),
@@ -344,7 +346,7 @@ const NegotiationList = ({ type }) => {
   const handleConsiderNegotiation = async (negotiationId) => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/consider-negotiations/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/consider-negotiations/`,
         {
           negotiation_id: negotiationId,
           is_considered: true,
@@ -369,6 +371,48 @@ const NegotiationList = ({ type }) => {
 
   const handleToRoomChat = () => {
     navigate(`/user/chat`);
+  };
+
+  // Xóa thương lượng
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedNegotiationIdDelete, setSelectedNegotiationIdDelete] =
+    useState(null);
+
+  const openDelete = (negotiationId) => {
+    setSelectedNegotiationIdDelete(negotiationId);
+    setIsDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setSelectedNegotiationIdDelete(null);
+    setIsDeleteOpen(false);
+  };
+
+  const handleDeleteNegotiation = async (negotiationId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${negotiationId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Delete negotiation successfully");
+        alert("Xóa thương lượng thành công!");
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        console.error("Delete negotiation failed:", errorData);
+        alert("Xóa thương lượng thất bại!");
+      }
+    } catch (error) {
+      console.error("Error deleting negotiation:", error);
+      alert("Có lỗi xảy ra khi xóa thương lượng!");
+    }
   };
 
   return (
@@ -466,7 +510,7 @@ const NegotiationList = ({ type }) => {
                     (@{negotiation.user?.username || "Chưa có thông tin"})
                   </span>
                   {sessionToken && negotiation.user.user_id !== id && (
-                    <div className="relative flex items-center ml-9">
+                    <div className="relative flex items-center ml-2">
                       {/* Icon dấu ba chấm dọc */}
                       <button
                         onClick={toggleMenu}
@@ -607,13 +651,6 @@ const NegotiationList = ({ type }) => {
                 !negotiation.is_accepted &&
                 !negotiation.is_considered && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
-                    {/* <button
-                    className="text-white bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => openModal(negotiation.negotiation_id)}
-                  >
-                    Chấp nhận
-                  </button> */}
-
                     <button
                       className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
                       onClick={() =>
@@ -645,21 +682,33 @@ const NegotiationList = ({ type }) => {
                     </button>
                   </div>
                 )}
+              <div className="flex justify-center items-center gap-1 mt-2 w-full">
+                {type !== "owner" &&
+                  negotiation.user.user_id === id &&
+                  negotiation.proposals.length > 0 && (
+                    <div className="flex justify-center items-center gap-3 mt-3 w-full">
+                      <button
+                        className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
+                        onClick={() =>
+                          openModalViewProposal(negotiation.negotiation_id)
+                        }
+                      >
+                        Xem mức đề nghị
+                      </button>
+                    </div>
+                  )}
 
-              {type !== "owner" &&
-                negotiation.user.user_id === id &&
-                negotiation.proposals.length > 0 && (
+                {type !== "owner" && negotiation.user.user_id === id && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
                     <button
-                      className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
-                      onClick={() =>
-                        openModalViewProposal(negotiation.negotiation_id)
-                      }
+                      className="text-white font-semibold bg-gradient-to-r from-red-500 to-red-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-red-600 hover:to-red-500 "
+                      onClick={() => openDelete(negotiation.negotiation_id)}
                     >
-                      Xem mức đề nghị
+                      Xóa thương lượng
                     </button>
                   </div>
                 )}
+              </div>
             </div>
           ))}
         </div>
@@ -1166,6 +1215,45 @@ const NegotiationList = ({ type }) => {
                 onClick={closeModalConsider}
               >
                 Hủy bỏ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Xóa Thương Lượng */}
+      {isDeleteOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-2xl relative">
+            <h3 className="text-2xl font-semibold text-center mb-4 border-b border-solid border-gray-200 pb-2">
+              Xác Nhận
+            </h3>
+            <button
+              onClick={closeDelete}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              aria-label="Đóng"
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <p className="mb-6 text-center font-semibold text-gray-700">
+              Bạn có chắc chắn muốn xóa thương lượng này?
+            </p>
+            <div className="flex justify-center space-x-4 font-semibold">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300"
+                onClick={closeDelete}
+              >
+                Hủy
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center space-x-2"
+                onClick={() => {
+                  handleDeleteNegotiation(selectedNegotiationIdDelete);
+                  closeDelete();
+                }}
+              >
+                <FontAwesomeIcon icon={faX} />
+                <span>Xác nhận xóa</span>
               </button>
             </div>
           </div>
