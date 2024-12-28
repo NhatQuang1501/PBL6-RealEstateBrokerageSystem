@@ -1,12 +1,16 @@
 import numpy as np
-from django.db.models import Count
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from accounts.models import *
 from application.models import *
 
 
 def collaborative_filtering(user_id, num_recommendations=10):
-    # Lấy tất cả các bài đăng và người dùng
-    all_posts = Post.objects.filter(status=Status.APPROVED)
+    # Lấy tất cả các bài đăng đã duyệt và không phải của người dùng
+    author = get_object_or_404(User, user_id=user_id)
+    all_posts = Post.objects.filter(status=Status.APPROVED).exclude(
+        Q(user_id=author) | Q(sale_status=Sale_status.SOLD)
+    )
     all_users = User.objects.filter(role=Role.USER)
 
     # Tạo ma trận tương tác giữa người dùng và bài đăng
