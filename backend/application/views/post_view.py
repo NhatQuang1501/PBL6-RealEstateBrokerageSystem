@@ -580,13 +580,13 @@ class MarkPostAsSoldView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        if post.sale_status == Sale_status.NEGOTIATING:
-            return Response(
-                {
-                    "message": "Bài đăng không được chuyển sang 'đã bán' khi đang ở trạng thái đang thương lượng"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # if post.sale_status == Sale_status.NEGOTIATING:
+        #     return Response(
+        #         {
+        #             "message": "Bài đăng không được chuyển sang 'đã bán' khi đang ở trạng thái đang thương lượng"
+        #         },
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
         post.sale_status = sale_status
 
