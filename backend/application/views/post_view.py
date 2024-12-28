@@ -163,7 +163,9 @@ class PostView(APIView):
             for admin in admins:
                 admin_noti = f"{author.username} đã tạo bài đăng mới"
                 author_id = author.user_id
-                author_avatar = author.profile.avatar.url if author.profile.avatar else None
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
                 additional_info = {
                     "type": NotificationType.POST,
                     "author_id": str(author_id),
@@ -233,7 +235,9 @@ class PostView(APIView):
             for admin in admins:
                 admin_noti = f"{author.username} đã chỉnh sửa 1 bài đăng"
                 author_id = author.user_id
-                author_avatar = author.profile.avatar.url if author.profile.avatar else None
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
                 additional_info = {
                     "type": NotificationType.POST,
                     "author_id": str(author_id),
@@ -552,9 +556,9 @@ class MarkPostAsSoldView(APIView):
         return [permission() for permission in self.permission_classes]
 
     def get(self, request):
-        sold_posts = Post.objects.filter(status=Sale_status.SOLD).order_by(
-            "-created_at"
-        )
+        sold_posts = Post.objects.filter(
+            user_id=request.user, sale_status=Sale_status.SOLD
+        ).order_by("-created_at")
         sold_post_serializer = PostSerializer(sold_posts, many=True)
 
         return Response(
@@ -576,18 +580,17 @@ class MarkPostAsSoldView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        if post.sale_status != Sale_status.DEPOSITED:
-            return Response(
-                {
-                    "message": "Bài đăng phải ở trạng thái 'đã cọc' mới có thể chuyển sang 'đã bán'."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # if post.sale_status == Sale_status.NEGOTIATING:
+        #     return Response(
+        #         {
+        #             "message": "Bài đăng không được chuyển sang 'đã bán' khi đang ở trạng thái đang thương lượng"
+        #         },
+        #         status=status.HTTP_400_BAD_REQUEST,
+        #     )
 
         post.sale_status = sale_status
 
         if sale_status == "đã bán":
-            # post.status = Status.CLOSED
             post.save()
             serializer = PostSerializer(post)
 
