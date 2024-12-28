@@ -54,6 +54,9 @@ function Post({ post, type }) {
   const [showPopupD, setShowPopupD] = useState(false);
   const [showPopUpConfirm, setShowPopUpConfirm] = useState(false);
   const [showPopUpDelete, setShowPopUpDelete] = useState(false);
+  
+  const [showPopUpMarkSold, setShowPopUpMarkSold] = useState(false);
+  
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -589,6 +592,19 @@ const formatPrice = (price) => {
                   className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
                   onClick={() => {
                     handleUpdate(post.post_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                  Cập nhật
+                </button>
+              </>
+            )}
+            {id === post.user.user_id && (post.sale_status === "Đang thương lượng" || post.sale_status === "Đã cọc") && (
+              <>
+                <button
+                  className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  onClick={() => {
+                    // handleMarkSold(post.post_id);
                   }}
                 >
                   <FontAwesomeIcon icon={faEdit} className="text-lg" />

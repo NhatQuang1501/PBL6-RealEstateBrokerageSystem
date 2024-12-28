@@ -110,11 +110,11 @@ const formatPrice = (price) => {
                   Giá bán
                 </div>
                 <div className="text-lg font-semibold text-gray-700 mt-2 leading-relaxed">
-                  {formatPrice(price)} VNĐ
+                  {formatPrice(price)} 
                 </div>
                 {calculatePricePerSquareMeter() && (
                   <div className="text-sm text-gray-500 mt-1">
-                    ~ {calculatePricePerSquareMeter()} VNĐ/m²
+                    ~ {calculatePricePerSquareMeter()} /m²
                   </div>
                 )}
               </div>
