@@ -20,6 +20,9 @@ import {
   faFileContract,
   faCheck,
   faX,
+  faTimes,
+  faExclamationTriangle,
+  faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   FaPen,
@@ -55,6 +58,8 @@ function Post({ post, type }) {
   const [showPopUpConfirm, setShowPopUpConfirm] = useState(false);
   const [showPopUpDelete, setShowPopUpDelete] = useState(false);
 
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
+
   const getStatusClass = (status) => {
     switch (status) {
       case "Đang bán":
@@ -85,7 +90,7 @@ function Post({ post, type }) {
       if (role !== "admin" && role) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/user-posts-like/`,
+            `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-posts-like/`,
             {
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
@@ -110,7 +115,7 @@ function Post({ post, type }) {
       if (role !== "admin" && role) {
         try {
           const response = await axios.get(
-            `http://127.0.0.1:8000/api/saved-posts/${id}/`,
+            `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${id}/`,
             {
               headers: {
                 Authorization: `Bearer ${sessionToken}`,
@@ -147,7 +152,7 @@ function Post({ post, type }) {
       });
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${post.post_id}/like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${post.post_id}/like/`,
           {},
           {
             headers: {
@@ -183,7 +188,7 @@ function Post({ post, type }) {
       });
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/saved-posts/${post.post_id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${post.post_id}/`,
           {},
           {
             headers: {
@@ -200,15 +205,11 @@ function Post({ post, type }) {
 
   const formatPrice = (price) => {
     if (price >= 1_000_000_000) {
-      const billionValue = price / 1_000_000_000;
-      return Number.isInteger(billionValue)
-        ? `${billionValue} tỷ VND`
-        : `${billionValue.toFixed(1)} tỷ VNĐ`;
+      const billionValue = parseFloat((price / 1_000_000_000).toFixed(5));
+      return `${billionValue} tỷ VNĐ`;
     } else if (price >= 1_000_000) {
-      const millionValue = price / 1_000_000;
-      return Number.isInteger(millionValue)
-        ? `${millionValue} triệu VNĐ`
-        : `${millionValue.toFixed(3)} triệu VNĐ`;
+      const millionValue = parseFloat((price / 1_000_000).toFixed(5));
+      return `${millionValue} triệu VNĐ`;
     } else {
       return `${price} VNĐ`;
     }
@@ -234,7 +235,7 @@ function Post({ post, type }) {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "DELETE",
           headers: {
@@ -255,6 +256,34 @@ function Post({ post, type }) {
 
   const handleUpdate = (postId) => {
     navigate(`/user/update-post/${postId}`);
+  };
+
+  const handleStatusUpdate = async (postId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/sold-posts/${postId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            sale_status: "Đã bán",
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Cập nhật trạng thái thành công!");
+        window.location.reload();
+      } else {
+        alert("Cập nhật trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái!");
+    }
   };
 
   // Thương lượng
@@ -286,7 +315,7 @@ function Post({ post, type }) {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${post.post_id}/`,
         {
           negotiation_price: parseInt(numericPrice, 10),
           negotiation_date: negotiationDate,
@@ -328,7 +357,7 @@ function Post({ post, type }) {
     setShowPopupD(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "đã duyệt",
@@ -355,7 +384,7 @@ function Post({ post, type }) {
     setShowPopUpConfirm(false);
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/posts/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/`,
         {
           post_id: postId,
           status: "bị từ chối",
@@ -382,7 +411,7 @@ function Post({ post, type }) {
     setShowPopUpDelete(false);
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/admin/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/admin/posts/${postId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -446,7 +475,7 @@ function Post({ post, type }) {
                 </button>
                 {isPopupOpen && (
                   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                    <div className="bg-white text-black p-8 rounded-xl shadow-2xl max-w-3xl w-full">
                       <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
                         Hãy nhập giá tiền và thông tin bạn muốn thương lượng
                       </h2>
@@ -600,6 +629,92 @@ function Post({ post, type }) {
                 </button>
               </>
             )}
+            {id === post.user.user_id &&
+              (post.sale_status === "Đang thương lượng" ||
+                post.sale_status === "Đã cọc") && (
+                <>
+                  <button
+                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    onClick={() => setIsStatusPopupOpen(true)}
+                  >
+                    <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                    Cập nhật
+                  </button>
+
+                  {/* Status Update Popup */}
+                  {isStatusPopupOpen && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+                      <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 w-full max-w-xl relative transform transition-all duration-300 ease-out scale-100 shadow-2xl border border-blue-100">
+                        <button
+                          onClick={() => setIsStatusPopupOpen(false)}
+                          className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                        >
+                          <FontAwesomeIcon icon={faTimes} size="lg" />
+                        </button>
+
+                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                          <FontAwesomeIcon icon={faEdit} className="mr-2" />
+                          Cập Nhật Trạng Thái
+                        </h2>
+
+                        <p className="text-sm text-gray-600 mb-8 text-center italic">
+                          Hiện tại bạn chỉ có thể cập nhật trạng thái của bài
+                          đăng là "Đã bán".
+                        </p>
+
+                        <div className="flex flex-col gap-4">
+                          <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                            <FontAwesomeIcon
+                              icon={faInfoCircle}
+                              className="text-blue-500 text-xl"
+                            />
+                            <div className="flex flex-row justify-start items-center gap-5 w-full">
+                              <p className="font-semibold text-gray-700 mb-1">
+                                Trạng thái hiện tại:
+                              </p>
+                              <p className="text-blue-600 w-auto bg-blue-200 px-3 py-1 rounded-3xl">
+                                {post.sale_status}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                            <FontAwesomeIcon
+                              icon={faExclamationTriangle}
+                              className="text-red-500 text-xl"
+                            />
+                            <div className="flex flex-row justify-start items-center gap-5 w-full">
+                              <p className="font-semibold text-gray-700 mb-1">
+                                Trạng thái mới:
+                              </p>
+                              <p className="text-red-600 w-auto bg-red-200 px-3 py-1 rounded-3xl">
+                                Đã bán
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex justify-end space-x-4 border-t border-gray-100 pt-2">
+                            <button
+                              className="px-6 py-2.5 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-200 flex items-center space-x-2 hover:shadow-md"
+                              onClick={() => setIsStatusPopupOpen(false)}
+                            >
+                              <FontAwesomeIcon icon={faTimes} />
+                              <span>Hủy</span>
+                            </button>
+                            <button
+                              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold flex items-center space-x-2 hover:shadow-md"
+                              onClick={() => handleStatusUpdate(post.post_id)}
+                            >
+                              <FontAwesomeIcon icon={faCheck} />
+                              <span>Xác nhận</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             {id === post.user.user_id && (
               <>
                 <button
@@ -625,7 +740,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={45}
+                    maxLength={52}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />
@@ -840,7 +955,7 @@ function Post({ post, type }) {
                 <div className="flex-1">
                   <DetailDescription
                     description={post.description}
-                    maxLength={45}
+                    maxLength={52}
                     moreLink={`/user/detail-post/${post.post_id}`}
                     onClick={handleDetailClick}
                   />

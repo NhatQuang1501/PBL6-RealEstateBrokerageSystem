@@ -21,7 +21,7 @@ const Adminpage = () => {
     return <Error />;
   }
   return (
-    <div className="relative bg-[#9EBBD8] p-3 transition-width duration-300 font-montserrat">
+    <div className="relative bg-[#9EBBD8] p-2 transition-width duration-300 font-montserrat">
       <Navbar
         isCollapsed={isCollapsed}
         activeMenu={activeMenu}

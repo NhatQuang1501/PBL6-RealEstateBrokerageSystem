@@ -12,6 +12,10 @@ import {
   faEdit,
   faTrash,
   faHandshake,
+  faCheck,
+  faTimes,
+  faInfoCircle,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useCallback } from "react";
 import {
@@ -46,6 +50,7 @@ const DetailPost = () => {
   const [negotiationNote, setNegotiationNote] = useState("");
   // const [selectedPostIdD, setSelectedPostIdD] = useState(null);
   // const [showPopupD, setShowPopupD] = useState(false);
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -74,6 +79,34 @@ const DetailPost = () => {
     navigate(`/user/update-post/${postId}`);
   };
 
+  const handleStatusUpdate = async (postId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/sold-posts/${postId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            sale_status: "Đã bán",
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Cập nhật trạng thái thành công!");
+        window.location.reload();
+      } else {
+        alert("Cập nhật trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái!");
+    }
+  };
+
   // Delete post
   const handleDelete = async (postId) => {
     const userConfirmed = window.confirm(
@@ -85,7 +118,7 @@ const DetailPost = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "DELETE",
           headers: {
@@ -110,7 +143,8 @@ const DetailPost = () => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${postId}/`;
+        // let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
+        let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -138,7 +172,7 @@ const DetailPost = () => {
     const checkLiked = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/user-posts-like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-posts-like/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -177,7 +211,7 @@ const DetailPost = () => {
     } else {
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${postId}/like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/like/`,
           {},
           {
             headers: {
@@ -228,7 +262,7 @@ const DetailPost = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${post.post_id}/`,
         {
           negotiation_price: parseInt(numericPrice, 10),
           negotiation_date: negotiationDate,
@@ -477,6 +511,99 @@ const DetailPost = () => {
                           <FontAwesomeIcon icon={faEdit} className="text-lg" />
                           Cập nhật
                         </button>
+                      </>
+                    )}
+
+                  {post &&
+                    id === post.user.user_id &&
+                    (post.sale_status === "Đang thương lượng" ||
+                      post.sale_status === "Đã cọc") && (
+                      <>
+                        <button
+                          className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                          onClick={() => setIsStatusPopupOpen(true)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                          Cập nhật
+                        </button>
+
+                        {/* Status Update Popup */}
+                        {isStatusPopupOpen && (
+                          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+                            <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 w-full max-w-xl relative transform transition-all duration-300 ease-out scale-100 shadow-2xl border border-blue-100">
+                              <button
+                                onClick={() => setIsStatusPopupOpen(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                              >
+                                <FontAwesomeIcon icon={faTimes} size="lg" />
+                              </button>
+
+                              <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className="mr-2"
+                                />
+                                Cập Nhật Trạng Thái
+                              </h2>
+
+                              <p className="text-sm text-gray-600 mb-8 text-center italic">
+                                Hiện tại bạn chỉ có thể cập nhật trạng thái của
+                                bài đăng là "Đã bán".
+                              </p>
+
+                              <div className="flex flex-col gap-4">
+                                <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                                  <FontAwesomeIcon
+                                    icon={faInfoCircle}
+                                    className="text-blue-500 text-xl"
+                                  />
+                                  <div className="flex flex-row justify-start items-center gap-5 w-full">
+                                    <p className="font-semibold text-gray-700 mb-1">
+                                      Trạng thái hiện tại:
+                                    </p>
+                                    <p className="text-blue-600 w-auto bg-blue-200 px-3 py-1 rounded-3xl">
+                                      {post.sale_status}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                                  <FontAwesomeIcon
+                                    icon={faExclamationTriangle}
+                                    className="text-red-500 text-xl"
+                                  />
+                                  <div className="flex flex-row justify-start items-center gap-5 w-full">
+                                    <p className="font-semibold text-gray-700 mb-1">
+                                      Trạng thái mới:
+                                    </p>
+                                    <p className="text-red-600 w-auto bg-red-200 px-3 py-1 rounded-3xl">
+                                      Đã bán
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-end space-x-4 border-t border-gray-100 pt-2">
+                                  <button
+                                    className="px-6 py-2.5 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-200 flex items-center space-x-2 hover:shadow-md"
+                                    onClick={() => setIsStatusPopupOpen(false)}
+                                  >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                    <span>Hủy</span>
+                                  </button>
+                                  <button
+                                    className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold flex items-center space-x-2 hover:shadow-md"
+                                    onClick={() =>
+                                      handleStatusUpdate(post.post_id)
+                                    }
+                                  >
+                                    <FontAwesomeIcon icon={faCheck} />
+                                    <span>Xác nhận</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </>
                     )}
 

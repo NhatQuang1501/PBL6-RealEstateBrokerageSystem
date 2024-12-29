@@ -141,10 +141,10 @@ const NotifyAdmin = () => {
                 >
                   {notification.data.additional_info?.post_id ? (
                     <img
-                      // src={`http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`}
+                      // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.author_avatar}`}
                       src={
                         notification.data.additional_info.author_avatar
-                          ? `http://127.0.0.1:8000${notification.data.additional_info.author_avatar}`
+                          ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.author_avatar}`
                           : User
                       }
                       alt="Avatar"
@@ -152,10 +152,10 @@ const NotifyAdmin = () => {
                     />
                   ) : (
                     <img
-                      // src={`http://127.0.0.1:8000${notification.data.additional_info.reportee_avatar}`}
+                      // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.reportee_avatar}`}
                       src={
                         notification.data.additional_info.reportee_avatar
-                          ? `http://127.0.0.1:8000${notification.data.additional_info.reportee_avatar}`
+                          ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${notification.data.additional_info.reportee_avatar}`
                           : User
                       }
                       alt="Avatar"

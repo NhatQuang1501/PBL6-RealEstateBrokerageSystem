@@ -190,10 +190,10 @@ const SideBar = ({
               "Tây",
               "Nam",
               "Bắc",
-              "Đông-Nam",
-              "Đông-Bắc",
-              "Tây-Bắc",
-              "Tây-Nam",
+              "Đông Nam",
+              "Đông Bắc",
+              "Tây Bắc",
+              "Tây Nam",
             ].map((orientation, index) => (
               <li
                 key={index}

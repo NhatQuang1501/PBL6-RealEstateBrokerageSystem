@@ -13,7 +13,7 @@ const ImageCard = ({ postId, type, auth }) => {
     const fetchImages = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/posts/${postId}/images/`
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/images/`
         );
 
         if (Array.isArray(response.data)) {
@@ -71,7 +71,7 @@ const ImageCard = ({ postId, type, auth }) => {
     setShowPopup(false);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/images/`,
         {
           method: "DELETE",
           headers: {
@@ -100,7 +100,7 @@ const ImageCard = ({ postId, type, auth }) => {
         <div
           className="relative border-[1px] border-double border-gray-400 rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
           style={{
-            backgroundImage: `url(http://127.0.0.1:8000${images[currentImageIndex].image})`,
+            backgroundImage: `url(${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${images[currentImageIndex].image})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -156,7 +156,7 @@ const ImageCard = ({ postId, type, auth }) => {
                   }`}
                 >
                   <img
-                    src={`http://127.0.0.1:8000${image.image}`}
+                    src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className="rounded-lg w-[50rem] h-[30rem] object-contain shadow-2xl bg-black"
                   />
@@ -184,7 +184,7 @@ const ImageCard = ({ postId, type, auth }) => {
                   onClick={() => handleThumbnailClick(index)}
                 >
                   <img
-                    src={`http://127.0.0.1:8000${image.image}`}
+                    src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                       index === currentImageIndex
@@ -262,7 +262,7 @@ const ImageCard = ({ postId, type, auth }) => {
                     className="flex justify-center mb-4"
                   >
                     <img
-                      src={`http://127.0.0.1:8000${images[currentImageIndex].image}`}
+                      src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${images[currentImageIndex].image}`}
                       alt={`Ảnh của bài đăng: ${images[currentImageIndex].post_id}`}
                       className="rounded-lg w-auto h-[20rem] object-contain shadow-2xl bg-black"
                     />
@@ -276,7 +276,7 @@ const ImageCard = ({ postId, type, auth }) => {
                           onClick={() => handleThumbnailClick(index)}
                         >
                           <img
-                            src={`http://127.0.0.1:8000${image.image}`}
+                            src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                             alt={`Ảnh của bài đăng: ${image.post_id}`}
                             className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                               index === currentImageIndex

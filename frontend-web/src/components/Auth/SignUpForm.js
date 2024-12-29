@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Land_SignUp from "../../assets/image/Land.webp";
 
 const SignUpForm = () => {
   const [error, setError] = useState(null);
@@ -19,20 +20,23 @@ const SignUpForm = () => {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/register/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user: {
-            email: email,
-            username: username,
-            password: password,
-            role: "user",
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/register/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            user: {
+              email: email,
+              username: username,
+              password: password,
+              role: "user",
+            },
+          }),
+        }
+      );
 
       const data = await response.json();
       console.log(response);
@@ -53,10 +57,9 @@ const SignUpForm = () => {
     <div
       className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto relative"
       style={{
-        backgroundImage: `url('https://static.chotot.com/storage/chotot-kinhnghiem/nha/2021/12/b039cc56-ban-dat-1-e1638373452143.webp')`,
+        backgroundImage: `url('${Land_SignUp}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        // filter: "blur(8px)",
       }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -133,7 +136,11 @@ const SignUpForm = () => {
               placeholder="Nhập lại mật khẩu"
               className="w-full p-3 mb-4 border border-gray-300 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-            {error && <div className="text-red-500 mb-4 text-center font-semibold">{error}</div>}
+            {error && (
+              <div className="text-red-500 mb-4 text-center font-semibold">
+                {error}
+              </div>
+            )}
             <div className="flex flex-col items-center">
               <button
                 className="bg-[#3CA9F9] text-white font-bold w-[100px] h-[33px] rounded-lg hover:bg-blue-600 transition duration-300 mt-1"

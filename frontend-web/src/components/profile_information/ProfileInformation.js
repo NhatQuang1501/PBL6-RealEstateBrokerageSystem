@@ -85,7 +85,7 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
     const fetchAvatar = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/auth/users-avatar/${user_id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${user_id}/`,
           {
             headers: {
               "Content-Type": "application/json",

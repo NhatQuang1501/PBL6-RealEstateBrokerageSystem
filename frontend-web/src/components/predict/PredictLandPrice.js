@@ -56,7 +56,7 @@ const PredictLandPrice = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/predict-price/",
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/predict-price/`,
         {
           ...formData,
           has_frontage: formData.has_frontage ? 1 : 0,

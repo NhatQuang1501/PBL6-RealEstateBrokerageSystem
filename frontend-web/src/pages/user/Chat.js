@@ -13,6 +13,11 @@ const Chat = () => {
     return savedFriendInfo ? JSON.parse(savedFriendInfo) : {};
   });
 
+  const clearFriendInfo = () => {
+    setFriendInfo({});
+    localStorage.setItem("friendInfo", JSON.stringify({}));
+  };
+
   useEffect(() => {
     if (selectedFriend) {
       const savedMessages = localStorage.getItem(`messages_${selectedFriend}`);
@@ -60,6 +65,7 @@ const Chat = () => {
             messages={messages}
             setMessages={setMessages}
             friendInfo={friendInfo}
+            clearFriendInfo={clearFriendInfo}
           />
         </div>
       ) : (

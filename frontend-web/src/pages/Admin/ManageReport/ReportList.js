@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate } from "react-router-dom";
 import User from "../../../assets/image/User.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 
 const ReportList = () => {
   const [reports, setReports] = useState([]);
@@ -26,13 +28,16 @@ const ReportList = () => {
   useEffect(() => {
     const fetchReports = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/report/", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${sessionToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const data = await response.json();
         setReports(data);
         setLoading(false);
@@ -49,7 +54,7 @@ const ReportList = () => {
     console.log("Resolving report with ID:", reportId);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/report/${reportId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/${reportId}/`,
         {
           method: "PUT",
           headers: {
@@ -85,12 +90,18 @@ const ReportList = () => {
   };
 
   // Render loading or error state
-  if (loading) return <div className="text-center text-xl">Đang tải...</div>;
+  if (loading)
+    return <div className="text-center text-xl font-bold">Đang tải...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   return (
     <div className="p-2">
-      <h1 className="text-2xl font-bold mb-6">Danh Sách Báo Cáo</h1>
+      <div className="flex justify-center items-center">
+        <h1 className="text-xl text-center font-bold mb-4 w-auto bg-white px-5 py-1 rounded-3xl shadow-md underline flex items-center border-[1px] border-solid border-gray-400">
+          <FontAwesomeIcon icon={faListAlt} className="text-xl text-black mr-2" />
+          Danh Sách Báo Cáo
+        </h1>
+      </div>
       {reports.length === 0 ? (
         <p>Không có báo cáo nào.</p>
       ) : (
@@ -110,10 +121,10 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        // src={`http://127.0.0.1:8000${report.reportee_avt}`}
+                        // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`}
                         src={
                           report.reportee_avt
-                            ? `http://127.0.0.1:8000${report.reportee_avt}`
+                            ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`
                             : User
                         }
                         alt={report.reportee_name}
@@ -140,10 +151,10 @@ const ReportList = () => {
                     </label>
                     <div className="flex items-center bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-xl transition duration-300 ease-in-out">
                       <img
-                        // src={`http://127.0.0.1:8000${report.reported_user_avt}`}
+                        // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`}
                         src={
                           report.reported_user_avt
-                            ? `http://127.0.0.1:8000${report.reported_user_avt}`
+                            ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`
                             : User
                         }
                         alt={report.reported_user_name}
@@ -197,7 +208,7 @@ const ReportList = () => {
                       <button
                         className="px-4 py-2 rounded-full text-white bg-blue-500 hover:bg-blue-600 font-semibold"
                         onClick={() => {
-                          handlePersonalProfileClick(report.reportee_id);
+                          handlePersonalProfileClick(report.reported_user_id);
                         }}
                       >
                         Xem thông tin người dùng

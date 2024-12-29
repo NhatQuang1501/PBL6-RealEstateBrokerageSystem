@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Pagination from "../../Pagination/Pagination";
+import Pagination from "../../../components/pagination/pagination";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +7,26 @@ const ManagerUserAccount = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [accountsPerPage] = useState(7);
+  useEffect(() => {
+    const savedPage = localStorage.getItem("currentPage");
+    if (savedPage) {
+      setCurrentPage(parseInt(savedPage, 10));
+    }
+  }, []);
+  const itemsPerPage = 8;
+  const totalPages = Math.ceil(accounts.length / itemsPerPage);
+  const indexOfLastAccount = currentPage * itemsPerPage;
+  const indexOfFirstAccount = indexOfLastAccount - itemsPerPage;
+
+  const currentAccounts = accounts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const [lockedAccounts, setLockedAccounts] = useState([]);
   const { sessionToken } = useAppContext();
   const [isLockPopupOpen, setIsLockPopupOpen] = useState(false);
@@ -23,7 +42,7 @@ const ManagerUserAccount = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/users/");
+        const res = await fetch(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/`);
         const data = await res.json();
         // Filter out accounts with the role "admin"
         const filteredAccounts = data.filter(
@@ -40,7 +59,7 @@ const ManagerUserAccount = () => {
     // Fetch locked accounts
     const fetchLockedAccounts = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/auth/lock-users/", {
+        const res = await fetch(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/lock-users/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -57,15 +76,6 @@ const ManagerUserAccount = () => {
     fetchLockedAccounts();
     fetchAccounts();
   }, [sessionToken]);
-
-  const indexOfLastAccount = currentPage * accountsPerPage;
-  const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
-  const currentAccounts = accounts.slice(
-    indexOfFirstAccount,
-    indexOfLastAccount
-  );
-
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (loading) {
     return (
@@ -94,7 +104,7 @@ const ManagerUserAccount = () => {
     const formattedUnlockDate = formatDateTime(unlockDate);
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/auth/lock-users/${userId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/lock-users/${userId}/`,
         {
           method: "POST",
           headers: {
@@ -167,7 +177,7 @@ const ManagerUserAccount = () => {
   const handleUnLockAccount = async (userId) => {
     try {
       const res = await fetch(
-        `http://127.0.0.1:8000/auth/unlock-users/${userId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/unlock-users/${userId}/`,
         {
           method: "POST",
           headers: {
@@ -191,12 +201,12 @@ const ManagerUserAccount = () => {
   };
 
   return (
-    <div className="container mx-auto p-2 bg-white shadow-md rounded-lg">
-      <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">
+    <div className="container mx-auto p-2 bg-white shadow-md rounded-lg whitespace-nowrap">
+      <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800 underline">
         Danh Sách Tài Khoản
       </h2>
 
-      <div className="overflow-x-auto shadow-sm rounded-lg h-[31rem]">
+      <div className="overflow-x-auto shadow-sm rounded-lg h-[33.5rem]">
         <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr className="bg-blue-200 text-gray-800 text-center font-bold ">
@@ -309,7 +319,7 @@ const ManagerUserAccount = () => {
                   <td className="border border-gray-300 px-4 py-3 whitespace-nowrap">
                     {account.avatar ? (
                       <img
-                        src={`http://127.0.0.1:8000${account.avatar}`}
+                        src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${account.avatar}`}
                         alt="Avatar"
                         className="w-10 h-10 rounded-full mx-auto object-cover"
                       />
@@ -463,13 +473,17 @@ const ManagerUserAccount = () => {
       )}
 
       {/* Pagination */}
-      <div className="flex justify-center">
-        <Pagination
-          accountsPerPage={accountsPerPage}
-          totalAccounts={accounts.length}
-          paginate={paginate}
-        />
-      </div>
+      {accounts.length > 0 ? (
+        <div className="">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      ) : (
+        <div className="text-center font-bold">Không có tài khoản nào</div>
+      )}
     </div>
   );
 };

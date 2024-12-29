@@ -57,7 +57,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   };
 
   return (
-    <div className="flex justify-between items-center mt-2 bg-gray-200 p-2 rounded-lg w-full border-2 border-black">
+    <div className="flex justify-between items-center mt-1 bg-gray-200 p-1 rounded-lg w-full border-2 border-black">
       <button
         className="px-4 py-2 bg-gray-300 text-gray-800 text-sm rounded-l-lg font-bold"
         onClick={handlePreviousPage}
@@ -71,7 +71,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         {generatePageNumbers().map((page, index) => (
           <button
             key={index}
-            className={`w-12 h-10 flex items-center justify-center rounded-full ${
+            className={`w-8 h-9 flex items-center justify-center rounded-full ${
               currentPage === page
                 ? "bg-blue-400 text-white"
                 : "bg-gray-300 text-gray-800"

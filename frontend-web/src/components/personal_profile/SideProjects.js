@@ -49,7 +49,7 @@ export default function SideProjects() {
           author = id;
         }
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/friendlist/${author}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friendlist/${author}/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -72,7 +72,7 @@ export default function SideProjects() {
     const fetchReceives = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/friend-requests-received/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friend-requests-received/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -100,7 +100,7 @@ export default function SideProjects() {
     const fetchSenders = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/friend-requests-sent/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friend-requests-sent/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -144,7 +144,7 @@ export default function SideProjects() {
   const handleAcceptFriendRequest = async (senderId) => {
     try {
       await axios.put(
-        `http://127.0.0.1:8000/api/friend-requests/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friend-requests/`,
         {
           friendrequest_id: senderId,
           friendrequest_status: "đã kết bạn",
@@ -174,7 +174,7 @@ export default function SideProjects() {
   const handleDeclineFriendRequest = async (senderId) => {
     try {
       await axios.put(
-        `http://127.0.0.1:8000/api/friend-requests/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friend-requests/`,
         {
           friendrequest_id: senderId,
           friendrequest_status: "đã từ chối",
@@ -202,14 +202,17 @@ export default function SideProjects() {
   // Unfriend
   const handleUnfriend = async () => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/unfriend/`, {
-        data: {
-          friend_user_id: selectedFriendId,
-        },
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-        },
-      });
+      await axios.delete(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/unfriend/`,
+        {
+          data: {
+            friend_user_id: selectedFriendId,
+          },
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
 
       setFriends((prevFriends) =>
         prevFriends.filter((friend) => friend.user_id !== selectedFriendId)
@@ -226,7 +229,7 @@ export default function SideProjects() {
   const handleDeleteSender = (senderId) => async () => {
     try {
       await axios.delete(
-        `http://127.0.0.1:8000/api/friend-requests/${senderId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/friend-requests/${senderId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -292,7 +295,10 @@ export default function SideProjects() {
               className="p-4 rounded-lg flex items-center bg-white text-black font-bold"
             >
               <img
-                src={"http://127.0.0.1:8000" + friend.user.avatar}
+                src={
+                  `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}` +
+                  friend.user.avatar
+                }
                 alt={`${friend.user.username} avatar`}
                 className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid cursor-pointer"
                 onClick={toggleMenu}
@@ -394,7 +400,8 @@ export default function SideProjects() {
                   <div className="flex items-center">
                     <img
                       src={
-                        "http://127.0.0.1:8000" + receive.sender_profile.avatar
+                        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}` +
+                        receive.sender_profile.avatar
                       }
                       alt={`${receive.sender_profile.user.username} avatar`}
                       className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"
@@ -434,7 +441,8 @@ export default function SideProjects() {
                 >
                   <img
                     src={
-                      "http://127.0.0.1:8000" + sender.receiver_profile.avatar
+                      `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}` +
+                      sender.receiver_profile.avatar
                     }
                     alt={`${sender.receiver_profile.user.username} avatar`}
                     className="w-10 h-10 rounded-full mr-4 object-contain bg-slate-200 border-[1px] border-[#3CA9F9] border-solid"

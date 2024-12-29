@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../../AppProvider";
 import { useNavigate, useParams } from "react-router-dom";
 import Logo from "../../../assets/image/Logo.png";
+import User from "../../../assets/image/User.png";
 
 const ReportDetail = () => {
   const [report, setReport] = useState(null);
@@ -16,7 +17,7 @@ const ReportDetail = () => {
     const fetchReportDetail = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/report/${reportId}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/${reportId}/`,
           {
             method: "GET",
             headers: {
@@ -48,7 +49,7 @@ const ReportDetail = () => {
     console.log("Resolving report with ID:", reportId);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/report/${reportId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/${reportId}/`,
         {
           method: "PUT",
           headers: {
@@ -111,7 +112,12 @@ const ReportDetail = () => {
               </h2>
               <div className="flex items-center space-x-4">
                 <img
-                  src={`http://127.0.0.1:8000${report.reportee_avt}`}
+                  // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`}
+                  src={
+                    report.reportee_avt
+                      ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reportee_avt}`
+                      : User
+                  }
                   alt={report.reportee_name}
                   className="w-16 h-16 rounded-full object-cover border-2 border-blue-400"
                 />
@@ -136,7 +142,12 @@ const ReportDetail = () => {
               </h2>
               <div className="flex items-center space-x-4">
                 <img
-                  src={`http://127.0.0.1:8000${report.reported_user_avt}`}
+                  // src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`}
+                  src={
+                    report.reported_user_avt
+                      ? `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${report.reported_user_avt}`
+                      : User
+                  }
                   alt={report.reported_user_name}
                   className="w-16 h-16 rounded-full object-cover border-2 border-red-400"
                 />
