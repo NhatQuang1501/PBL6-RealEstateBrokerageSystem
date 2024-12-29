@@ -307,15 +307,79 @@ const DetailPost = () => {
         <div className="p-6 mb-5 ml-10 w-[57rem] rounded-lg bg-white">
           {post ? (
             <>
-              <div className="flex items-center justify-between mb-24 ">
-                <h3 className="text-xl font-bold text-blue-500 flex items-center gap-3 ">
-                  <FontAwesomeIcon
-                    icon={faListAlt}
-                    className=" bg-white p-2 w-5 h-5 rounded-full shadow-md"
-                  />
+              <div className="flex justify-center items-end mb-5">
+                <h1 className="text-xl text-center text-blue-500 font-bold mb-3 w-auto bg-white px-5 py-1 rounded-3xl shadow-md underline flex items-center border-[1px] border-solid border-gray-300">
+                  <FontAwesomeIcon icon={faListAlt} className="text-lg mr-2" />
                   Chi tiết bài đăng
-                </h3>
+                </h1>
+              </div>
 
+              <div className="flex justify-between items-center px-2 py-4">
+                <h1 className="text-xl font-semibold text-black rounded-lg flex items-center">
+                  <FaPen className="mr-2" />
+                  {post.title}
+                </h1>
+                <div
+                  className={`px-5 max-w-[15rem] text-center py-2 text-white font-bold rounded-[0.5rem] ${getStatusClass(
+                    post.sale_status
+                  )}`}
+                >
+                  {post.sale_status}
+                </div>
+              </div>
+
+              <div className="mt-4 flex justify-center items-center gap-10"></div>
+
+              {/* Profile + reaction */}
+              <div className="flex flex-row justify-between border-b-[2px] border-gray-300 border-solid pb-5">
+                <div className="">
+                  <ProfileInformation
+                    name={post.user.username}
+                    user_id={post.user.user_id}
+                    date={post.created_at}
+                  />
+                </div>
+
+                <div className="flex space-x-8 mt-4 justify-end">
+                  {/* Heart */}
+                  <div className="flex items-end text-gray-500 space-x-1">
+                    <button
+                      onClick={handleClick}
+                      className="focus:outline-none"
+                    >
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        className={`w-6 h-6 transition duration-100 ${
+                          isClicked ? "text-red-400" : "text-gray-500"
+                        }`}
+                      />
+                    </button>
+                    <span>{reactionsCount}</span>
+                  </div>
+                  {/* Chat */}
+                  <div className="flex items-end text-[#3CA9F9] space-x-1">
+                    <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
+                    <span>{commentCount}</span>
+                  </div>
+
+                  {/* Save */}
+                  <div className="flex items-end text-gray-500 space-x-1">
+                    <button
+                      onClick={handleSaveClick}
+                      className="focus:outline-none"
+                    >
+                      <FontAwesomeIcon
+                        icon={faBookmark}
+                        className={`w-6 h-6 transition duration-100 ${
+                          isSaved ? "text-yellow-400" : "text-gray-500"
+                        }`}
+                      />
+                    </button>
+                    <span>{savesCount}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center mb-10 mt-5 border-b-[2px] border-gray-300 border-solid pb-5">
                 <div className="flex items-center gap-5">
                   {post &&
                     post.user.user_id === id &&
@@ -620,71 +684,6 @@ const DetailPost = () => {
                       </button>
                     </>
                   )}
-                </div>
-              </div>
-              <div className="flex justify-between items-center px-2 py-4">
-                <h1 className="text-xl font-semibold text-black rounded-lg flex items-center">
-                  <FaPen className="mr-2" />
-                  {post.title}
-                </h1>
-                <div
-                  className={`px-5 max-w-[15rem] text-center py-2 text-white font-bold rounded-[0.5rem] ${getStatusClass(
-                    post.sale_status
-                  )}`}
-                >
-                  {post.sale_status}
-                </div>
-              </div>
-
-              <div className="mt-4 flex justify-center items-center gap-10"></div>
-
-              {/* Profile + reaction */}
-              <div className="flex flex-row justify-between border-b-[2px] border-gray-300 border-solid pb-5">
-                <div className="">
-                  <ProfileInformation
-                    name={post.user.username}
-                    user_id={post.user.user_id}
-                    date={post.created_at}
-                  />
-                </div>
-
-                <div className="flex space-x-8 mt-4 justify-end">
-                  {/* Heart */}
-                  <div className="flex items-end text-gray-500 space-x-1">
-                    <button
-                      onClick={handleClick}
-                      className="focus:outline-none"
-                    >
-                      <FontAwesomeIcon
-                        icon={faHeart}
-                        className={`w-6 h-6 transition duration-100 ${
-                          isClicked ? "text-red-400" : "text-gray-500"
-                        }`}
-                      />
-                    </button>
-                    <span>{reactionsCount}</span>
-                  </div>
-                  {/* Chat */}
-                  <div className="flex items-end text-[#3CA9F9] space-x-1">
-                    <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
-                    <span>{commentCount}</span>
-                  </div>
-
-                  {/* Save */}
-                  <div className="flex items-end text-gray-500 space-x-1">
-                    <button
-                      onClick={handleSaveClick}
-                      className="focus:outline-none"
-                    >
-                      <FontAwesomeIcon
-                        icon={faBookmark}
-                        className={`w-6 h-6 transition duration-100 ${
-                          isSaved ? "text-yellow-400" : "text-gray-500"
-                        }`}
-                      />
-                    </button>
-                    <span>{savesCount}</span>
-                  </div>
                 </div>
               </div>
 
