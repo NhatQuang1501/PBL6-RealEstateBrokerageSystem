@@ -13,7 +13,7 @@ const ManagerUserAccount = () => {
       setCurrentPage(parseInt(savedPage, 10));
     }
   }, []);
-  const itemsPerPage = 7;
+  const itemsPerPage = 8;
   const totalPages = Math.ceil(accounts.length / itemsPerPage);
   const indexOfLastAccount = currentPage * itemsPerPage;
   const indexOfFirstAccount = indexOfLastAccount - itemsPerPage;
@@ -202,11 +202,11 @@ const ManagerUserAccount = () => {
 
   return (
     <div className="container mx-auto p-2 bg-white shadow-md rounded-lg whitespace-nowrap">
-      <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800">
+      <h2 className="text-2xl font-semibold mb-8 text-center text-gray-800 underline">
         Danh Sách Tài Khoản
       </h2>
 
-      <div className="overflow-x-auto shadow-sm rounded-lg h-[31rem]">
+      <div className="overflow-x-auto shadow-sm rounded-lg h-[33.5rem]">
         <table className="min-w-full border-collapse text-sm">
           <thead>
             <tr className="bg-blue-200 text-gray-800 text-center font-bold ">

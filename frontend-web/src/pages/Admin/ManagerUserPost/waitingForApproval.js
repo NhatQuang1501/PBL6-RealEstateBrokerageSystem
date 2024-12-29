@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import Pagination from "../../../components/pagination/pagination";
 import axios from "axios";
 import { useAppContext } from "../../../AppProvider";
-// import { useNavigate } from "react-router-dom";
 import Panel from "../../../components/panel/Panel";
 import Post from "../../../components/item_post/Post";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListAlt } from "@fortawesome/free-solid-svg-icons";
 
 const PenddingPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -74,9 +75,15 @@ const PenddingPosts = () => {
 
   return (
     <div className="">
-      <h1 className="text-xl font-bold mb-1 text-center">
-        Danh Sách Bài Đăng Chờ Duyệt
-      </h1>
+      <div className="flex justify-center items-end">
+        <h1 className="text-xl text-center font-bold mb-3 w-auto bg-white px-5 py-1 rounded-3xl shadow-md underline flex items-center border-[1px] border-solid border-gray-400">
+          <FontAwesomeIcon
+            icon={faListAlt}
+            className="text-lg text-black mr-2"
+          />
+          Danh Sách Bài Đăng Chờ Duyệt
+        </h1>
+      </div>
       <div className="rounded-lg h-[39rem] overflow-auto">
         <Panel className="flex flex-col h-full" type="personal-page">
           <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
