@@ -93,14 +93,10 @@ const NotifyUser = () => {
     );
   };
 
-  // const handleGoToReport = (reportId) => {
-  //   navigate(`/admin/manage-report/${reportId}`);
-  //   setIsDropdownOpen(false);
-  // };
-
   const handleGoToPost = (postId) => {
-    navigate(`/user/detail-post/${postId}`);
+    navigate(`/user/detail-post/${postId}`, { replace: true });
     setIsDropdownOpen(false);
+    window.location.reload();
   };
 
   const handleGoToChatRoom = () => {

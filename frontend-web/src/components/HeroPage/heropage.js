@@ -105,7 +105,7 @@ const HeroSection = ({
 
         <div className="w-full absolute bottom-[7rem]">
           <div className="rounded-lg w-[70%] m-auto">
-            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-500 border-double">
+            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-200 border-double">
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === ""
@@ -138,7 +138,7 @@ const HeroSection = ({
               </button>
             </div>
 
-            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-gray-500 border-double">
+            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-gray-200 border-double">
               <div className="grid grid-cols-4 gap-6">
                 <div>
                   <label
