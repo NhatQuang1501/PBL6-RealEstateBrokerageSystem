@@ -95,12 +95,15 @@ WSGI_APPLICATION = "backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD_PRODUCTION"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME_PROD"),
+        "USER": os.getenv("DB_USER_PROD"),
+        "PASSWORD": os.getenv("DB_PASSWORD_PROD"),
+        "HOST": os.getenv("DB_HOST_PROD"),
+        "PORT": os.getenv("DB_PORT_PROD"),
+        "OPTIONS": {
+            "sslmode": "require",  # Đảm bảo kết nối SSL
+        },
     }
 }
 
@@ -141,7 +144,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = BASE_DIR / "static"
+STATICFILES = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
