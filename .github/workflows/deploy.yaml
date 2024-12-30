@@ -53,7 +53,7 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           cd pbl6
-          cd PBL6_RealEstateBrokerageSystem
+          cd PBL6-RealEstateBrokerageSystem
           git checkout deploy
           git pull origin deploy
           cd backend
