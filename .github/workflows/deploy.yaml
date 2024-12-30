@@ -52,7 +52,8 @@ jobs:
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
-          cd /root/pbl6/PBL6_RealEstateBrokerageSystem
+          cd pbl6
+          cd PBL6_RealEstateBrokerageSystem
           git checkout deploy
           git pull origin deploy
           cd backend
