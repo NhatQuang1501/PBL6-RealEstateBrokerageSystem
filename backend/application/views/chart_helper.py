@@ -15,14 +15,14 @@ class ChartHelper():
             start_date = end_date - timedelta(days=1)
             trunc_func = TruncDay
         elif period == 'week':
-            start_date = end_date - timedelta(weeks=1)
-            trunc_func = TruncWeek
+            start_date = end_date - timedelta(days=7)
+            trunc_func = TruncDay
         elif period == 'month':
             start_date = end_date - timedelta(days=30)
-            trunc_func = TruncMonth
+            trunc_func = TruncWeek
         elif period == 'year':
             start_date = end_date - timedelta(days=365)
-            trunc_func = TruncYear
+            trunc_func = TruncMonth
         else:
             start_date = datetime.min.replace(tzinfo=timezone.utc)
             trunc_func = TruncYear
@@ -44,13 +44,16 @@ class ChartHelper():
             start_date = end_date - timedelta(days=1)
             trunc_func = TruncDay
         elif period == 'week':
-            start_date = end_date - timedelta(weeks=1)
-            trunc_func = TruncWeek
+            start_date = end_date - timedelta(days=7)
+            trunc_func = TruncDay
         elif period == 'month':
             start_date = end_date - timedelta(days=30)
+            trunc_func = TruncWeek
+        elif period == 'year':
+            start_date = end_date - timedelta(days=365)
             trunc_func = TruncMonth
         else:
-            start_date = end_date - timedelta(days=365)
+            start_date = datetime.min.replace(tzinfo=timezone.utc)
             trunc_func = TruncYear
 
         return Post.objects.filter(created_at__range=(start_date, end_date)).annotate(period=trunc_func('created_at')).values('period').annotate(count=Count('post_id')).order_by('period')

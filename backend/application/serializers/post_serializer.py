@@ -238,6 +238,7 @@ class PostSerializer(serializers.ModelSerializer):
 class PostCommentSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     fullname = serializers.SerializerMethodField()
+    avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = PostComment
@@ -247,6 +248,7 @@ class PostCommentSerializer(serializers.ModelSerializer):
             "user_id",
             "username",
             "fullname",
+            "avatar",
             "comment",
             "created_at",
             "is_report_removed",
@@ -268,6 +270,16 @@ class PostCommentSerializer(serializers.ModelSerializer):
     def get_fullname(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user_id)
         return user_profile.fullname
+    
+    def get_avatar(self, obj):
+        try:
+            user = UserProfile.objects.get(user=obj.user_id)
+            if user.avatar:
+                return user.avatar.url
+            else:
+                return None
+        except:
+            return None
 
 
 class PostReactionSerializer(serializers.ModelSerializer):
