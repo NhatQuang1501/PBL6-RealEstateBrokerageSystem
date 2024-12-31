@@ -804,7 +804,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             relativeLink = reverse(
                 "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
             )
-            absurl = f"http://{current_site}{relativeLink}"
+            absurl = f"https://{current_site}{relativeLink}"
             email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
             send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)
         return Response(

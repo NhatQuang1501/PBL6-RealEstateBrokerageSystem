@@ -52,7 +52,7 @@ def send_email_verification(user, request):
 
     current_site = get_current_site(request).domain
     relativeLink = reverse("email-verify")
-    verification_url = f"http://{current_site}{relativeLink}?token={str(token)}"
+    verification_url = f"https://{current_site}{relativeLink}?token={str(token)}"
 
     subject = "Xác thực tài khoản bạn đã đăng ký tại website Sweet Home"
 

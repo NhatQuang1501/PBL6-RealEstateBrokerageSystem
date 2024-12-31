@@ -7,6 +7,7 @@ from chatting.jwtTokenMiddleware import UserIDMiddleware
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
+django_asgi_app = get_asgi_application()
 
 application = ProtocolTypeRouter(
     {
