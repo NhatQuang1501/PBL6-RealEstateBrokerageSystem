@@ -7,11 +7,13 @@ from application.models import *
 
 def collaborative_filtering(user_id, num_recommendations=10):
     # Lấy tất cả các bài đăng đã duyệt và không phải của người dùng
-    author = get_object_or_404(User, user_id=user_id)
-    all_posts = Post.objects.filter(status=Status.APPROVED).exclude(
-        Q(user_id=author) | Q(sale_status=Sale_status.SOLD)
+    author = get_object_or_404(User.objects.only("user_id"), user_id=user_id)
+    all_posts = (
+        Post.objects.filter(status=Status.APPROVED)
+        .exclude(Q(user_id=author) | Q(sale_status=Sale_status.SOLD))
+        .only("post_id")
     )
-    all_users = User.objects.filter(role=Role.USER)
+    all_users = User.objects.filter(role=Role.USER).only("user_id")
 
     # Tạo ma trận tương tác giữa người dùng và bài đăng
     interaction_matrix = np.zeros((all_users.count(), all_posts.count()))

@@ -9,6 +9,7 @@ from application.serializers.report_serializer import ReportSerializer
 from accounts.models import User
 from accounts.enums import *
 from notification.notification_service import NotificationService
+from django.db.models import Q, F
 
 
 class ReportView(APIView):
@@ -23,27 +24,24 @@ class ReportView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            reported_user = User.objects.filter(user_id=pk).first()
-            reportee = User.objects.filter(user_id=pk).first()
-            report = Report.objects.filter(report_id=pk).first()
-            if reported_user:
-                reports = Report.objects.filter(
-                    reported_user=reported_user, resolved=False
+            reports = Report.objects.filter(
+                Q(reported_user__user_id=pk) | Q(reportee__user_id=pk) | Q(report_id=pk)
+            ).select_related("reported_user", "reportee", "post", "comment")
+            if not reports.exists():
+                return Response(
+                    {"message": "Không tìm thấy báo cáo"},
+                    status=status.HTTP_404_NOT_FOUND,
                 )
-                serializer = ReportSerializer(reports, many=True)
-                if reports:
-                    return Response(serializer.data)
-            if reportee:
-                reports = Report.objects.filter(reportee=reportee, resolved=False)
-                serializer = ReportSerializer(reports, many=True)
-                return Response(serializer.data)
-            if report:
-                serializer = ReportSerializer(report)
-                return Response(serializer.data)
-        else:
-            reports = Report.objects.filter(resolved=False).order_by("-created_at")
             serializer = ReportSerializer(reports, many=True)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            reports = (
+                Report.objects.filter(resolved=False)
+                .select_related("reported_user", "reportee", "post", "comment")
+                .order_by("-created_at")
+            )
+            serializer = ReportSerializer(reports, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         report = ReportSerializer(data=request.data)
@@ -69,18 +67,18 @@ class ReportView(APIView):
                     "reportee_name": str(reportee_name),
                     "reportee_avatar": reportee_avatar,
                     "reported_user_name": str(reported_user_name),
-                    "report_id": str(report.data["report_id"]),
+                    "report_type": report_type,
                 }
                 NotificationService.add_notification(admin, admin_noti, additional_info)
 
             return Response(report.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(report.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(report.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         report = get_object_or_404(Report, report_id=pk)
         report.resolved = True
         reported_user = report.reported_user
-        reported_user.profile.reputation_score -= 10
+        reported_user.profile.reputation_score = F("reputation_score") - 10
         report.save()
+        reported_user.profile.save()
         return Response(status=status.HTTP_200_OK)
