@@ -57,11 +57,15 @@ class StatisticView(APIView):
         }
 
     def get_posts_summary(self):
-        total_posts = Post.objects.count()
-        violated_posts = Post.objects.filter(status=Status.REJECTED).count()
+        total_posts = self.chart_helper.get_total_posts()
+        violated_posts = self.chart_helper.get_violated_posts()
+        house_posts = Post.objects.filter(estate_type=EstateType.HOUSE, status=Status.APPROVED).count()
+        land_posts = Post.objects.filter(estate_type=EstateType.LAND, status=Status.APPROVED).count()
         return {
             "total_posts": total_posts,
-            "violated_posts": violated_posts,
+            "rejected_posts": violated_posts,
+            "house_posts": house_posts,
+            "land_posts": land_posts,
         }
 
     def get_new_posts_statistics(self, period):

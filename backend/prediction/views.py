@@ -88,7 +88,8 @@ class PredictPriceView(APIView):
             has_rear_expansion=serializer.validated_data["has_rear_expansion"],
             orientation=serializer.validated_data["orientation"],
         )
-        price = int(price_m2 * area * 1000000)
+        price = int(price_m2 * area * 1000000 * 1.7)
+        price = price // 10000000 * 10000000
         return Response({"predicted_price": price}, status=status.HTTP_200_OK)
 
 
@@ -198,5 +199,6 @@ class PredictHousePriceView(APIView):
             street=street,
             ward=serializer.validated_data["ward"],
         )
-        price = int(price * 1000000000)
+        price = int(price * 1000000000 * 1.7)
+        price = price // 10000000 * 10000000
         return Response({"predicted_price": price}, status=status.HTTP_200_OK)
