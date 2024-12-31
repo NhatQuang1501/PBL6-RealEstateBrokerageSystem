@@ -10,9 +10,20 @@ from application.models import *
 
 def content_based_filtering(user_id, num_recommendations=10):
     # Lấy tất cả các bài đăng đã duyệt và không phải của người dùng
-    author = get_object_or_404(User, user_id=user_id)
-    all_posts = Post.objects.filter(status=Status.APPROVED).exclude(
-        Q(user_id=author) | Q(sale_status=Sale_status.SOLD)
+    author = get_object_or_404(User.objects.only("user_id"), user_id=user_id)
+    all_posts = (
+        Post.objects.filter(status=Status.APPROVED)
+        .exclude(Q(user_id=author) | Q(sale_status=Sale_status.SOLD))
+        .only(
+            "title",
+            "estate_type",
+            "city",
+            "district",
+            "ward",
+            "street",
+            "orientation",
+            "legal_status",
+        )
     )
 
     # Tạo ma trận đặc trưng cho các bài đăng

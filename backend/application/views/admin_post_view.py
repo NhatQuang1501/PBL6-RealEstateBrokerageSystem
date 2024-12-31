@@ -1,48 +1,45 @@
 import json
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, views
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from accounts.permission import *
-from accounts.models import *
-from accounts.enums import *
-from application.models import *
-from application.serializers.negotiation_serrializer import *
-from application.serializers.post_serializer import *
-from application.utils import *
+from accounts.permission import IsAdmin
+from accounts.models import User
+from accounts.enums import Status, NotificationType
+from application.models import Post
+from application.serializers.post_serializer import PostSerializer
 from django.shortcuts import get_object_or_404
 from notification.notification_service import NotificationService
 
 
 class AdminPostView(APIView):
     permission_classes = [IsAuthenticated, IsAdmin]
-    # getter = PostGetter()
 
     def get(self, request, pk=None):
         if pk:
-            post = Post.objects.get(post_id=pk)
-            if post:
-                serializer = PostSerializer(post)
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(
-                {"message": f"Bài đăng {pk} không tồn tại"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
+            post = Post.objects.select_related("user_id").get(post_id=pk)
+            serializer = PostSerializer(post)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            posts = Post.objects.filter(status=Status.PENDING_APPROVAL).order_by(
-                "-created_at"
+            posts = (
+                Post.objects.filter(status=Status.PENDING_APPROVAL)
+                .select_related("user_id")
+                .order_by("-created_at")
             )
             serializer = PostSerializer(posts, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
-    # Chức năng duyệt của Admin
     def post(self, request):
         post_id = request.data.get("post_id")
         post_status = request.data.get("status")
         post_status = Status.map_display_to_value(post_status)
-        post = Post.objects.get(post_id=post_id)
+        post = (
+            Post.objects.select_related("user_id")
+            .only("post_id", "status", "user_id")
+            .get(post_id=post_id)
+        )
         post.status = post_status
         post.save()
 
@@ -62,8 +59,10 @@ class AdminPostView(APIView):
         )
 
     def delete(self, request, pk):
-        post = get_object_or_404(Post, post_id=pk)
-        deleted_post = post
+        post = get_object_or_404(
+            Post.objects.select_related("user_id").only("post_id", "title", "user_id"),
+            post_id=pk,
+        )
         post_id = post.post_id
         post_title = post.title
         author = post.user_id

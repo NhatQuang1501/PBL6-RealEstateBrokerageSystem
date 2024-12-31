@@ -54,40 +54,21 @@ class PredictPriceView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # kiểm tra xem dữ liệu đầu vào có đầy đủ không
-        if "area" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing area"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "width" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing width"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "length" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing length"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "ward" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing ward"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "has_frontage" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing has_frontage"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "has_car_lane" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing has_car_lane"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "has_rear_expansion" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing has_rear_expansion"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        if "orientation" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing orientation"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        required_fields = [
+            "area",
+            "width",
+            "length",
+            "ward",
+            "has_frontage",
+            "has_car_lane",
+            "has_rear_expansion",
+            "orientation",
+        ]
+        for field in required_fields:
+            if field not in serializer.validated_data:
+                return Response(
+                    {"error": f"Missing {field}"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
         if serializer.validated_data["ward"] not in encoding_ward:
             return Response(
@@ -170,55 +151,25 @@ class PredictHousePriceView(APIView):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # kiểm tra xem dữ liệu đầu vào có đầy đủ không
-        if "area" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing area"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "floors" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing floors"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "rooms" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing rooms"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "toilets" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing toilets"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "house_type" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing house_type"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "furnishing_sell" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing furnishing_sell"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "living_size" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing living_size"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "width" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing width"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "length" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing length"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "orientation" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing orientation"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "street" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing street"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        if "ward" not in serializer.validated_data:
-            return Response(
-                {"error": "Missing ward"}, status=status.HTTP_400_BAD_REQUEST
-            )
+        required_fields = [
+            "area",
+            "floors",
+            "rooms",
+            "toilets",
+            "house_type",
+            "furnishing_sell",
+            "living_size",
+            "width",
+            "length",
+            "orientation",
+            "street",
+            "ward",
+        ]
+        for field in required_fields:
+            if field not in serializer.validated_data:
+                return Response(
+                    {"error": f"Missing {field}"}, status=status.HTTP_400_BAD_REQUEST
+                )
 
         street = serializer.validated_data["street"].lower()
         if street not in street_dict:

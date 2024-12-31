@@ -38,11 +38,7 @@ class SavePostView(APIView):
         posts = [saved_post.post for saved_post in saved_posts]
         post_serializer = PostSerializer(posts, many=True)
 
-        return Response(
-            # {"count": len(posts), "data": post_serializer.data},
-            post_serializer.data,
-            status=status.HTTP_200_OK,
-        )
+        return Response(post_serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, pk):
         # pk là post_id
