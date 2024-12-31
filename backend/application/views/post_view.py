@@ -56,6 +56,7 @@ class PostView(APIView):
                 )
                 post.view_count = F("view_count") + 1
                 post.save(update_fields=["view_count"])
+                post.refresh_from_db()
                 post_serializer = PostSerializer(
                     post, context={"request_type": "detail"}
                 )
