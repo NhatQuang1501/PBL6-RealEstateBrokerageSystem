@@ -59,9 +59,6 @@ class ChartHelper:
         else:
             start_date = datetime.min.replace(tzinfo=timezone.utc)
             trunc_func = TruncYear
-        else:
-            start_date = datetime.min.replace(tzinfo=timezone.utc)
-            trunc_func = TruncYear
 
         return (
             Post.objects.filter(created_at__range=(start_date, end_date))
