@@ -1,13 +1,15 @@
 import os
+import django
 from django.core.asgi import get_asgi_application
-from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.routing import ProtocolTypeRouter, URLRouter, get_default_application
 from channels.auth import AuthMiddlewareStack
 from backend.routing import websocket_urlpatterns
 from chatting.jwtTokenMiddleware import UserIDMiddleware
 
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
-django_asgi_app = get_asgi_application()
+django.setup()
+django_asgi_app = get_default_application()
 
 application = ProtocolTypeRouter(
     {
