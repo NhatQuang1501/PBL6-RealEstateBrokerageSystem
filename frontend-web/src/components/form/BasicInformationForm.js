@@ -29,6 +29,7 @@ import axios from "axios";
 import { FaSpinner, FaTimesCircle, FaCheckCircle } from "react-icons/fa";
 import House from "../../assets/image/House.jpg";
 import Land from "../../assets/image/Land.webp";
+import Swal from "sweetalert2";
 
 const BasicInformation = () => {
   let navigate = useNavigate();
@@ -268,6 +269,52 @@ const BasicInformation = () => {
         } else {
           console.error("post_id is missing in the response data");
         }
+      } else if (response.status === 400) {
+        console.log("Response error:", data);
+        const errorMessage =
+          data.error?.non_field_errors?.[0] ||
+          data.message ||
+          "Đăng bài thất bại!";
+
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: errorMessage,
+          confirmButtonText: "Đóng",
+          confirmButtonColor: "#dc3545",
+          customClass: {
+            title: "swal-title",
+            content: "swal-text",
+            confirmButton: "swal-confirm-button",
+            htmlContainer: "swal-html-container",
+          },
+          showClass: {
+            popup: "swal2-show",
+          },
+          didOpen: () => {
+            const popup = Swal.getPopup();
+            popup.style.fontFamily = "'Montserrat', sans-serif";
+
+            // Style error message
+            const content = Swal.getHtmlContainer();
+            content.style.cssText = `
+      text-align: left;
+      font-weight: 600;
+      padding: 0.5em 1em;
+    `;
+
+            // Style confirm button
+            const confirmButton = Swal.getConfirmButton();
+            confirmButton.style.cssText = `
+      font-weight: 600;
+      padding: 0.5em 2em;
+    `;
+
+            // Center title
+            const title = Swal.getTitle();
+            title.style.textAlign = "center";
+          },
+        });
       } else {
         console.log("Đăng bài thất bại!");
         alert("Đăng bài thất bại!");

@@ -33,11 +33,11 @@ const HeaderAdmin = ({ isCollapsed }) => {
 
   return (
     <div
-      className={`absolute top-2 flex justify-between items-center right-2 h-[48px] p-3 rounded-md transition-width duration-300 bg-white ${
+      className={`absolute top-2 flex justify-end items-center right-2 h-[48px] p-3 rounded-md transition-width duration-300 bg-white ${
         isCollapsed ? "w-[92vw]" : "w-[75.5vw]"
       }`}
     >
-      <div className="relative flex items-center w-[33%]">
+      {/* <div className="relative flex items-center w-[33%]">
         <svg
           className="absolute left-3 w-[20px] text-white"
           xmlns="http://www.w3.org/2000/svg"
@@ -50,7 +50,7 @@ const HeaderAdmin = ({ isCollapsed }) => {
           placeholder="Tìm kiếm ..."
           className="pl-10 p-2 bg-[#9EBBD8] text-white placeholder-white placeholder-opacity-75 w-full rounded-md"
         />
-      </div>
+      </div> */}
 
       <div className="relative flex items-center w-[150px]" ref={dropdownRef}>
         <NotifyAdmin />
