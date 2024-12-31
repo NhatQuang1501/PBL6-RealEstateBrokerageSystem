@@ -13,31 +13,38 @@ import { useNavigate } from "react-router-dom";
 const UpdateProfile = () => {
   const { id, sessionToken } = useAppContext();
   const [profileData, setProfileData] = useState({
-    email: "",
     fullname: "",
     city: "",
     birthdate: "",
     phone_number: "",
     gender: "Nam",
   });
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  let navigate = useNavigate();
+  const navigate = useNavigate();
 
+  // Fetch user data from the API
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
       );
-      setProfileData(response.data);
-      setLoading(false);
+      const { fullname, city, birthdate, phone_number, gender } = response.data;
+      setProfileData({ fullname, city, birthdate, phone_number, gender });
     } catch (err) {
+      console.error("Error fetching user data:", err);
       setError("Có lỗi xảy ra khi tải dữ liệu.");
+    } finally {
       setLoading(false);
     }
   };
 
+  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfileData((prevData) => ({
@@ -46,29 +53,43 @@ const UpdateProfile = () => {
     }));
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     try {
-      await axios.put(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`, profileData, {
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const payload = {
+        fullname: profileData.fullname,
+        city: profileData.city,
+        birthdate: profileData.birthdate,
+        phone_number: profileData.phone_number,
+        gender: profileData.gender,
+      };
+
+      await axios.put(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       alert("Cập nhật thông tin thành công!");
       navigate("/user/personal-page");
     } catch (err) {
+      console.error("Error updating profile:", err);
       setError("Có lỗi xảy ra khi cập nhật dữ liệu.");
     }
   };
 
   useEffect(() => {
     fetchUserData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) return <p>Đang tải dữ liệu...</p>;
-  if (error) return <p>{error}</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-100 to-blue-200 flex items-center justify-center font-montserrat">
@@ -77,13 +98,13 @@ const UpdateProfile = () => {
           Cập nhật hồ sơ
         </h1>
         <form onSubmit={handleSubmit}>
+          {/** Fullname Field */}
           <div className="mb-5">
             <label
               htmlFor="fullname"
               className="flex items-center text-gray-700 font-semibold mb-2"
             >
-              <FaUser className="mr-2 text-blue-500" />
-              Họ tên
+              <FaUser className="mr-2 text-blue-500" /> Họ tên
             </label>
             <input
               type="text"
@@ -95,13 +116,14 @@ const UpdateProfile = () => {
               required
             />
           </div>
+
+          {/** City Field */}
           <div className="mb-5">
             <label
               htmlFor="city"
               className="flex items-center text-gray-700 font-semibold mb-2"
             >
-              <FaMapMarkerAlt className="mr-2 text-blue-500" />
-              Thành phố
+              <FaMapMarkerAlt className="mr-2 text-blue-500" /> Thành phố
             </label>
             <input
               type="text"
@@ -113,13 +135,14 @@ const UpdateProfile = () => {
               required
             />
           </div>
+
+          {/** Birthdate Field */}
           <div className="mb-5">
             <label
               htmlFor="birthdate"
               className="flex items-center text-gray-700 font-semibold mb-2"
             >
-              <FaBirthdayCake className="mr-2 text-blue-500" />
-              Ngày sinh
+              <FaBirthdayCake className="mr-2 text-blue-500" /> Ngày sinh
             </label>
             <input
               type="date"
@@ -130,13 +153,14 @@ const UpdateProfile = () => {
               required
             />
           </div>
+
+          {/** Phone Number Field */}
           <div className="mb-5">
             <label
               htmlFor="phone_number"
               className="flex items-center text-gray-700 font-semibold mb-2"
             >
-              <FaPhone className="mr-2 text-blue-500" />
-              Số điện thoại
+              <FaPhone className="mr-2 text-blue-500" /> Số điện thoại
             </label>
             <input
               type="tel"
@@ -148,13 +172,14 @@ const UpdateProfile = () => {
               required
             />
           </div>
+
+          {/** Gender Field */}
           <div className="mb-5">
             <label
               htmlFor="gender"
               className="flex items-center text-gray-700 font-semibold mb-2"
             >
-              <FaTransgenderAlt className="mr-2 text-blue-500" />
-              Giới tính
+              <FaTransgenderAlt className="mr-2 text-blue-500" /> Giới tính
             </label>
             <select
               name="gender"
@@ -168,6 +193,7 @@ const UpdateProfile = () => {
               <option value="Khác">Khác</option>
             </select>
           </div>
+
           <button
             type="submit"
             className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg w-full transition duration-300"
