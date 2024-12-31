@@ -838,6 +838,20 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+# class PasswordTokenCheckAPI(generics.GenericAPIView):
+#     def get(self, request, uidb64, token):
+#         try:
+#             uid = force_str(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+
+#             if not PasswordResetTokenGenerator().check_token(user, token):
+#                 return redirect(f'{frontend_url}/password-reset-invalid')
+
+#             return redirect(f'{frontend_url}/reset-password?uidb64={uidb64}&token={token}')
+
+#         except DjangoUnicodeDecodeError as identifier:
+#             return redirect(f'{frontend_url}/password-reset-invalid')
+        
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
     permission_classes = [AllowAny]
