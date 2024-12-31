@@ -48,7 +48,7 @@ const ReportPopup = ({
 
     try {
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/report/",
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/report/`,
         reportData,
         {
           headers: {
@@ -57,12 +57,18 @@ const ReportPopup = ({
           },
         }
       );
+      if(response.status === 201) {
       console.log("Report submitted successfully:", response.data);
       alert("Báo cáo đã được gửi thành công!");
       onClose();
+      }
+      else if(response.status === 400) {
+        alert("Báo cáo đã được gửi trước đó!");
+        onClose();
+      }
     } catch (error) {
       console.error("Error submitting report:", error);
-      alert("Có lỗi xảy ra khi gửi báo cáo.");
+      alert("Báo cáo đã được gửi trước đó!");
     }
   };
 
@@ -70,7 +76,7 @@ const ReportPopup = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-[80rem] max-w-[70rem] space-y-6 relative overflow-y-auto max-h-[100vh]">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-[80rem] max-w-[70rem] space-y-6 relative overflow-y-auto max-h-[100vh] text-black">
         <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center border-solid border-gray-500 border-b-[2px] pb-5">
           Báo cáo{" "}
           {reportType === "user"
@@ -121,13 +127,13 @@ const ReportPopup = ({
         {/* Buttons */}
         <div className="flex justify-center gap-4">
           <button
-            className="bg-gray-300 text-gray-700 px-5 py-2 rounded-lg hover:bg-gray-400 transition-all"
+            className="bg-gray-300 text-gray-700 font-semibold px-5 py-2 rounded-lg hover:bg-gray-400 transition-all"
             onClick={onClose}
           >
             Hủy
           </button>
           <button
-            className="bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition-all"
+            className="bg-red-600 text-white font-semibold px-5 py-2 rounded-lg hover:bg-red-700 transition-all"
             onClick={handleReportSubmit}
           >
             Gửi báo cáo

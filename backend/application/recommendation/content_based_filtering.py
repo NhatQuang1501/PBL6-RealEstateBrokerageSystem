@@ -1,14 +1,30 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+from django.shortcuts import get_object_or_404
+from django.db.models import Q
 from accounts.models import *
 from accounts.enums import *
 from application.models import *
 
 
 def content_based_filtering(user_id, num_recommendations=10):
-    # Lấy tất cả các bài đăng đã duyệt
-    all_posts = Post.objects.filter(status=Status.APPROVED)
+    # Lấy tất cả các bài đăng đã duyệt và không phải của người dùng
+    author = get_object_or_404(User.objects.only("user_id"), user_id=user_id)
+    all_posts = (
+        Post.objects.filter(status=Status.APPROVED)
+        .exclude(Q(user_id=author) | Q(sale_status=Sale_status.SOLD))
+        .only(
+            "title",
+            "estate_type",
+            "city",
+            "district",
+            "ward",
+            "street",
+            "orientation",
+            "legal_status",
+        )
+    )
 
     # Tạo ma trận đặc trưng cho các bài đăng
     post_features = []

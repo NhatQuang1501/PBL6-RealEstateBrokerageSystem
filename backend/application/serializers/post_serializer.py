@@ -194,10 +194,20 @@ class PostSerializer(serializers.ModelSerializer):
         length = data.get("length")
         width = data.get("width")
 
+        try:
+            area = float(area)
+            length = float(length)
+            width = float(width)
+        except (TypeError, ValueError):
+            raise serializers.ValidationError(
+                "Diện tích, chiều dài và chiều rộng phải là số."
+            )
+
+        error = area * 0.1
         if area is not None and length is not None and width is not None:
-            if abs(area - (length * width)) >= 10:
+            if abs(area - (length * width)) >= error:
                 raise serializers.ValidationError(
-                    "Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số < 10m2)"
+                    f"Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số 10% so với diện tích): {length * width} không tương đương {area} sai số {error} m2"
                 )
 
         return data

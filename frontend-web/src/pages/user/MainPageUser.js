@@ -3,7 +3,11 @@ import Post from "../../components/item_post/Post";
 import Pagination from "../../components/pagination/pagination";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
+import {
+  faListAlt,
+  faEdit,
+  faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../AppProvider";
 import { useNavigate } from "react-router-dom";
 
@@ -51,32 +55,48 @@ const MainPageUser = ({
       let url;
       if (searchValue) {
         url = searchValue
-          ? `http://127.0.0.1:8000/api/search/?text=${encodeURIComponent(
-              searchValue
-            )}`
-          : "http://127.0.0.1:8000/api/posts/";
+          ? `${
+              process.env.REACT_APP_SWEETHOME_API_ENDPOINT
+            }/api/search/?text=${encodeURIComponent(searchValue)}`
+          : `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`;
       } else if (typePost) {
         if (typePost === "house") {
-          url = "http://127.0.0.1:8000/api/posts/?category=house";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=house`;
         } else if (typePost === "land") {
-          url = "http://127.0.0.1:8000/api/posts/?category=land";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=land`;
         }
       } else {
         if (sortOption === "Mới nhất") {
-          url = "http://127.0.0.1:8000/api/posts/";
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/`;
         } else if (sortOption === "Cũ nhất") {
-          url = `http://127.0.0.1:8000/api/posts/?category=oldest posts`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=oldest posts`;
         } else if (sortOption === "Nổi bật") {
-          url = `http://127.0.0.1:8000/api/posts/?category=popular`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/?category=popular`;
+        } else if (sortOption === "Đề xuất") {
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts-recommendation/?num_recommendations=10`;
         }
       }
       try {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        let response;
+        if (
+          url ===
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts-recommendation/?num_recommendations=10`
+        ) {
+          response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionToken}`,
+            },
+          });
+        } else {
+          response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+        }
 
         const data = await response.json();
         console.log("Post data:", data);
@@ -222,6 +242,7 @@ const MainPageUser = ({
     filterDistrictValue,
     sortOption,
     typePost,
+    sessionToken,
   ]);
 
   const handleCreatePostClick = () => {
@@ -240,34 +261,35 @@ const MainPageUser = ({
 
   return (
     <div className="font-montserrat main-content">
-      <div className="flex items-center justify-between w-[72%] ml-5 mt-6 mb-4 px-6 py-2 bg-gradient-to-r from-gray-400 to-gray-600 rounded-lg shadow-lg">
+      <div className="flex items-center justify-between w-[75%] mt-6 mb-4 px-6 py-2">
         {!searchValue ? (
-          <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h3 className="text-xl font-bold text-blue-500 flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-gray-500 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-blue-500 bg-white p-2 w-5 h-5 rounded-full shadow-md"
             />
             Danh sách bài đăng
           </h3>
         ) : (
-          <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h3 className="text-2xl font-bold text-blue-500 flex items-center gap-3">
             <FontAwesomeIcon
               icon={faListAlt}
-              className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
+              className="text-blue-500 bg-white p-2 w-5 h-5 rounded-full shadow-md"
             />
             Đã tìm kiếm theo "<span className="italic">{searchValue}</span>"
           </h3>
         )}
         <div className="relative">
           <div
-            className="text-white font-semibold underline hover:text-blue-300 transition-colors duration-200 cursor-pointer"
+            className="text-blue-500 bg-white p-2 rounded-2xl font-semibold underline hover:text-blue-600 transition-colors duration-200 cursor-pointer border-[2px] border-solid border-gray-300"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
             Sắp xếp theo
+            <FontAwesomeIcon icon={faCaretDown} className="ml-2" />
           </div>
           {isDropdownOpen && (
-            <div className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10">
-              <ul className="py-1">
+            <div className="absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10  border-[1px] border-solid border-gray-300">
+              <ul className="py-1 font-semibold">
                 <li
                   className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
                   onClick={() => handleSortOptionClick("Mới nhất")}
@@ -285,6 +307,12 @@ const MainPageUser = ({
                   onClick={() => handleSortOptionClick("Nổi bật")}
                 >
                   Nổi bật
+                </li>
+                <li
+                  className="block px-4 py-2 text-gray-800 hover:bg-blue-500 hover:text-white cursor-pointer"
+                  onClick={() => handleSortOptionClick("Đề xuất")}
+                >
+                  Đề xuất với bạn
                 </li>
               </ul>
             </div>
@@ -325,7 +353,7 @@ const MainPageUser = ({
       </Panel>
       <div
         onClick={handleCreatePostClick}
-        className="fixed bottom-4 right-4 bg-gray-500 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-[#005bb5] transition duration-300 cursor-pointer"
+        className="fixed bottom-4 right-4 bg-blue-400 text-white p-4 rounded-full shadow-lg flex items-center justify-center hover:bg-blue-500 transition duration-300 cursor-pointer"
         style={{ zIndex: 1000 }}
         title="Tạo bài đăng"
       >

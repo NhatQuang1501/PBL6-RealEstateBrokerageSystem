@@ -49,7 +49,7 @@ const HeroSection = ({
 
   const handleSearchSubmit = () => {
     setSearchValue(inputValue);
-    alert(`Đang tìm kiếm theo: ${inputValue}`);
+    setIsPopupOpen(false);
     window.scrollBy({
       top: 300,
       behavior: "smooth",
@@ -105,12 +105,22 @@ const HeroSection = ({
 
         <div className="w-full absolute bottom-[7rem]">
           <div className="rounded-lg w-[70%] m-auto">
-            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-500 border-double">
+            <div className="flex justify-center w-[28%] bg-white px-3 py-3 rounded-t-2xl gap-3 z-10 border-l-2 border-gray-200 border-double">
+              <button
+                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
+                  type === ""
+                    ? "bg-blue-500 text-white scale-105"
+                    : "text-black hover:bg-blue-500 hover:text-white"
+                }`}
+                onClick={() => setType("")}
+              >
+                Tất cả
+              </button>
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "house"
-                    ? "bg-gray-500 text-white scale-105"
-                    : "text-black hover:bg-gray-500 hover:text-white"
+                    ? "bg-blue-500 text-white scale-105"
+                    : "text-black hover:bg-blue-500 hover:text-white"
                 }`}
                 onClick={() => setType("house")}
               >
@@ -119,26 +129,16 @@ const HeroSection = ({
               <button
                 className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
                   type === "land"
-                    ? "bg-gray-500 text-white scale-105"
-                    : "text-black hover:bg-gray-500 hover:text-white"
+                    ? "bg-blue-500 text-white scale-105"
+                    : "text-black hover:bg-blue-500 hover:text-white"
                 }`}
                 onClick={() => setType("land")}
               >
                 Đất
               </button>
-              <button
-                className={`tab-btn font-semibold px-4 py-2 rounded-xl z-10 transition-all duration-300 ease-in-out transform ${
-                  type === "news"
-                    ? "bg-gray-500 text-white scale-105"
-                    : "text-black hover:bg-gray-500 hover:text-white"
-                }`}
-                onClick={() => setType("news")}
-              >
-                Tin tức
-              </button>
             </div>
 
-            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-gray-500 border-double">
+            <div className="bg-white shadow-lg px-10 py-5 rounded-e-2xl rounded-es-2xl border-l-2 border-b-2 border-r-2 border-gray-200 border-double">
               <div className="grid grid-cols-4 gap-6">
                 <div>
                   <label
@@ -154,7 +154,7 @@ const HeroSection = ({
                     placeholder="Tìm kiếm ..."
                     value={inputValue}
                     onClick={handleInputClick}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-gray-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
                     readOnly
                   />
 
@@ -187,12 +187,23 @@ const HeroSection = ({
                             type="text"
                             value={popupValue}
                             onChange={handlePopupChange}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                // Create synthetic event object
+                                const syntheticEvent = {
+                                  target: e.target,
+                                  currentTarget: e.currentTarget,
+                                };
+                                handleOutsideClick(syntheticEvent);
+                              }
+                            }}
                             placeholder="Nhập nội dung tìm kiếm..."
-                            className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 transition-shadow"
+                            className="w-full p-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 transition-shadow"
+                            autoFocus
                           />
                         </div>
 
-                        <div className="mt-4 text-sm text-gray-500 italic flex items-center">
+                        <div className="mt-4 text-sm text-blue-500 italic flex items-center">
                           <FaLightbulb className="mr-2" />
                           <p>
                             Bạn có thể tìm kiếm các bài đăng có liên quan đến
@@ -214,7 +225,7 @@ const HeroSection = ({
                     id="category"
                     name="category"
                     onChange={handleFilterStatusChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:blue-500 focus:border-blue-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="Đang bán">Đang bán</option>
@@ -234,7 +245,7 @@ const HeroSection = ({
                     id="price"
                     name="price"
                     onChange={handleFilterPriceChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:blue-500 focus:border-blue-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="<=500">Dưới 500 triệu</option>
@@ -258,7 +269,7 @@ const HeroSection = ({
                     id="area"
                     name="area"
                     onChange={handleFilterAreaChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:gray-500 focus:border-gray-500"
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:blue-500 focus:border-blue-500"
                   >
                     <option value="">Tất cả</option>
                     <option value="<=50">Dưới 50m2</option>
@@ -275,11 +286,11 @@ const HeroSection = ({
 
               <button
                 onClick={handleSearchSubmit}
-                className="w-1/4 py-2 bg-gray-500 text-white font-semibold rounded-md mt-3"
+                className="w-[23.3%] py-2 bg-blue-500 text-white font-semibold rounded-md mt-3"
               >
                 Tìm kiếm
               </button>
-              <span className="w-ful h-[5rem] mt-3 ml-[7rem] text-center italic text-gray-500">
+              <span className="w-ful h-[5rem] mt-3 ml-[8rem] text-center italic text-gray-500">
                 * Bạn có thể kết hợp các điều kiện lọc cùng lúc.
               </span>
             </div>

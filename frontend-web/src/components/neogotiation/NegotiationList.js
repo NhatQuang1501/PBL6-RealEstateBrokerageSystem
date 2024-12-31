@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import axios from "axios";
 
@@ -19,11 +20,17 @@ import {
   faTimesCircle,
   faStickyNote,
   faCreditCard,
+  faEllipsisV,
+  faFlag,
+  faX,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
+import ReportPopup from "../report/ReportPopup ";
 
 const NegotiationList = ({ type }) => {
   const { postId } = useParams();
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
+  let navigate = useNavigate();
 
   const [negotiations, setNegotiations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,11 +48,33 @@ const NegotiationList = ({ type }) => {
   const [order, setOrder] = useState("desc");
   const [amount, setAmount] = useState("5");
 
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef(null);
+  const [reportType, setReportType] = useState("");
+  const [isReportPopupOpen, setIsReportPopupOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen((prev) => !prev);
+  };
+
+  const closeReportPopup = () => {
+    setIsReportPopupOpen(false);
+  };
+
+  const handlePersonalProfileClick = (user_id) => {
+    navigate(`/user/profile/${user_id}`);
+  };
+
+  const openReportPopup = (type) => {
+    setReportType(type);
+    setIsReportPopupOpen(true);
+  };
+
   useEffect(() => {
     const fetchNegotiations = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/post-negotiations/${postId}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${postId}/`,
           {
             params: {
               sort_by: sortBy,
@@ -72,7 +101,7 @@ const NegotiationList = ({ type }) => {
   const handleAcceptNegotiation = async (negotiationId) => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/accept-negotiations/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/accept-negotiations/`,
         {
           negotiation_id: negotiationId,
           is_accepted: true,
@@ -92,10 +121,10 @@ const NegotiationList = ({ type }) => {
     }
   };
 
-  const openModal = (negotiationId) => {
-    setSelectedNegotiationId(negotiationId);
-    setIsModalOpen(true);
-  };
+  // const openModal = (negotiationId) => {
+  //   setSelectedNegotiationId(negotiationId);
+  //   setIsModalOpen(true);
+  // };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -150,7 +179,7 @@ const NegotiationList = ({ type }) => {
     const numericPrice = proposalPrice.replace(/,/g, "");
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/send-proposal/${negotiationId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/send-proposal/${negotiationId}/`,
         {
           proposal_price: parseInt(numericPrice, 10),
           proposal_date: proposalDate,
@@ -194,7 +223,7 @@ const NegotiationList = ({ type }) => {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/negotiation-proposal/${negotiationId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/negotiation-proposal/${negotiationId}/`,
         {
           headers: {
             Authorization: `Bearer ${sessionToken}`,
@@ -247,7 +276,7 @@ const NegotiationList = ({ type }) => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/accept-proposal/${proposalID}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/accept-proposal/${proposalID}/`,
         {
           is_accepted: true,
           negotiation_price: parseInt(numericPrice, 10),
@@ -317,7 +346,7 @@ const NegotiationList = ({ type }) => {
   const handleConsiderNegotiation = async (negotiationId) => {
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/consider-negotiations/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/consider-negotiations/`,
         {
           negotiation_id: negotiationId,
           is_considered: true,
@@ -330,7 +359,7 @@ const NegotiationList = ({ type }) => {
       );
       if (response.status === 200) {
         alert("Đã xem xét thương lượng thành công !");
-        window.location.reload();
+        navigate(`/user/chat`);
       } else {
         alert("Đã xảy ra lỗi khi xem xét thương lượng !");
         window.location.reload();
@@ -340,89 +369,138 @@ const NegotiationList = ({ type }) => {
     }
   };
 
+  const handleToRoomChat = () => {
+    navigate(`/user/chat`);
+  };
+
+  // Xóa thương lượng
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedNegotiationIdDelete, setSelectedNegotiationIdDelete] =
+    useState(null);
+
+  const openDelete = (negotiationId) => {
+    setSelectedNegotiationIdDelete(negotiationId);
+    setIsDeleteOpen(true);
+  };
+
+  const closeDelete = () => {
+    setSelectedNegotiationIdDelete(null);
+    setIsDeleteOpen(false);
+  };
+
+  const handleDeleteNegotiation = async (negotiationId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${negotiationId}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log("Delete negotiation successfully");
+        alert("Xóa thương lượng thành công!");
+        window.location.reload();
+      } else {
+        const errorData = await response.json();
+        console.error("Delete negotiation failed:", errorData);
+        alert("Xóa thương lượng thất bại!");
+      }
+    } catch (error) {
+      console.error("Error deleting negotiation:", error);
+      alert("Có lỗi xảy ra khi xóa thương lượng!");
+    }
+  };
+
   return (
-    <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] max-h-[85rem] overflow-auto">
+    <div className="p-6 mt-[3rem] bg-white border-solid border-gray-300 border-[1px] rounded-lg shadow-lg w-[32rem] max-h-[85rem] overflow-auto">
       <div className="border-b-[2px] border-gray-300 border-solid">
-        <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
-          <FontAwesomeIcon icon={faHandshake} /> {/* Thêm biểu tượng */}
+        <h2 className="text-xl font-extrabold text-blue-600 mb-6 text-center flex items-center justify-center gap-2">
+          <FontAwesomeIcon icon={faHandshake} />
           Danh sách thương lượng
         </h2>
       </div>
 
-      {/* Order by params */}
-      <div className="flex flex-col justify-center mb-4 mt-4 gap-2 border-solid border-gray-300 border-b-[2px] pb-3">
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="sort_by"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Sắp xếp theo:
-          </label>
-          <select
-            id="sort_by"
-            value={sortBy}
-            onChange={handleSortChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-          >
-            <option value="">Chọn tiêu chí</option>
-            <option value="average_response_time">
-              Thời gian phản hồi trung bình
-            </option>
-            <option value="reputation_score">Điểm uy tín</option>
-            <option value="successful_transactions">
-              Giao dịch thành công
-            </option>
-            <option value="response_rate">Tỷ lệ phản hồi</option>
-            <option value="profile_completeness">Độ hoàn thiện hồ sơ</option>
-            <option value="negotiation_experience">
-              Kinh nghiệm thương lượng
-            </option>
-          </select>
-        </div>
+      {type === "owner" && (
+        <div className="flex flex-col justify-center mb-4 mt-4 gap-2 border-solid border-gray-300 border-b-[2px] pb-3">
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="sort_by"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Sắp xếp theo:
+            </label>
+            <select
+              id="sort_by"
+              value={sortBy}
+              onChange={handleSortChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+            >
+              <option value="">Chọn tiêu chí</option>
+              <option value="average_response_time">
+                Thời gian phản hồi trung bình
+              </option>
+              <option value="reputation_score">Điểm uy tín</option>
+              <option value="successful_transactions">
+                Giao dịch thành công
+              </option>
+              <option value="response_rate">Tỷ lệ phản hồi</option>
+              <option value="profile_completeness">Độ hoàn thiện hồ sơ</option>
+              <option value="negotiation_experience">
+                Kinh nghiệm thương lượng
+              </option>
+            </select>
+          </div>
 
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="order"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Thứ tự:
-          </label>
-          <select
-            id="order"
-            value={order}
-            onChange={handleOrderChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-          >
-            <option value="">Chọn thứ tự</option>
-            <option value="asc">Tăng dần</option>
-            <option value="desc">Giảm dần</option>
-          </select>
-        </div>
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="order"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Thứ tự:
+            </label>
+            <select
+              id="order"
+              value={order}
+              onChange={handleOrderChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+            >
+              <option value="">Chọn thứ tự</option>
+              <option value="asc">Tăng dần</option>
+              <option value="desc">Giảm dần</option>
+            </select>
+          </div>
 
-        <div className="flex justify-between items-center gap-3">
-          <label
-            htmlFor="amount"
-            className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
-          >
-            Số lượng:
-          </label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={handleAmountChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-            placeholder="Nhập số lượng"
-          />
+          <div className="flex justify-between items-center gap-3">
+            <label
+              htmlFor="amount"
+              className="block text-gray-700 font-semibold mb-1 ml-2 text-sm"
+            >
+              Số lượng:
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={1}
+              id="amount"
+              value={amount}
+              onChange={handleAmountChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+              placeholder="Nhập số lượng"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {negotiations.length > 0 ? (
         <div className="space-y-4 mt-[3rem]">
           {negotiations.map((negotiation) => (
             <div
               key={negotiation.negotiation_id}
-              className="bg-blue-100 p-6 border-solid border-gray-300 border-[2px] rounded-lg shadow-lg flex flex-col items-start"
+              className="bg-blue-50 p-6 border-solid border-gray-300 border-[1px] rounded-lg shadow-lg flex flex-col items-start"
             >
               <div className="w-full flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
@@ -431,6 +509,70 @@ const NegotiationList = ({ type }) => {
                   <span className="text-sm text-gray-500">
                     (@{negotiation.user?.username || "Chưa có thông tin"})
                   </span>
+                  {sessionToken && negotiation.user.user_id !== id && (
+                    <div className="relative flex items-center ml-2">
+                      {/* Icon dấu ba chấm dọc */}
+                      <button
+                        onClick={toggleMenu}
+                        className="focus:outline-none p-3"
+                      >
+                        <FontAwesomeIcon
+                          icon={faEllipsisV}
+                          className="text-gray-600 text-xl cursor-pointer opacity-50"
+                        />
+                      </button>
+
+                      {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
+                      {isOpen && role !== "admin" && (
+                        <div
+                          ref={menuRef}
+                          className="absolute right-5 top-8 mt-2 w-[15rem] text-sm font-semibold p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                        >
+                          <button
+                            className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                            onClick={() => {
+                              handlePersonalProfileClick(
+                                negotiation.user.user_id
+                              );
+                            }}
+                          >
+                            <FontAwesomeIcon
+                              icon={faUser}
+                              className="text-blue-500"
+                            />
+                            <span className="text-gray-700">
+                              Thông tin cá nhân
+                            </span>
+                          </button>
+
+                          <div className="relative">
+                            <button
+                              className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                              onClick={() => openReportPopup("user")}
+                            >
+                              <FontAwesomeIcon
+                                icon={faFlag}
+                                className="text-red-500"
+                              />
+                              <span className="text-gray-700">
+                                Báo cáo người dùng
+                              </span>
+                            </button>
+
+                            <ReportPopup
+                              isOpen={isReportPopupOpen}
+                              onClose={closeReportPopup}
+                              reportType={reportType}
+                              reportedUserId={negotiation.user.user_id}
+                              postId={null}
+                              commentId={null}
+                              reporteeId={id}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </h3>
               </div>
 
@@ -509,13 +651,6 @@ const NegotiationList = ({ type }) => {
                 !negotiation.is_accepted &&
                 !negotiation.is_considered && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
-                    {/* <button
-                    className="text-white bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => openModal(negotiation.negotiation_id)}
-                  >
-                    Chấp nhận
-                  </button> */}
-
                     <button
                       className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
                       onClick={() =>
@@ -526,7 +661,7 @@ const NegotiationList = ({ type }) => {
                     </button>
 
                     <button
-                      className="text-white font-semibold bg-gradient-to-r from-green-500 to-green-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-green-600 hover:to-green-500 "
+                      className="text-white font-semibold bg-gradient-to-r from-green-600 to-green-500 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-green-700 hover:to-green-600 "
                       onClick={() =>
                         openModalConsider(negotiation.negotiation_id)
                       }
@@ -539,33 +674,41 @@ const NegotiationList = ({ type }) => {
                 !negotiation.is_accepted &&
                 negotiation.is_considered && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
-                    {/* <button
-                    className="text-white bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => openModal(negotiation.negotiation_id)}
-                  >
-                    Chấp nhận
-                  </button> */}
-
-                    <button className="text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 ">
+                    <button
+                      className="text-white font-semibold bg-gradient-to-r from-blue-500 to-blue-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500 "
+                      onClick={() => handleToRoomChat()}
+                    >
                       Đang thương lượng
                     </button>
                   </div>
                 )}
+              <div className="flex justify-center items-center gap-1 mt-2 w-full">
+                {type !== "owner" &&
+                  negotiation.user.user_id === id &&
+                  negotiation.proposals.length > 0 && (
+                    <div className="flex justify-center items-center gap-3 mt-3 w-full">
+                      <button
+                        className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
+                        onClick={() =>
+                          openModalViewProposal(negotiation.negotiation_id)
+                        }
+                      >
+                        Xem mức đề nghị
+                      </button>
+                    </div>
+                  )}
 
-              {type !== "owner" &&
-                negotiation.user.user_id === id &&
-                negotiation.proposals.length > 0 && (
+                {type !== "owner" && negotiation.user.user_id === id && (
                   <div className="flex justify-center items-center gap-3 mt-3 w-full">
                     <button
-                      className="text-black font-semibold bg-gradient-to-r from-yellow-500 to-yellow-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500 "
-                      onClick={() =>
-                        openModalViewProposal(negotiation.negotiation_id)
-                      }
+                      className="text-white font-semibold bg-gradient-to-r from-red-500 to-red-400 px-3 py-2 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-red-600 hover:to-red-500 "
+                      onClick={() => openDelete(negotiation.negotiation_id)}
                     >
-                      Xem mức đề nghị
+                      Xóa thương lượng
                     </button>
                   </div>
                 )}
+              </div>
             </div>
           ))}
         </div>
@@ -602,7 +745,7 @@ const NegotiationList = ({ type }) => {
       {isModalProposalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">
+            <h2 className="text-xl font-bold text-gray-800 mb-4 text-center  border-b-[2px] border-gray-500 border-solid pb-2">
               Đề nghị lại mức thương lượng
             </h2>
             <p className="text-sm text-gray-600 mb-6 text-center">
@@ -880,19 +1023,19 @@ const NegotiationList = ({ type }) => {
               <div className="flex justify-center gap-4">
                 <button
                   type="button"
+                  className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                  onClick={closeModalViewProposal}
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
                   className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-500 transition duration-300 ease-in-out"
                   onClick={() =>
                     handleNeogotiate(proposalData.proposals[0].proposal_id)
                   }
                 >
                   Gửi lại thương lượng
-                </button>
-                <button
-                  type="button"
-                  className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                  onClick={closeModalViewProposal}
-                >
-                  Đóng
                 </button>
               </div>
             </div>
@@ -1050,9 +1193,9 @@ const NegotiationList = ({ type }) => {
               <strong className="font-bold text-red-500">Chú ý:</strong> Nếu
               thấy thương lượng đạt yêu cầu thì bạn có thể cho thương lượng này
               vào danh sách được{" "}
-              <span className="text-green-500 font-semibold"> xem xét</span> và
+              <span className="text-green-700 font-semibold"> xem xét</span> và
               tạo Chatroom với người được{" "}
-              <span className="text-green-500 font-semibold"> xem xét</span> đó.{" "}
+              <span className="text-green-700 font-semibold"> xem xét</span> đó.{" "}
             </p>
 
             {/* Nút Xác Nhận và Hủy Bỏ */}
@@ -1072,6 +1215,45 @@ const NegotiationList = ({ type }) => {
                 onClick={closeModalConsider}
               >
                 Hủy bỏ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Xóa Thương Lượng */}
+      {isDeleteOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-2xl relative">
+            <h3 className="text-2xl font-semibold text-center mb-4 border-b border-solid border-gray-200 pb-2">
+              Xác Nhận
+            </h3>
+            <button
+              onClick={closeDelete}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+              aria-label="Đóng"
+            >
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
+            <p className="mb-6 text-center font-semibold text-gray-700">
+              Bạn có chắc chắn muốn xóa thương lượng này?
+            </p>
+            <div className="flex justify-center space-x-4 font-semibold">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors duration-300"
+                onClick={closeDelete}
+              >
+                Hủy
+              </button>
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center space-x-2"
+                onClick={() => {
+                  handleDeleteNegotiation(selectedNegotiationIdDelete);
+                  closeDelete();
+                }}
+              >
+                <FontAwesomeIcon icon={faX} />
+                <span>Xác nhận xóa</span>
               </button>
             </div>
           </div>

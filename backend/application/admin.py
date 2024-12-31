@@ -53,3 +53,4 @@ admin.site.register(PostReaction)
 admin.site.register(PostImage)
 admin.site.register(SavedPost, SavedPostAdmin)
 admin.site.register(Report, ReportAdmin)
+

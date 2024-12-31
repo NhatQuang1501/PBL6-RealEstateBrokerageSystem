@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import PredictLandPrice from "../../components/predict/PredictLandPrice";
 import backgroundVideo from "../../assets/video/Xám và Trắng Doanh nghiệp Bất động sản Thương mại Video Trình chiếu.mp4";
 import { MdLandscape, MdOutlineHouse, MdArrowBack } from "react-icons/md";
+import PredictHousePrice from "../../components/predict/PredictHousePrice";
 
 function Predict() {
   const [selectedOption, setSelectedOption] = useState(null);
@@ -54,7 +55,7 @@ function Predict() {
               }`}
             >
               <MdLandscape className="mr-2 text-xl" />
-              <span>Dự Đoán Đất</span>
+              <span>Dự Đoán Giá Đất</span>
             </button>
             <button
               onClick={() => setSelectedOption("house")}
@@ -65,7 +66,7 @@ function Predict() {
               }`}
             >
               <MdOutlineHouse className="mr-2 text-xl" />
-              <span>Dự Đoán Nhà</span>
+              <span>Dự Đoán Giá Nhà</span>
             </button>
           </div>
         </div>
@@ -78,8 +79,8 @@ function Predict() {
             </div>
           )}
           {selectedOption === "house" && (
-            <div className="bg-white bg-opacity-90 p-6 rounded-lg shadow-lg text-lg text-gray-700 mt-4 animate-pulse">
-              Tính năng dự đoán giá nhà đang được phát triển...
+            <div className="ml-[5rem]">
+              <PredictHousePrice />
             </div>
           )}
         </div>

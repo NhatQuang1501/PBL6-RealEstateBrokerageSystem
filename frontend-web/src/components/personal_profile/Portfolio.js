@@ -42,23 +42,25 @@ export default function Portfolio() {
           author = id;
         }
 
-        // const url =
-        //   filterStatus === "Đã duyệt"
-        //     ? `http://127.0.0.1:8000/api/posts/${author}/`
-        //     : `http://127.0.0.1:8000/api/pending-posts/${id}/`;
         let url;
         if (filterStatus === "Đã duyệt") {
-          url = `http://127.0.0.1:8000/api/posts/${author}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${author}/`;
         }
         if (filterStatus === "Đang chờ duyệt" && id === author) {
-          url = `http://127.0.0.1:8000/api/pending-posts/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/pending-posts/${id}/`;
         }
         if (filterStatus === "Đã lưu") {
           if (author !== "") {
-            url = `http://127.0.0.1:8000/api/saved-posts/${author}/`;
+            url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${author}/`;
           } else {
-            url = `http://127.0.0.1:8000/api/saved-posts/${id}/`;
+            url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/saved-posts/${id}/`;
           }
+        }
+        if (filterStatus === "Đang thương lượng") {
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-negotiations/?type=author`;
+        }
+        if (filterStatus === "Đang tham gia thương lượng") {
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-negotiations/?type=negotiator`;
         }
 
         const response = await fetch(url, {
@@ -82,22 +84,22 @@ export default function Portfolio() {
   }, [sessionToken, id, filterStatus, userId]);
 
   return (
-    <div className=" p-6 rounded-lg">
-      <div className="flex flex-row justify-between gap-10 border-b-[2px] border-solid border-gray-400 ">
-        <h2 className="text-lg font-bold mb-4">
+    <div className=" p-1 mt-3 rounded-lg">
+      <div className="flex flex-row justify-center gap-5 border-b-[2px] border-solid border-gray-400 overflow-x-auto">
+        <h2 className="text-md font-bold mb-4">
           <button
-            className={`text-black ${
-              filterStatus === "Đã duyệt" ? "underline text-gray-500" : ""
+            className={`text-black text-sm ${
+              filterStatus === "Đã duyệt" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã duyệt")}
           >
             Bài đăng đã duyệt
           </button>
         </h2>
-        <h2 className="text-lg font-bold mb-4">
+        <h2 className="text-md font-bold mb-4">
           <button
-            className={`text-black ${
-              filterStatus === "Đã lưu" ? "underline text-gray-500" : ""
+            className={`text-black text-sm ${
+              filterStatus === "Đã lưu" ? "underline text-blue-500" : ""
             }`}
             onClick={() => handleFilterChange("Đã lưu")}
           >
@@ -105,28 +107,53 @@ export default function Portfolio() {
           </button>
         </h2>
         {!userId && (
-          <h2 className="text-lg font-bold mb-4">
-            <button
-              className={`text-black ${
-                filterStatus === "Đang chờ duyệt"
-                  ? "underline text-gray-500"
-                  : ""
-              }`}
-              onClick={() => handleFilterChange("Đang chờ duyệt")}
-            >
-              Bài đăng chờ duyệt
-            </button>
-          </h2>
+          <div className="flex flex-row gap-5">
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black text-sm ${
+                  filterStatus === "Đang chờ duyệt"
+                    ? "underline text-blue-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang chờ duyệt")}
+              >
+                Bài đăng chờ duyệt
+              </button>
+            </h2>
+
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black text-sm ${
+                  filterStatus === "Đang thương lượng"
+                    ? "underline text-blue-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang thương lượng")}
+              >
+                Bài đăng đang thương lượng
+              </button>
+            </h2>
+
+            <h2 className="text-md font-bold mb-4">
+              <button
+                className={`text-black text-sm ${
+                  filterStatus === "Đang tham gia thương lượng"
+                    ? "underline text-blue-500"
+                    : ""
+                }`}
+                onClick={() => handleFilterChange("Đang tham gia thương lượng")}
+              >
+                Bài đăng đang tham gia thương lượng
+              </button>
+            </h2>
+          </div>
         )}
       </div>
 
       <Panel className="flex flex-col max-h-full" type="personal-page">
-        <div className="relative h-full overflow-y-auto grid grid-cols-1 gap-4">
+        <div className=" h-full overflow-y-auto grid grid-cols-1 gap-4">
           {currentPosts.map((post, index) => (
-            <div
-              key={index}
-              className="border-[3px] rounded-[1rem] border-[#002182] shadow-md bg-white p-4"
-            >
+            <div key={index} className="">
               <Post post={post} type="personal-page" />
             </div>
           ))}

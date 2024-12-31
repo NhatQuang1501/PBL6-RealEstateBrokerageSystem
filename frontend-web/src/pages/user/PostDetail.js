@@ -6,13 +6,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHeart,
   faComment,
-  faShareAlt,
   faBookmark,
   faListAlt,
   faUpload,
   faEdit,
   faTrash,
   faHandshake,
+  faCheck,
+  faTimes,
+  faInfoCircle,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useEffect, useState, useCallback } from "react";
 import {
@@ -31,7 +34,7 @@ import NegotiationList from "../../components/neogotiation/NegotiationList";
 import MapView from "../../components/map_api/Mapbox";
 
 const DetailPost = () => {
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
   const { postId } = useParams();
   const [post, setPost] = useState();
   const [isClicked, setIsClicked] = useState();
@@ -45,6 +48,9 @@ const DetailPost = () => {
   const [negotiationDate, setNegotiationDate] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [negotiationNote, setNegotiationNote] = useState("");
+  // const [selectedPostIdD, setSelectedPostIdD] = useState(null);
+  // const [showPopupD, setShowPopupD] = useState(false);
+  const [isStatusPopupOpen, setIsStatusPopupOpen] = useState(false);
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -73,6 +79,34 @@ const DetailPost = () => {
     navigate(`/user/update-post/${postId}`);
   };
 
+  const handleStatusUpdate = async (postId) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/sold-posts/${postId}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+          body: JSON.stringify({
+            sale_status: "Đã bán",
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Cập nhật trạng thái thành công!");
+        window.location.reload();
+      } else {
+        alert("Cập nhật trạng thái thất bại!");
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+      alert("Có lỗi xảy ra khi cập nhật trạng thái!");
+    }
+  };
+
   // Delete post
   const handleDelete = async (postId) => {
     const userConfirmed = window.confirm(
@@ -84,7 +118,7 @@ const DetailPost = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "DELETE",
           headers: {
@@ -109,7 +143,8 @@ const DetailPost = () => {
     console.log("Post ID:", postId);
     const fetchPostById = async () => {
       try {
-        let url = `http://127.0.0.1:8000/api/posts/${postId}/`;
+        // let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
+        let url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -137,7 +172,7 @@ const DetailPost = () => {
     const checkLiked = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/user-posts-like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/user-posts-like/`,
           {
             headers: {
               Authorization: `Bearer ${sessionToken}`,
@@ -176,7 +211,7 @@ const DetailPost = () => {
     } else {
       try {
         await axios.post(
-          `http://127.0.0.1:8000/api/posts/${postId}/like/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/like/`,
           {},
           {
             headers: {
@@ -227,7 +262,7 @@ const DetailPost = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/post-negotiations/${post.post_id}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/post-negotiations/${post.post_id}/`,
         {
           negotiation_price: parseInt(numericPrice, 10),
           negotiation_date: negotiationDate,
@@ -267,33 +302,18 @@ const DetailPost = () => {
 
   return (
     <div className="flex flex-col items-center font-montserrat">
-      <div className="flex items-center justify-between w-[95%] mt-6 mb-4 mr-3 px-6 py-4 bg-gradient-to-r from-gray-400 to-gray-600 rounded-3xl shadow-lg">
-        <h3 className="text-2xl font-bold text-white flex items-center gap-3">
-          <FontAwesomeIcon
-            icon={faListAlt}
-            className="text-gray-600 bg-white p-3 w-8 h-8 rounded-full shadow-md"
-          />
-          Chi tiết bài đăng
-        </h3>
-
-        {post &&
-          post.user.user_id === id &&
-          post.sale_status === "Đang bán" && (
-            <button
-              className="bg-white text-black font-semibold hover:bg-gray-500 hover:text-white transition duration-300 ease-in-out px-5 py-3 rounded-full mt-5 ml-5 self-start flex items-center mb-5"
-              onClick={handleUploadImage}
-            >
-              <FontAwesomeIcon icon={faUpload} className="mr-2" />
-              Tải ảnh lên
-            </button>
-          )}
-      </div>
-
       <div className="flex flex-row-2 gap-3 items-start justify-center">
         {/* Main content */}
-        <div className="p-6 mt-5 mb-5 ml-10 w-[57rem] rounded-lg bg-white border-double border-gray-300 border-[2px] shadow-md">
+        <div className="p-6 mb-5 ml-10 w-[57rem] rounded-lg bg-white">
           {post ? (
             <>
+              <div className="flex justify-center items-end mb-5">
+                <h1 className="text-xl text-center text-blue-500 font-bold mb-3 w-auto bg-white px-5 py-1 rounded-3xl shadow-md underline flex items-center border-[1px] border-solid border-gray-300">
+                  <FontAwesomeIcon icon={faListAlt} className="text-lg mr-2" />
+                  Chi tiết bài đăng
+                </h1>
+              </div>
+
               <div className="flex justify-between items-center px-2 py-4">
                 <h1 className="text-xl font-semibold text-black rounded-lg flex items-center">
                   <FaPen className="mr-2" />
@@ -308,194 +328,7 @@ const DetailPost = () => {
                 </div>
               </div>
 
-              {id !== post.user.user_id && (
-                <div className="mt-5 flex justify-center items-center">
-                  <button
-                    className="bg-gradient-to-r from-blue-500 to-blue-400 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-blue-600 hover:to-blue-500"
-                    onClick={() => {
-                      handleNeogotiate(post.post_id);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faHandshake} className="text-lg" />
-                    Thương lượng
-                  </button>
-                  {isPopupOpen && (
-                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
-                          Hãy nhập giá tiền và thông tin bạn muốn thương lượng
-                        </h2>
-                        <p className="text-sm text-gray-600 mb-6 text-center">
-                          <strong className="font-bold text-red-500">
-                            Chú ý:
-                          </strong>{" "}
-                          Khi thương lượng, giá thương lượng mà bạn đưa ra không
-                          được nhỏ hơn{" "}
-                          <span className="text-red-500 font-semibold">
-                            70%
-                          </span>{" "}
-                          giá tiền mà chủ bài viết đã đăng bán.
-                        </p>
-
-                        {/* Trường Giá Thương Lượng */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="price"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Giá Thương Lượng (VNĐ)
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaDollarSign className="text-gray-500" />
-                            </div>
-                            <input
-                              type="text"
-                              id="price"
-                              value={price}
-                              onChange={handlePriceChange}
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              placeholder="Nhập giá tiền (VNĐ)"
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        {/* Trường Ngày Thương Lượng */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="negotiationDate"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Ngày Bắt Đầu Giao Dịch
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaCalendarAlt className="text-gray-500" />
-                            </div>
-                            <input
-                              type="date"
-                              id="negotiationDate"
-                              value={negotiationDate}
-                              onChange={(e) =>
-                                setNegotiationDate(e.target.value)
-                              }
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              required
-                            />
-                          </div>
-                        </div>
-
-                        {/* Trường Hình Thức Trả Tiền */}
-                        <div className="mb-4">
-                          <label
-                            htmlFor="paymentMethod"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Hình Thức Trả Tiền
-                          </label>
-                          <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3">
-                              <FaCreditCard className="text-gray-500" />
-                            </div>
-                            <select
-                              id="paymentMethod"
-                              value={paymentMethod}
-                              onChange={(e) => setPaymentMethod(e.target.value)}
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              required
-                            >
-                              <option value="" disabled>
-                                Chọn hình thức trả tiền
-                              </option>
-                              <option value="Trả góp">Trả góp</option>
-                              <option value="Một lần">
-                                Thanh toán một lần
-                              </option>
-                              <option value="Khác">Khác</option>
-                              {/* Thêm các lựa chọn khác nếu cần */}
-                            </select>
-                          </div>
-                        </div>
-
-                        {/* Trường Ghi Chú Thêm */}
-                        <div className="mb-6">
-                          <label
-                            htmlFor="negotiationNote"
-                            className="block text-gray-800 font-bold mb-2"
-                          >
-                            Ghi Chú Thêm
-                          </label>
-                          <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
-                            <div className="px-3 mt-2">
-                              <FaStickyNote className="text-gray-500" />
-                            </div>
-                            <textarea
-                              id="negotiationNote"
-                              value={negotiationNote}
-                              onChange={(e) =>
-                                setNegotiationNote(e.target.value)
-                              }
-                              className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-                              placeholder="Ghi chú thêm (tùy chọn)"
-                              rows="3"
-                            ></textarea>
-                          </div>
-                        </div>
-
-                        {/* Nút Xác Nhận và Hủy Bỏ */}
-                        <div className="flex justify-center gap-4">
-                          <button
-                            type="button"
-                            className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
-                            onClick={handleSubmit}
-                          >
-                            Xác nhận
-                          </button>
-                          <button
-                            type="button"
-                            className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
-                            onClick={handleClose}
-                          >
-                            Hủy bỏ
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="mt-4 flex justify-center items-center gap-10">
-                {id === post.user.user_id &&
-                  post.sale_status === "Đang bán" && (
-                    <>
-                      <button
-                        className="bg-gradient-to-r from-blue-500 to-blue-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        onClick={() => {
-                          handleUpdate(post.post_id);
-                        }}
-                      >
-                        <FontAwesomeIcon icon={faEdit} className="text-lg" />
-                        Cập nhật
-                      </button>
-                    </>
-                  )}
-
-                {id === post.user.user_id && (
-                  <>
-                    <button
-                      className="bg-gradient-to-r from-red-500 to-red-400 text-white font-semibold w-[8rem] px-2 py-3 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
-                      onClick={() => {
-                        handleDelete(post.post_id);
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faTrash} className="text-lg" />
-                      Xóa
-                    </button>
-                  </>
-                )}
-              </div>
+              <div className="mt-4 flex justify-center items-center gap-10"></div>
 
               {/* Profile + reaction */}
               <div className="flex flex-row justify-between border-b-[2px] border-gray-300 border-solid pb-5">
@@ -516,7 +349,7 @@ const DetailPost = () => {
                     >
                       <FontAwesomeIcon
                         icon={faHeart}
-                        className={`w-8 h-8 transition duration-100 ${
+                        className={`w-6 h-6 transition duration-100 ${
                           isClicked ? "text-red-400" : "text-gray-500"
                         }`}
                       />
@@ -525,14 +358,10 @@ const DetailPost = () => {
                   </div>
                   {/* Chat */}
                   <div className="flex items-end text-[#3CA9F9] space-x-1">
-                    <FontAwesomeIcon icon={faComment} className="w-8 h-8" />
+                    <FontAwesomeIcon icon={faComment} className="w-6 h-6" />
                     <span>{commentCount}</span>
                   </div>
-                  {/* Share */}
-                  <div className="flex items-end text-gray-500 space-x-1">
-                    <FontAwesomeIcon icon={faShareAlt} className="w-8 h-8" />
-                    <span>5</span>
-                  </div>
+
                   {/* Save */}
                   <div className="flex items-end text-gray-500 space-x-1">
                     <button
@@ -541,13 +370,320 @@ const DetailPost = () => {
                     >
                       <FontAwesomeIcon
                         icon={faBookmark}
-                        className={`w-8 h-8 transition duration-100 ${
+                        className={`w-6 h-6 transition duration-100 ${
                           isSaved ? "text-yellow-400" : "text-gray-500"
                         }`}
                       />
                     </button>
                     <span>{savesCount}</span>
                   </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center mb-10 mt-5 border-b-[2px] border-gray-300 border-solid pb-5">
+                <div className="flex items-center gap-5">
+                  {post &&
+                    post.user.user_id === id &&
+                    post.sale_status === "Đang bán" && (
+                      <button
+                        className="bg-gradient-to-r from-gray-500 to-gray-400 text-white text-sm font-semibold px-2 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                        onClick={handleUploadImage}
+                      >
+                        <FontAwesomeIcon icon={faUpload} className="mr-2" />
+                        Tải thêm ảnh lên
+                      </button>
+                    )}
+
+                  {post &&
+                    id !== post.user.user_id &&
+                    role === "user" &&
+                    post.sale_status !== "Đã cọc" &&
+                    post.sale_status !== "Đã bán" && (
+                      <div className="flex justify-center items-center">
+                        <button
+                          className="bg-gradient-to-r from-yellow-500 to-yellow-400 font-semibold text-black  text-sm px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 transform hover:scale-105 transition-transform duration-200 ease-in-out hover:from-yellow-600 hover:to-yellow-500"
+                          onClick={() => {
+                            handleNeogotiate(post.post_id);
+                          }}
+                        >
+                          <FontAwesomeIcon
+                            icon={faHandshake}
+                            className="text-lg"
+                          />
+                          Thương lượng
+                        </button>
+                        {isPopupOpen && (
+                          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                            <div className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl w-full">
+                              <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                                Hãy nhập giá tiền và thông tin bạn muốn thương
+                                lượng
+                              </h2>
+                              <p className="text-sm text-gray-600 mb-6 text-center">
+                                <strong className="font-bold text-red-500">
+                                  Chú ý:
+                                </strong>{" "}
+                                Khi thương lượng, giá thương lượng mà bạn đưa ra
+                                không được nhỏ hơn{" "}
+                                <span className="text-red-500 font-semibold">
+                                  70%
+                                </span>{" "}
+                                giá tiền mà chủ bài viết đã đăng bán.
+                              </p>
+
+                              {/* Trường Giá Thương Lượng */}
+                              <div className="mb-4">
+                                <label
+                                  htmlFor="price"
+                                  className="block text-gray-800 font-bold mb-2"
+                                >
+                                  Giá Thương Lượng (VNĐ)
+                                </label>
+                                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                  <div className="px-3">
+                                    <FaDollarSign className="text-gray-500" />
+                                  </div>
+                                  <input
+                                    type="text"
+                                    id="price"
+                                    value={price}
+                                    onChange={handlePriceChange}
+                                    className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                    placeholder="Nhập giá tiền (VNĐ)"
+                                    required
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Trường Ngày Thương Lượng */}
+                              <div className="mb-4">
+                                <label
+                                  htmlFor="negotiationDate"
+                                  className="block text-gray-800 font-bold mb-2"
+                                >
+                                  Ngày Bắt Đầu Giao Dịch
+                                </label>
+                                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                  <div className="px-3">
+                                    <FaCalendarAlt className="text-gray-500" />
+                                  </div>
+                                  <input
+                                    type="date"
+                                    id="negotiationDate"
+                                    value={negotiationDate}
+                                    onChange={(e) =>
+                                      setNegotiationDate(e.target.value)
+                                    }
+                                    className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                    required
+                                  />
+                                </div>
+                              </div>
+
+                              {/* Trường Hình Thức Trả Tiền */}
+                              <div className="mb-4">
+                                <label
+                                  htmlFor="paymentMethod"
+                                  className="block text-gray-800 font-bold mb-2"
+                                >
+                                  Hình Thức Trả Tiền
+                                </label>
+                                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                  <div className="px-3">
+                                    <FaCreditCard className="text-gray-500" />
+                                  </div>
+                                  <select
+                                    id="paymentMethod"
+                                    value={paymentMethod}
+                                    onChange={(e) =>
+                                      setPaymentMethod(e.target.value)
+                                    }
+                                    className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                    required
+                                  >
+                                    <option value="" disabled>
+                                      Chọn hình thức trả tiền
+                                    </option>
+                                    <option value="trả góp">Trả góp</option>
+                                    <option value="một lần">
+                                      Thanh toán một lần
+                                    </option>
+                                    <option value="trả trước">Trả trước</option>
+                                    <option value="khác">Khác</option>
+                                    {/* Thêm các lựa chọn khác nếu cần */}
+                                  </select>
+                                </div>
+                              </div>
+
+                              {/* Trường Ghi Chú Thêm */}
+                              <div className="mb-6">
+                                <label
+                                  htmlFor="negotiationNote"
+                                  className="block text-gray-800 font-bold mb-2"
+                                >
+                                  Ghi Chú Thêm
+                                </label>
+                                <div className="flex items-start border border-gray-300 rounded-lg overflow-hidden">
+                                  <div className="px-3 mt-2">
+                                    <FaStickyNote className="text-gray-500" />
+                                  </div>
+                                  <textarea
+                                    id="negotiationNote"
+                                    value={negotiationNote}
+                                    onChange={(e) =>
+                                      setNegotiationNote(e.target.value)
+                                    }
+                                    className="w-full px-4 py-2 border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+                                    placeholder="Ghi chú thêm (tùy chọn)"
+                                    rows="3"
+                                  ></textarea>
+                                </div>
+                              </div>
+
+                              {/* Nút Xác Nhận và Hủy Bỏ */}
+                              <div className="flex justify-center gap-4">
+                                <button
+                                  type="button"
+                                  className="bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 ease-in-out"
+                                  onClick={handleSubmit}
+                                >
+                                  Xác nhận
+                                </button>
+                                <button
+                                  type="button"
+                                  className="bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 ease-in-out"
+                                  onClick={handleClose}
+                                >
+                                  Hủy bỏ
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                  {post &&
+                    id === post.user.user_id &&
+                    post.sale_status === "Đang bán" && (
+                      <>
+                        <button
+                          className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[8rem] px-2 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                          onClick={() => {
+                            handleUpdate(post.post_id);
+                          }}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                          Cập nhật
+                        </button>
+                      </>
+                    )}
+
+                  {post &&
+                    id === post.user.user_id &&
+                    (post.sale_status === "Đang thương lượng" ||
+                      post.sale_status === "Đã cọc") && (
+                      <>
+                        <button
+                          className="bg-gradient-to-r from-blue-500 to-blue-400 text-white text-sm font-semibold w-[7rem] px-1 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                          onClick={() => setIsStatusPopupOpen(true)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} className="text-lg" />
+                          Cập nhật
+                        </button>
+
+                        {/* Status Update Popup */}
+                        {isStatusPopupOpen && (
+                          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+                            <div className="bg-gradient-to-br from-white to-blue-50 rounded-2xl p-8 w-full max-w-xl relative transform transition-all duration-300 ease-out scale-100 shadow-2xl border border-blue-100">
+                              <button
+                                onClick={() => setIsStatusPopupOpen(false)}
+                                className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors duration-200"
+                              >
+                                <FontAwesomeIcon icon={faTimes} size="lg" />
+                              </button>
+
+                              <h2 className="text-xl font-bold text-gray-800 mb-4 text-center border-b-[2px] border-gray-500 border-solid pb-2">
+                                <FontAwesomeIcon
+                                  icon={faEdit}
+                                  className="mr-2"
+                                />
+                                Cập Nhật Trạng Thái
+                              </h2>
+
+                              <p className="text-sm text-gray-600 mb-8 text-center italic">
+                                Hiện tại bạn chỉ có thể cập nhật trạng thái của
+                                bài đăng là "Đã bán".
+                              </p>
+
+                              <div className="flex flex-col gap-4">
+                                <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                                  <FontAwesomeIcon
+                                    icon={faInfoCircle}
+                                    className="text-blue-500 text-xl"
+                                  />
+                                  <div className="flex flex-row justify-start items-center gap-5 w-full">
+                                    <p className="font-semibold text-gray-700 mb-1">
+                                      Trạng thái hiện tại:
+                                    </p>
+                                    <p className="text-blue-600 w-auto bg-blue-200 px-3 py-1 rounded-3xl">
+                                      {post.sale_status}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center space-x-4 p-4 font-semibold bg-gray-100">
+                                  <FontAwesomeIcon
+                                    icon={faExclamationTriangle}
+                                    className="text-red-500 text-xl"
+                                  />
+                                  <div className="flex flex-row justify-start items-center gap-5 w-full">
+                                    <p className="font-semibold text-gray-700 mb-1">
+                                      Trạng thái mới:
+                                    </p>
+                                    <p className="text-red-600 w-auto bg-red-200 px-3 py-1 rounded-3xl">
+                                      Đã bán
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="flex justify-end space-x-4 border-t border-gray-100 pt-2">
+                                  <button
+                                    className="px-6 py-2.5 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition-all duration-200 flex items-center space-x-2 hover:shadow-md"
+                                    onClick={() => setIsStatusPopupOpen(false)}
+                                  >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                    <span>Hủy</span>
+                                  </button>
+                                  <button
+                                    className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold flex items-center space-x-2 hover:shadow-md"
+                                    onClick={() =>
+                                      handleStatusUpdate(post.post_id)
+                                    }
+                                  >
+                                    <FontAwesomeIcon icon={faCheck} />
+                                    <span>Xác nhận</span>
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                  {post && id === post.user.user_id && (
+                    <>
+                      <button
+                        className="bg-gradient-to-r from-red-500 to-red-400 text-white text-sm font-semibold w-[8rem] px-2 py-2 rounded-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                        onClick={() => {
+                          handleDelete(post.post_id);
+                        }}
+                      >
+                        <FontAwesomeIcon icon={faTrash} className="text-lg" />
+                        Xóa
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 

@@ -17,11 +17,65 @@ const SideBar = ({
   setFilterBathroomValue,
   setFilterDistrictValue,
 }) => {
-  const [selectedLegals, setSelectedLegals] = useState([]);
-  const [selectedOrientations, setSelectedOrientations] = useState([]);
-  const [selectedBedrooms, setSelectedBedrooms] = useState([]);
-  const [selectedBathrooms, setSelectedBathrooms] = useState([]);
-  const [selectedDistricts, setSelectedDistricts] = useState([]);
+  const [selectedLegals, setSelectedLegals] = useState(() => {
+    const saved = localStorage.getItem("selectedLegals");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedOrientations, setSelectedOrientations] = useState(() => {
+    const saved = localStorage.getItem("selectedOrientations");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedBedrooms, setSelectedBedrooms] = useState(() => {
+    const saved = localStorage.getItem("selectedBedrooms");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedBathrooms, setSelectedBathrooms] = useState(() => {
+    const saved = localStorage.getItem("selectedBathrooms");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [selectedDistricts, setSelectedDistricts] = useState(() => {
+    const saved = localStorage.getItem("selectedDistricts");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Save to localStorage when filters change
+  useEffect(() => {
+    localStorage.setItem("selectedLegals", JSON.stringify(selectedLegals));
+    setFilterLegalValue(selectedLegals);
+  }, [selectedLegals, setFilterLegalValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedOrientations",
+      JSON.stringify(selectedOrientations)
+    );
+    setFilterOrientationValue(selectedOrientations);
+  }, [selectedOrientations, setFilterOrientationValue]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedBedrooms", JSON.stringify(selectedBedrooms));
+    setFilterBedroomValue(selectedBedrooms);
+  }, [selectedBedrooms, setFilterBedroomValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedBathrooms",
+      JSON.stringify(selectedBathrooms)
+    );
+    setFilterBathroomValue(selectedBathrooms);
+  }, [selectedBathrooms, setFilterBathroomValue]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      "selectedDistricts",
+      JSON.stringify(selectedDistricts)
+    );
+    setFilterDistrictValue(selectedDistricts);
+  }, [selectedDistricts, setFilterDistrictValue]);
 
   const handleFilterLegal = (legal) => {
     setSelectedLegals((prevSelected) => {
@@ -96,7 +150,7 @@ const SideBar = ({
   return (
     <div className="flex w-[25%] p-4">
       <div className="bg-white border-2 border-gray-300 border-solid w-full max-h-[75vh] mt-2 pb-5 p-5 rounded-xl shadow-lg text-left sticky top-[7rem] overflow-y-auto">
-        <h1 className="text-xl font-bold text-white bg-gray-500 p-3 rounded-lg shadow-xl mb-6 text-center">
+        <h1 className="text-xl font-bold text-gray-600 bg-blue-200 p-3 rounded-lg shadow-xl mb-6 text-center">
           Bộ lọc tìm kiếm
         </h1>
 
@@ -110,10 +164,8 @@ const SideBar = ({
             {["Sổ đỏ/Sổ hồng", "Chưa có", "Khác"].map((legal, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
-                  selectedLegals.includes(legal)
-                    ? "bg-gray-500 text-white"
-                    : ""
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
+                  selectedLegals.includes(legal) ? "bg-gray-500 text-white" : ""
                 }`}
                 onClick={() => handleFilterLegal(legal)}
               >
@@ -138,14 +190,14 @@ const SideBar = ({
               "Tây",
               "Nam",
               "Bắc",
-              "Đông-Nam",
-              "Đông-Bắc",
-              "Tây-Bắc",
-              "Tây-Nam",
+              "Đông Nam",
+              "Đông Bắc",
+              "Tây Bắc",
+              "Tây Nam",
             ].map((orientation, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
                   selectedOrientations.includes(orientation)
                     ? "bg-gray-500 text-white"
                     : ""
@@ -171,7 +223,7 @@ const SideBar = ({
             {["1", "2", "3", "4", "5", "Nhiều hơn 5"].map((bedroom, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
                   selectedBedrooms.includes(bedroom)
                     ? "bg-gray-500 text-white"
                     : ""
@@ -197,7 +249,7 @@ const SideBar = ({
             {["1", "2", "3", "4", "5", "Nhiều hơn 5"].map((bathroom, index) => (
               <li
                 key={index}
-                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-gray-200 transition-all duration-200 ${
+                className={`flex justify-between p-2 rounded-lg opacity-90 cursor-pointer hover:opacity-100 hover:bg-blue-200 transition-all duration-200 ${
                   selectedBathrooms.includes(bathroom)
                     ? "bg-gray-500 text-white"
                     : ""
@@ -243,7 +295,7 @@ const SideBar = ({
             ))}
           </ul>
         </div>
-        <div className="mb-8 p-4 bg-gradient-to-r from-gray-400 via-gray-500 to-gray-600 text-white rounded-md">
+        <div className="mb-8 p-4 bg-gradient-to-r from-blue-100 to-blue-200 text-gray-600 rounded-md">
           <h2 className="text-lg font-semibold flex items-center gap-3 italic">
             <FontAwesomeIcon icon={faLightbulb} />
             Hãy kết hợp lọc nhiều điều kiện để tìm kiếm chính xác hơn !

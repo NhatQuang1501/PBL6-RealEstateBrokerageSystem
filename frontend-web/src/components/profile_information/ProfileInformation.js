@@ -3,16 +3,18 @@ import axios from "axios";
 import {
   faEllipsisV,
   faUser,
-  faComment,
   faFlag,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
 import ReportPopup from "../report/ReportPopup ";
+import User from "../../assets/image/User.png";
+
 const ProfileInformation = ({ name, date, user_id, post_id }) => {
   let navigate = useNavigate();
-  const { sessionToken, id } = useAppContext();
+  const { role, sessionToken, id } = useAppContext();
   const [ava, setAva] = useState("");
   const [isReportOptionsVisible, setIsReportOptionsVisible] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -83,7 +85,7 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
     const fetchAvatar = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/auth/users-avatar/${user_id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${user_id}/`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -116,7 +118,7 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
     setReportType(type);
     setReportedUserId(user_id);
     setPostId(type === "post" ? post_id : null);
-    setCommentId(type === "comment" ? "67890" : null); 
+    setCommentId(type === "comment" ? "67890" : null);
     setIsPopupOpen(true);
   };
 
@@ -130,8 +132,8 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
 
       <div className="flex items-center mt-1">
         <img
-          className="w-10 h-10 rounded-full mr-3 object-cover bg-gray-500"
-          src={ava}
+          className="w-10 h-10 rounded-full mr-3 object-cover"
+          src={ava ? ava : User}
           alt="avatar"
         />
         <div className="flex flex-col ">
@@ -152,10 +154,10 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
             </button>
 
             {/* Menu hiện ra khi nhấn vào dấu ba chấm */}
-            {isOpen && (
+            {isOpen && role !== "admin" && (
               <div
                 ref={menuRef}
-                className="absolute left-5 bottom-3 mt-2 w-[18rem] p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+                className="absolute left-5 bottom-3 mt-2 w-[18rem] font-semibold p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
               >
                 <button
                   className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
@@ -166,17 +168,6 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
                   <FontAwesomeIcon icon={faUser} className="text-blue-500" />
                   <span className="text-gray-700">Thông tin cá nhân</span>
                 </button>
-                <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
-                  <FontAwesomeIcon
-                    icon={faComment}
-                    className="text-green-500"
-                  />
-                  <span className="text-gray-700">Nhắn tin với người này</span>
-                </button>
-                {/* <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
-                  <FontAwesomeIcon icon={faFlag} className="text-red-500" />
-                  <span className="text-gray-700">Báo cáo</span>
-                </button> */}
 
                 <div className="relative">
                   <button
@@ -213,6 +204,34 @@ const ProfileInformation = ({ name, date, user_id, post_id }) => {
                     </div>
                   )}
                 </div>
+              </div>
+            )}
+            {isOpen && role === "admin" && (
+              <div
+                ref={menuRef}
+                className="absolute left-5 bottom-3 mt-2 w-[18rem] p-2 bg-white border-solid border-[1px] border-gray-300 rounded-lg shadow-lg flex flex-col space-y-2 z-50"
+              >
+                <button
+                  className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md"
+                  onClick={() => {
+                    handlePersonalProfileClick(user_id);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faUser} className="text-blue-500" />
+                  <span className="text-gray-700 font-semibold">
+                    Thông tin cá nhân
+                  </span>
+                </button>
+                {/* <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                  <FontAwesomeIcon icon={faLock} className="text-gray-500" />
+                  <span className="text-gray-700">Khóa tài khoản này</span>
+                </button> */}
+                <button className="flex items-center space-x-2 hover:bg-gray-100 p-2 rounded-md">
+                  <FontAwesomeIcon icon={faTrash} className="text-red-500" />
+                  <span className="text-gray-700 font-semibold">
+                    Xóa bài đăng
+                  </span>
+                </button>
               </div>
             )}
           </div>

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from chatting.models import *
+from accounts.serializers import UserProfile
 
 
 class ChatRoomSerializer(serializers.ModelSerializer):
@@ -25,8 +26,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    # sender_profile = UserProfileSerializer(read_only=True)
     sender_username = serializers.CharField(source="sender.username", read_only=True)
+    sender_avatar = serializers.SerializerMethodField()
 
     class Meta:
         model = Message
@@ -35,6 +36,7 @@ class MessageSerializer(serializers.ModelSerializer):
             "chatroom",
             "sender",
             "sender_username",
+            "sender_avatar",
             "content",
             "created_at",
         ]
@@ -43,6 +45,10 @@ class MessageSerializer(serializers.ModelSerializer):
             "created_at": {"read_only": True},
             "sender": {"read_only": True},
             "sender_username": {"read_only": True},
+            "sender_avatar": {"read_only": True},
             "chatroom": {"required": True},
             "content": {"required": True},
         }
+
+    def get_sender_avatar(self, obj):
+        return obj.sender.profile.avatar.url if obj.sender.profile.avatar else None

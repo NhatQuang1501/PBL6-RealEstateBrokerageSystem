@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // components/ProfileCard.js
 import React, { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,27 +13,23 @@ import {
   faPhone,
   faCity,
   faBirthdayCake,
-  faUserPlus,
-  faCommentDots,
   faUserEdit,
   faCamera,
+  faBan,
+  faUnlock,
 } from "@fortawesome/free-solid-svg-icons";
-import { FaAddressCard, FaUserFriends } from "react-icons/fa";
+import { FaAddressCard } from "react-icons/fa";
 
-const ProfileCard = () => {
+const ProfileCard = ({ openLockPopup_, openUnLockPopup_ }) => {
   const navigate = useNavigate();
-  const { id, sessionToken } = useAppContext();
+  const { id, sessionToken, role } = useAppContext();
   const [user, setUser] = useState(null);
   const fileInputRef = useRef(null);
-  const [profileImage, setProfileImage] = useState(null); // Updated here
+  const [profileImage, setProfileImage] = useState(null);
   const [fileName, setFileName] = useState("Hãy chọn file ảnh");
   const [avatar, setAvatar] = useState(null);
   const { userId } = useParams();
-  const [isFriend, setIsFriend] = useState(false);
-  const [senders, setSenders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isSend, setIsSend] = useState(false);
+  const [lockedAccounts, setLockedAccounts] = useState([]);
 
   const handleUpdateProfile = () => {
     console.log("Update Profile");
@@ -46,9 +43,9 @@ const ProfileCard = () => {
       try {
         let url;
         if (userId) {
-          url = `http://127.0.0.1:8000/auth/users/${userId}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${userId}/`;
         } else {
-          url = `http://127.0.0.1:8000/auth/users/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users/${id}/`;
         }
 
         const response = await fetch(url, {
@@ -77,9 +74,9 @@ const ProfileCard = () => {
       try {
         let url;
         if (userId) {
-          url = `http://127.0.0.1:8000/auth/users-avatar/${userId}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${userId}/`;
         } else {
-          url = `http://127.0.0.1:8000/auth/users-avatar/${id}/`;
+          url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${id}/`;
         }
         const response = await axios.get(url, {
           headers: {
@@ -98,59 +95,23 @@ const ProfileCard = () => {
     };
     fetchAvatar();
 
-    // Check if the user is a friend
-    const fetchFriends = async () => {
+    // Fetch locked accounts
+    const fetchLockedAccounts = async () => {
       try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/friendlist/${id}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-            },
-          }
-        );
-
-        const friends = response.data.friends;
-        console.log("Friends data-----:", friends);
-        const friendIds = friends.map((friend) => friend.user_id);
-        console.log("Friend IDs------:", friendIds);
-        setIsFriend(friendIds.includes(userId));
-      } catch (error) {
-        console.error("Error fetching friends:", error);
-      }
-    };
-    fetchFriends();
-
-    const fetchSenders = async () => {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:8000/api/friend-requests-sent/`,
-          {
-            headers: {
-              Authorization: `Bearer ${sessionToken}`,
-            },
-          }
-        );
-
-        // Lọc các yêu cầu kết bạn có friendrequest_status là "đang chờ"
-        const filteredSenders = response.data.data.filter(
-          (request) => request.friendrequest_status === "đang chờ"
-        );
-        // Kiểm tra đã gửi yêu cầu kết bạn chưa
-        const senders = filteredSenders.map((sender) => sender.receiver);
-        setIsSend(senders.includes(userId));
-        console.log("Sender data=============>:", filteredSenders.length);
-        setSenders(filteredSenders);
-        console.log("Sender data:", filteredSenders.length);
+        const res = await fetch(`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/lock-users/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionToken}`,
+          },
+        });
+        const data = await res.json();
+        setLockedAccounts(data.data.map((item) => item.profile.user_id));
       } catch (err) {
-        console.error("Error fetching sender:", err);
-        setError("Không thể tải danh sách yêu cầu kết bạn.");
-      } finally {
-        setLoading(false);
+        console.log(err);
       }
     };
-
-    fetchSenders();
+    fetchLockedAccounts();
   }, [id, userId, sessionToken]);
 
   if (!user) {
@@ -200,7 +161,7 @@ const ProfileCard = () => {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/auth/users-avatar/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/`,
         formData,
         {
           headers: {
@@ -220,32 +181,8 @@ const ProfileCard = () => {
     }
   };
 
-  // Send friend request
-  const handleSendFriendRequest = (username) => async () => {
-    try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/friend-requests/`,
-        {
-          receiver: username,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${sessionToken}`,
-          },
-        }
-      );
-
-      console.log("Friend request sent successfully:", response.data);
-      alert("Yêu cầu kết bạn đã được gửi !");
-    } catch (error) {
-      console.error("Error sending friend request:", error);
-      alert("Gửi yêu cầu kết bạn thất bại !");
-    }
-  };
-
-
   return (
-    <div className="bg-gradient-to-r from-gray-400 to-gray-600 text-white p-6 rounded-lg shadow-lg">
+    <div className="bg-gradient-to-r from-blue-200 to-blue-300 text-white p-6 rounded-lg shadow-lg">
       {/* Profile Image */}
       <div className="mb-4 flex flex-col justify-center">
         <div className="grid justify-center">
@@ -253,7 +190,7 @@ const ProfileCard = () => {
             <img
               src={avatar}
               alt="profile"
-              className="rounded-full w-[12rem] h-[12rem] object-contain bg-gray-300 border-[3px] border-gray-200 border-solid shadow-lg"
+              className="rounded-full w-[12rem] h-[12rem] object-cover bg-gray-300 border-[3px] border-gray-200 border-solid shadow-lg"
             />
           ) : (
             <img
@@ -282,27 +219,32 @@ const ProfileCard = () => {
                 onChange={handleImageUpload}
               />
             </>
-          ) : isFriend ? (
-            // Trường hợp bạn bè
-            <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
-              <div className="text-sm font-bold text-gray-600">Bạn bè</div>
-              <FaUserFriends className="text-2xl text-gray-600 ml-2" />
-            </div>
           ) : (
-            // Trường hợp người lạ
+            // lock/unlock account
             <>
-            {!isSend ? (              <button
-                className="p-1 text-sm bg-white font-bold text-gray-600 rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200"
-                onClick={handleSendFriendRequest(user.user.username)}
-              >
-                Kết bạn
-                <FontAwesomeIcon icon={faUserPlus} className="ml-2" />
-              </button>
-            ) : (
-              <div className="flex flex-row justify-center items-center bg-gradient-to-r from-[#fafffe] via-[#e0f7fa] to-[#b2ebf2]  rounded-lg mt-2 hover:shadow-lg hover:bg-gray-200 p-1">
-                <div className="text-sm font-bold text-gray-600">Đã gửi yêu cầu</div>
-              </div>
-            )}
+              {role === "admin" && (
+                <>
+                  {lockedAccounts.includes(userId) ? (
+                    <button
+                      className="p-1 text-sm bg-yellow-500 font-bold text-black rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-yellow-600 flex items-center justify-center gap-2"
+                      onClick={() => openUnLockPopup_(userId)}
+                    >
+                      <FontAwesomeIcon icon={faUnlock} className="" />{" "}
+                      {/* Thêm biểu tượng */}
+                      Mở khóa tài khoản
+                    </button>
+                  ) : (
+                    <button
+                      className="p-1 text-sm bg-red-600 font-bold text-white rounded-lg mt-2 pr-2 hover:shadow-lg hover:bg-red-700 flex items-center justify-center gap-2"
+                      onClick={() => openLockPopup_(userId)}
+                    >
+                      <FontAwesomeIcon icon={faBan} className="" />{" "}
+                      {/* Thêm biểu tượng */}
+                      Khóa tài khoản
+                    </button>
+                  )}
+                </>
+              )}
             </>
           )}
         </div>
@@ -318,29 +260,7 @@ const ProfileCard = () => {
             Cập nhật trang cá nhân
           </button>
         </>
-      ) : isFriend ? (
-        // Trường hợp bạn bè
-        <>
-          {/* Contact Button */}
-          <button
-            className="bg-gradient-to-r from-purple-300 to-purple-400 text-black font-bold px-4 py-2 rounded-lg w-full mb-4 shadow-lg hover:shadow-xl hover:from-gray-500 hover:to-gray-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center gap-2 border-[1px] border-solid border-white"
-            // onClick={() => handleUpdateProfile()}
-          >
-            <FontAwesomeIcon icon={faCommentDots} />
-            Nhắn tin
-          </button>
-        </>
-      ) : (
-        <>
-          {/* Contact Button */}
-          {/* <button
-            className="bg-gray-500 px-4 py-2 rounded-lg w-full mb-4"
-            // onClick={() => handleUpdateProfile()}
-          >
-            Nhắn tin
-          </button> */}
-        </>
-      )}
+      ) : null}
 
       {/* Face Customizer Options */}
       <div className="p-5 bg-[#fafffe] rounded-lg shadow-md">

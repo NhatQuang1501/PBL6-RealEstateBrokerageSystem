@@ -80,13 +80,13 @@ const MapView = ({ longitude, latitude }) => {
     <div className="mb-6 mt-[3rem] w-[32rem] ">
       <div className="p-6 bg-white border-solid border-gray-300 border-[2px] rounded-lg shadow-lg w-[32rem] ">
         <div className="border-b-[2px] border-gray-300 border-solid">
-          <h2 className="text-2xl font-extrabold text-red-600 mb-6 text-center flex items-center justify-center gap-2">
-            <FaMap className="text-red-600 text-2xl" />
+          <h2 className="text-xl font-extrabold text-red-600 mb-6 text-center flex items-center justify-center gap-2">
+            <FaMap className="" />
             Vị trí bất động sản
           </h2>
         </div>
         <div className="mt-4">
-          <label className="block mb-2 text-lg text-gray-800 font-bold">
+          <label className="block mb-2 text-gray-800 font-bold">
             Chọn kiểu bản đồ:
           </label>
           <select
@@ -103,7 +103,7 @@ const MapView = ({ longitude, latitude }) => {
       </div>
 
       {/* Bản đồ */}
-      <div className="border-double border-gray-300 border-[2px] shadow-md">
+      <div className="border-double border-gray-300 border-[2px] shadow-md mt-3">
         {isValidCoordinates ? (
           <Map
             ref={mapRef}

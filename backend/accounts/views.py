@@ -20,7 +20,12 @@ from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.utils.encoding import smart_str, force_str, smart_bytes, DjangoUnicodeDecodeError
+from django.utils.encoding import (
+    smart_str,
+    force_str,
+    smart_bytes,
+    DjangoUnicodeDecodeError,
+)
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
@@ -38,10 +43,10 @@ class BaseView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            user = get_object_or_404(User, user_id=pk)
+            user = get_object_or_404(User.objects.only("user_id", "role"), user_id=pk)
 
             if user.role == "admin":
-                instance = get_object_or_404(self.model, user=user)
+                instance = get_object_or_404(self.model.objects.only("user"), user=user)
                 serializer = self.admin_serializer(instance)
                 admin_data = serializer.data
                 admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
@@ -49,14 +54,14 @@ class BaseView(APIView):
                 return Response(admin_data, status=status.HTTP_200_OK)
 
             else:
-                instance = get_object_or_404(self.model, user=user)
+                instance = get_object_or_404(self.model.objects.only("user"), user=user)
                 serializer = self.serializer(instance)
 
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
             # Lấy tất cả người dùng từ hệ thống
-            users = User.objects.all().order_by("-created_at")
+            users = User.objects.only("user_id", "role").all().order_by("-created_at")
 
             # Tạo danh sách kết quả chứa từng người dùng với serializer tương ứng
             results = []
@@ -66,21 +71,21 @@ class BaseView(APIView):
                     admin_data = serializer.data
                     admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
                     results.append(admin_data)
-
                 else:
-                    instance = get_object_or_404(self.model, user=user)
+                    instance = get_object_or_404(
+                        self.model.objects.only("user"), user=user
+                    )
                     serializer = self.serializer(instance)
                     results.append(serializer.data)
 
             return Response(
-                # {"count": len(results), "data": results},
                 results,
                 status=status.HTTP_200_OK,
             )
 
     def put(self, request, pk):
-        user = get_object_or_404(User, user_id=pk)
-        instance = get_object_or_404(self.model, user=user)
+        user = get_object_or_404(User.objects.only("user_id"), user_id=pk)
+        instance = get_object_or_404(self.model.objects.only("user"), user=user)
         serializer = self.serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():
@@ -103,11 +108,11 @@ class BaseView(APIView):
         )
 
     def delete(self, request, pk):
-        user = get_object_or_404(User, user_id=pk)
+        user = get_object_or_404(User.objects.only("user_id"), user_id=pk)
         user.delete()
 
         return Response(
-            {"message": "Xóa người dùng thành công"}, status=status.HTTP_204_NO_CONTENT
+            {"message": "Xóa người dùng thành công"}, status=status.HTTP_200_OK
         )
 
 
@@ -138,10 +143,16 @@ class RegisterView(APIView):
             )
 
         if not any(char.isalpha() for char in user_data.get("username", "")):
-            raise serializers.ValidationError(self.default_error_message["username"])
+            return Response(
+                {"error": self.default_error_message["username"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         if not any(char.isalpha() for char in user_data.get("password", "")):
-            raise serializers.ValidationError(self.default_error_message["password"])
+            return Response(
+                {"error": self.default_error_message["password"]},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Kiểm tra xem email và username đã tồn tại chưa
         if User.objects.filter(email=user_data.get("email")).exists():
@@ -367,13 +378,12 @@ class ReverifyEmailView(APIView):
     def get(self, request):
         email = request.query_params.get("email", None)
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.only("email", "is_verified").get(email=email)
             if user.is_verified:
                 return Response(
                     {"message": "Tài khoản đã được xác thực"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
             else:
                 send_email_verification(user, request)
                 login_redirect_url = request.build_absolute_uri("/login/")
@@ -384,6 +394,10 @@ class ReverifyEmailView(APIView):
                     },
                     status=status.HTTP_200_OK,
                 )
+        except User.DoesNotExist:
+            return Response(
+                {"message": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
             return Response(
                 {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -396,12 +410,11 @@ class AvatarView(APIView):
     def get_permissions(self):
         if self.request.method == "GET":
             return [AllowAny()]
-
         return [permission() for permission in self.permission_classes]
 
     def post(self, request):
         user = request.user
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile = UserProfile.objects.only("avatar").get(user=user)
 
         serializers = UserProfileSerializer(
             user_profile, data=request.data, partial=True
@@ -413,12 +426,16 @@ class AvatarView(APIView):
                 {"message": "Avatar đã được cập nhật", "avatar_url": avatar_url},
                 status=status.HTTP_200_OK,
             )
+        return Response(
+            {"message": "Cập nhật avatar thất bại", "error": serializers.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     def get(self, request, pk=None):
         user = request.user
         if pk:
             user = get_object_or_404(User, user_id=pk)
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile = UserProfile.objects.only("avatar").get(user=user)
         avatar_url = request.build_absolute_uri(user_profile.avatar.url)
         return Response(
             {"avatar_url": avatar_url},
@@ -427,7 +444,7 @@ class AvatarView(APIView):
 
     def put(self, request):
         user = request.user
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile = UserProfile.objects.only("avatar").get(user=user)
         serializers = UserProfileSerializer(
             user_profile, data=request.data, partial=True
         )
@@ -445,11 +462,11 @@ class AvatarView(APIView):
 
     def delete(self, request):
         user = request.user
-        user_profile = UserProfile.objects.get(user=user)
+        user_profile = UserProfile.objects.only("avatar").get(user=user)
         user_profile.avatar.delete(save=True)
         return Response(
             {"message": "Avatar đã được xóa"},
-            status=status.HTTP_204_NO_CONTENT,
+            status=status.HTTP_200_OK,
         )
 
 
@@ -472,6 +489,15 @@ class LockUserView(APIView):
         locked_users = (
             User.objects.filter(is_locked=True)
             .select_related("profile")
+            .only(
+                "user_id",
+                "username",
+                "is_locked",
+                "locked_reason",
+                "locked_date",
+                "unlocked_date",
+                "profile__fullname",
+            )
             .order_by("-created_at")
         )
         results = []
@@ -775,7 +801,9 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             uidb64 = urlsafe_base64_encode(smart_bytes(user.user_id))
             token = PasswordResetTokenGenerator().make_token(user)
             current_site = get_current_site(request=request).domain
-            relativeLink = reverse("password-reset-confirm", kwargs={"uidb64": uidb64, "token": token})
+            relativeLink = reverse(
+                "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
+            )
             absurl = f"http://{current_site}{relativeLink}"
             email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
             send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)

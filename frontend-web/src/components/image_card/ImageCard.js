@@ -13,7 +13,7 @@ const ImageCard = ({ postId, type, auth }) => {
     const fetchImages = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/posts/${postId}/images/`
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/images/`
         );
 
         if (Array.isArray(response.data)) {
@@ -71,7 +71,7 @@ const ImageCard = ({ postId, type, auth }) => {
     setShowPopup(false);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/images/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/images/`,
         {
           method: "DELETE",
           headers: {
@@ -100,7 +100,7 @@ const ImageCard = ({ postId, type, auth }) => {
         <div
           className="relative border-[1px] border-double border-gray-400 rounded-lg p-4 my-4 max-h-full font-extrabold shadow-md overflow-hidden"
           style={{
-            backgroundImage: `url(http://127.0.0.1:8000${images[currentImageIndex].image})`,
+            backgroundImage: `url(${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${images[currentImageIndex].image})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -109,13 +109,13 @@ const ImageCard = ({ postId, type, auth }) => {
           <div className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
           <div className="relative z-10">
             <div className="flex justify-between">
-              <h4 className="text-white text-lg mb-2">
+              <h4 className="text-white text-sm mb-2">
                 Hình ảnh mô tả ({images.length})
               </h4>
               {auth === "owner" && (
                 <>
                   <button
-                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="text-sm mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[6rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                     onClick={() => setShowPopup(true)}
                   >
                     Xóa ảnh
@@ -156,20 +156,20 @@ const ImageCard = ({ postId, type, auth }) => {
                   }`}
                 >
                   <img
-                    src={`http://127.0.0.1:8000${image.image}`}
+                    src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className="rounded-lg w-[50rem] h-[30rem] object-contain shadow-2xl bg-black"
                   />
                 </div>
               ))}
               <button
-                className="absolute left-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
+                className="absolute left-0 bg-gray-500 opacity-50 hover:opacity-100 text-white px-2.5 py-2 rounded-full focus:outline-none z-20"
                 onClick={handlePrevClick}
               >
                 &#9664;
               </button>
               <button
-                className="absolute right-0 bg-[#3CA9F9] text-white px-3 py-2 rounded-full focus:outline-none z-20"
+                className="absolute right-0 bg-gray-500 opacity-50 hover:opacity-100 text-white px-2.5 py-2 rounded-full focus:outline-none z-20"
                 onClick={handleNextClick}
               >
                 &#9654;
@@ -184,7 +184,7 @@ const ImageCard = ({ postId, type, auth }) => {
                   onClick={() => handleThumbnailClick(index)}
                 >
                   <img
-                    src={`http://127.0.0.1:8000${image.image}`}
+                    src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                     alt={`Ảnh của bài đăng: ${image.post_id}`}
                     className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                       index === currentImageIndex
@@ -216,13 +216,13 @@ const ImageCard = ({ postId, type, auth }) => {
           )}
           <div className="relative z-5">
             <div className="flex justify-between">
-              <h4 className="text-white text-lg mb-2">
+              <h4 className="text-white text-sm mb-2">
                 Hình ảnh mô tả ({images.length})
               </h4>
               {auth === "owner" && images.length > 0 && (
                 <>
                   <button
-                    className="text-lg mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[8rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
+                    className="text-sm mb-2 text-white bg-gradient-to-r from-red-500 to-red-400 font-semibold w-[6rem] px-1 py-1 rounded-lg transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-300"
                     onClick={() => setShowPopup(true)}
                   >
                     Xóa ảnh
@@ -262,9 +262,9 @@ const ImageCard = ({ postId, type, auth }) => {
                     className="flex justify-center mb-4"
                   >
                     <img
-                      src={`http://127.0.0.1:8000${images[currentImageIndex].image}`}
+                      src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${images[currentImageIndex].image}`}
                       alt={`Ảnh của bài đăng: ${images[currentImageIndex].post_id}`}
-                      className="rounded-lg w-full h-[20rem] object-contain shadow-2xl bg-black"
+                      className="rounded-lg w-auto h-[20rem] object-contain shadow-2xl bg-black"
                     />
                   </div>
                   {images.length > 1 && (
@@ -276,7 +276,7 @@ const ImageCard = ({ postId, type, auth }) => {
                           onClick={() => handleThumbnailClick(index)}
                         >
                           <img
-                            src={`http://127.0.0.1:8000${image.image}`}
+                            src={`${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}${image.image}`}
                             alt={`Ảnh của bài đăng: ${image.post_id}`}
                             className={`rounded-lg w-[5rem] h-[3rem] object-contain shadow-2xl bg-black ${
                               index === currentImageIndex

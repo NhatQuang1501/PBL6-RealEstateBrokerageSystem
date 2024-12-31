@@ -24,7 +24,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import MapView from "../../components/map_api/Mapbox";
 import MapUpdate from "../../components/map_api/MapUpdate";
 
 const UpdatePost = () => {
@@ -57,7 +56,7 @@ const UpdatePost = () => {
   useEffect(() => {
     const fetchPostById = async () => {
       try {
-        const url = `http://127.0.0.1:8000/api/posts/${postId}/`;
+        const url = `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`;
         const response = await fetch(url, {
           method: "GET",
           headers: {
@@ -116,7 +115,7 @@ const UpdatePost = () => {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/posts/${postId}/`,
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/api/posts/${postId}/`,
         {
           method: "PUT",
           headers: {

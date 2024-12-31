@@ -6,16 +6,17 @@ import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
-  faNewspaper,
   faChartLine,
   faEnvelope,
   faEdit,
   faComments,
 } from "@fortawesome/free-solid-svg-icons";
+import NotifyUser from "../Notification/NotifyUser";
+import User from "../../assets/image/User.png";
 
 function Header() {
   let navigate = useNavigate();
-  const location = useLocation(); // Lấy đường dẫn hiện tại
+  const location = useLocation();
   const [ava, setAva] = useState("");
 
   const { sessionToken, setSessionToken, setRole, role, name } =
@@ -26,13 +27,16 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/logout/`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/logout/`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         setSessionToken(null);
@@ -52,17 +56,14 @@ function Header() {
     const fetchAvatar = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/auth/users-avatar/${id}/`,
+          `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/users-avatar/${id}/`,
           {
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
-        if (response.data.avatar_url === null) {
-          response.data.avatar_url =
-            "https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain";
-        }
+
         setAva(response.data.avatar_url);
       } catch (error) {
         console.error("Error fetching avatar:", error);
@@ -72,30 +73,28 @@ function Header() {
   }, [id]);
 
   useEffect(() => {
-    setActiveLink(location.pathname); // Cập nhật activeLink khi đường dẫn thay đổi
+    setActiveLink(location.pathname);
   }, [location]);
 
   const linkStyle =
-    "text-oxford-blue font-semibold hover:text-gray-400 transition duration-300";
+    "text-oxford-blue font-semibold hover:text-blue-400 transition duration-300";
 
   return (
     <>
-      {!sessionToken && role !== "user" ? (
-        <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
-          <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
-            <div id="logo-header" className="flex items-center gap-1">
+      {role !== "user" && role !== "admin" ? (
+        <div className="sticky top-0 h-[7vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
+          <div className="main-content h-[7vh] w-screen px-3 flex items-center justify-between">
+            <Link to="/" id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
-              <strong className="font-extrabold text-base ml-2">
-                SweetHome
-              </strong>
-            </div>
+              <strong className="font-bold text-xl ml-2">SweetHome</strong>
+            </Link>
             <nav className="flex items-center w-[60%] px-6">
               <ul className="flex space-x-6 gap-20">
                 <li className="relative group">
                   <Link
                     to="/"
                     className={`${linkStyle} ${
-                      activeLink === "/" ? "text-gray-400" : ""
+                      activeLink === "/" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/")}
                   >
@@ -105,27 +104,14 @@ function Header() {
                     Trang chủ
                   </span>
                 </li>
+
                 <li className="relative group">
                   <Link
-                    to="/news"
+                    to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
-                  </Link>
-                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Tin tức
-                  </span>
-                </li>
-                <li className="relative group">
-                  <Link
-                    to="/user/predict"
-                    className={`${linkStyle} ${
-                      activeLink === "/user/predict" ? "text-gray-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/user/predict")}
+                    onClick={() => setActiveLink("/authen/login")}
                   >
                     <FontAwesomeIcon icon={faChartLine} className="w-5 h-5" />
                   </Link>
@@ -135,23 +121,23 @@ function Header() {
                 </li>
                 <li className="relative group">
                   <Link
-                    to="/contact"
+                    to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/contact" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
-                    onClick={() => setActiveLink("/contact")}
+                    onClick={() => setActiveLink("/authen/login")}
                   >
                     <FontAwesomeIcon icon={faEnvelope} className="w-5 h-5" />
                   </Link>
                   <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Liên hệ
+                    Giới thiệu
                   </span>
                 </li>
                 <li className="relative group">
                   <Link
                     to="/authen/login"
                     className={`${linkStyle} ${
-                      activeLink === "/authen/login" ? "text-gray-400" : ""
+                      activeLink === "/authen/login" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/authen/login")}
                   >
@@ -165,7 +151,7 @@ function Header() {
             </nav>
             <div>
               <button
-                className="bg-gray-600 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
+                className="bg-blue-400 hover:bg-blue-500 w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md text-white hidden md:block"
                 onClick={() => navigate("/authen/login")}
               >
                 Đăng nhập
@@ -173,12 +159,12 @@ function Header() {
             </div>
           </div>
         </div>
-      ) : role !== "admin" ? (
-        <div className="sticky top-0 h-[6.5vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
-          <div className="main-content h-[6.5vh] w-screen px-3 flex items-center justify-between">
+      ) : role === "user" ? (
+        <div className="sticky top-0 h-[7vh] bg-white font-montserrat z-50 shadow-sm shadow-blue-100">
+          <div className="main-content h-[7vh] w-screen px-3 flex items-center justify-between">
             <Link to="/" id="logo-header" className="flex items-center gap-1">
               <img className="w-[33px]" src={Logo} alt=""></img>
-              <strong className="font-bold text-base ml-2">SweetHome</strong>
+              <strong className="font-bold text-xl ml-2">SweetHome</strong>
             </Link>
             <nav className="flex items-center justify-center w-full md:w-3/4 lg:w-2/3 xl:w-1/2">
               <ul className="flex space-x-4 gap-4 md:gap-6 lg:gap-12 xl:gap-20">
@@ -187,7 +173,7 @@ function Header() {
                     to="/user/main-page-user"
                     className={`${linkStyle} ${
                       activeLink === "/user/main-page-user"
-                        ? "text-gray-400"
+                        ? "text-blue-400"
                         : ""
                     }`}
                     onClick={() => setActiveLink("/user/main-page-user")}
@@ -199,36 +185,12 @@ function Header() {
                     Trang chủ
                   </span>
                 </li>
-                {/* <li>
-                  <a
-                    href="#!"
-                    className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    Tin tức
-                  </a>
-                </li> */}
-                <li className="relative group">
-                  <Link
-                    to="/news"
-                    className={`${linkStyle} ${
-                      activeLink === "/news" ? "text-gray-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/news")}
-                  >
-                    <FontAwesomeIcon icon={faNewspaper} className="w-5 h-5" />
-                  </Link>
-                  <span className="absolute transform -translate-x-1/2 mt-10 w-auto px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    Tin tức
-                  </span>
-                </li>
+
                 <li className="relative group">
                   <Link
                     to="/user/predict"
                     className={`${linkStyle} ${
-                      activeLink === "/user/predict" ? "text-gray-400" : ""
+                      activeLink === "/user/predict" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/predict")}
                   >
@@ -242,7 +204,7 @@ function Header() {
                   <Link
                     to="/user/chat"
                     className={`${linkStyle} ${
-                      activeLink === "/user/chat" ? "text-gray-400" : ""
+                      activeLink === "/user/chat" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/chat")}
                   >
@@ -252,22 +214,12 @@ function Header() {
                     Nhắn tin
                   </span>
                 </li>
-                {/* <li>
-                  <Link
-                    to="/user/create-post"
-                    className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-gray-400" : ""
-                    }`}
-                    onClick={() => setActiveLink("/user/create-post")}
-                  >
-                    Đăng tin
-                  </Link>
-                </li> */}
+  
                 <li className="relative group">
                   <Link
                     to="/user/create-post"
                     className={`${linkStyle} ${
-                      activeLink === "/user/create-post" ? "text-gray-400" : ""
+                      activeLink === "/user/create-post" ? "text-blue-400" : ""
                     }`}
                     onClick={() => setActiveLink("/user/create-post")}
                   >
@@ -280,22 +232,19 @@ function Header() {
               </ul>
             </nav>
             <div className="flex flex-row gap-5">
+              <NotifyUser />
               <div className="flex items-center gap-4">
                 <img
-                  src={
-                    ava
-                      ? ava
-                      : `https://th.bing.com/th/id/OIP.Kt4xItiSOKueszQh9UysdgAAAA?w=465&h=465&rs=1&pid=ImgDetMain`
-                  }
+                  src={ava ? ava : User}
                   alt="avatar"
-                  className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover bg-gray-500"
+                  className="w-[2.5rem] h-[2.5rem] rounded-full border-[1px] border-gray-300 border-solid object-cover"
                 />
                 <Link to="/user/personal-page">
-                  <p className="text-gray-400 font-semibold">{name}</p>
+                  <p className="text-blue-400 font-semibold">{name}</p>
                 </Link>
               </div>
               <button
-                className="bg-custom_yellow w-[123px] px-2 py-2 font-semibold font-montserrat rounded-md bg-gray-400 text-white"
+                className="bg-custom_yellow w-[112px] px-1 py-1 font-semibold font-montserrat rounded-md bg-gray-400 text-white"
                 onClick={handleLogout}
               >
                 Đăng xuất

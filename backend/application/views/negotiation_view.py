@@ -15,7 +15,7 @@ from chatting.serializers import *
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from application.utils import *
-from django.db.models import Q
+from django.db.models import Q, F
 from decimal import Decimal
 from notification.notification_service import NotificationService
 
@@ -25,20 +25,20 @@ class NegotiationsView(APIView):
 
     def get(self, request, negotiation_id=None):
         if negotiation_id:
-            negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+            negotiation = get_object_or_404(
+                Negotiation.objects.select_related("post", "user"),
+                negotiation_id=negotiation_id,
+            )
             serializer = NegotiationSerializer(negotiation)
-
             return Response(serializer.data, status=status.HTTP_200_OK)
-
         else:
-            negotiations = (
-                Negotiation.objects.select_related("post").all().order_by("-created_at")
+            negotiations = Negotiation.objects.select_related("post", "user").order_by(
+                "-created_at"
             )
             grouped_data = {}
 
-            for negotiation in negotiations:
+            for negotiation in negotiations.iterator():
                 post_id = negotiation.post.post_id
-
                 if post_id not in grouped_data:
                     grouped_data[post_id] = {
                         "count": 0,
@@ -61,7 +61,10 @@ class UserNegotiationsView(APIView):
         negotiation_type = request.query_params.get("type", "").lower()
 
         if negotiation_id:
-            negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+            negotiation = get_object_or_404(
+                Negotiation.objects.select_related("post", "user"),
+                negotiation_id=negotiation_id,
+            )
             if negotiation.user != user and negotiation.post.user_id != user:
                 return Response(
                     {"message": "Bạn không có quyền xem chi tiết thương lượng này"},
@@ -69,41 +72,41 @@ class UserNegotiationsView(APIView):
                 )
             post = negotiation.post
             serializer = PostSerializer(post)
-
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
             if negotiation_type == "author":
-                authored_posts = Post.objects.filter(user_id=user)
-                negotiations = Negotiation.objects.filter(
-                    post__in=authored_posts
-                ).order_by("-created_at")
+                authored_posts = Post.objects.filter(user_id=user).values_list(
+                    "post_id", flat=True
+                )
+                negotiations = (
+                    Negotiation.objects.filter(post_id__in=authored_posts)
+                    .select_related("post", "user")
+                    .order_by("-created_at")
+                )
             else:
-                negotiations = Negotiation.objects.filter(user=user).order_by(
-                    "-created_at"
+                negotiations = (
+                    Negotiation.objects.filter(user=user)
+                    .select_related("post", "user")
+                    .order_by("-created_at")
                 )
 
             posts = {negotiation.post for negotiation in negotiations}
             serializer = PostSerializer(list(posts), many=True)
-
-            return Response(
-                {"count": len(posts), "posts": serializer.data},
-                status=status.HTTP_200_OK,
-            )
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# List và Detail thương lượng trên các bài đăng của user
 class PostNegotiationsView(APIView):
     permission_classes = [IsAuthenticated, IsAdminOrUser]
 
-    def get(self, request, post_id=None):
+    def get(self, request, pk=None):
         params = {key.strip(): value for key, value in request.query_params.items()}
         sort_by = params.get("sort_by")
         order = params.get("order", "desc")
         amount = params.get("amount", None)
 
-        if post_id:
-            post = get_object_or_404(Post, post_id=post_id)
+        if pk:
+            post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
             negotiations = Negotiation.objects.filter(post=post).select_related(
                 "user__profile"
             )
@@ -122,7 +125,6 @@ class PostNegotiationsView(APIView):
                 if order == "desc":
                     sort_field = f"-{sort_field}"
                 negotiations = negotiations.order_by(sort_field)
-
             else:
                 negotiations = negotiations.order_by(
                     f"{'-' if order == 'desc' else ''}{sort_by}"
@@ -132,7 +134,6 @@ class PostNegotiationsView(APIView):
                 try:
                     amount = int(amount)
                     negotiations = negotiations[:amount]
-
                 except ValueError:
                     return Response(
                         {"error": "amount phải là một số nguyên dương"},
@@ -140,7 +141,6 @@ class PostNegotiationsView(APIView):
                     )
 
             serializer = NegotiationSerializer(negotiations, many=True)
-
             return Response(
                 {
                     "message": f"Danh sách {amount if amount else 'tất cả'} thương lượng của bài {post.post_id} được sắp xếp theo {sort_by} {'giảm dần' if order == 'desc' else 'tăng dần'}",
@@ -149,23 +149,22 @@ class PostNegotiationsView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-
         else:
             posts = Post.objects.filter(user_id=request.user.user_id).order_by(
                 "-created_at"
             )
             negotiations = (
                 Negotiation.objects.filter(post__in=posts)
-                .select_related("post")
+                .select_related("post", "user")
                 .order_by("-created_at")
             )
 
             grouped_data = {}
-            for negotiation in negotiations:
+            for negotiation in negotiations.iterator():
                 post_id = negotiation.post.post_id
                 if post_id not in grouped_data:
                     grouped_data[post_id] = {
-                        "count": 0,  # Đếm số thương lượng của mỗi bài đăng
+                        "count": 0,
                         "post_id": post_id,
                         "post_title": negotiation.post.title,
                         "negotiations": [],
@@ -173,12 +172,12 @@ class PostNegotiationsView(APIView):
                 grouped_data[post_id]["negotiations"].append(
                     NegotiationSerializer(negotiation).data
                 )
-                grouped_data[post_id]["count"] += 1  # Tăng đếm số lượng
+                grouped_data[post_id]["count"] += 1
 
             return Response(list(grouped_data.values()), status=status.HTTP_200_OK)
 
-    def post(self, request, post_id):
-        post = get_object_or_404(Post, post_id=post_id)
+    def post(self, request, pk):
+        post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
         author = post.user_id
         negotiator = request.user
 
@@ -258,7 +257,7 @@ class PostNegotiationsView(APIView):
 
             # Cập nhật kinh nghiệm người dùng
             profile = get_object_or_404(UserProfile, user=negotiation.user)
-            profile.negotiation_experience += 1
+            profile.negotiation_experience = F("negotiation_experience") + 1
             profile.save()
 
         serializer = NegotiationSerializer(negotiation)
@@ -270,12 +269,13 @@ class PostNegotiationsView(APIView):
         negotiator_id = negotiator.user_id
         negotiator_username = negotiator.username
         negotiator_avatar = (
-            negotiator.profile.avatar if negotiator.profile.avatar else None
+            negotiator.profile.avatar.url if negotiator.profile.avatar else None
         )
         additional_info = {
             "type": NotificationType.NEGOTIATION,
             "negotiator_id": str(negotiator_id),
             "negotiator_avatar": negotiator_avatar,
+            "negotiator_username": negotiator_username,
             "post_id": str(post.post_id),
             "negotiation_id": str(serializer.data["negotiation_id"]),
         }
@@ -289,22 +289,24 @@ class PostNegotiationsView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-    def delete(self, request, negotiation_id):
-        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
-
-        # Kiểm tra xem người dùng có phải là người đăng bài không
+    def delete(self, request, pk):
+        negotiation = get_object_or_404(
+            Negotiation.objects.select_related("post", "user"), negotiation_id=pk
+        )
         if negotiation.user != request.user:
             return Response(
-                {"message": "Bạn không có quyền xóa thương lượng này."},
+                {"message": "Bạn không có quyền xóa thương lượng này"},
                 status=status.HTTP_403_FORBIDDEN,
             )
-
-        negotiation.delete()
-
-        return Response(
-            {"message": "Thương lượng đã bị xóa thành công"},
-            status=status.HTTP_200_OK,
-        )
+        else:
+            chatroom = ChatRoom.objects.filter(negotiation=negotiation).first()
+            if chatroom:
+                chatroom.delete()
+            negotiation.delete()
+            return Response(
+                {"message": "Thương lượng đã bị xóa"},
+                status=status.HTTP_200_OK,
+            )
 
 
 class ProposalView(APIView):
@@ -312,23 +314,28 @@ class ProposalView(APIView):
 
     def get(self, request, pk):
         if Negotiation.objects.filter(negotiation_id=pk).exists():
-            negotiation = Negotiation.objects.get(negotiation_id=pk)
-            proposals = Proposal.objects.filter(negotiation=negotiation).order_by(
-                "-created_at"
+            negotiation = Negotiation.objects.select_related("post", "user").get(
+                negotiation_id=pk
+            )
+            proposals = (
+                Proposal.objects.filter(negotiation=negotiation)
+                .select_related("user")
+                .order_by("-created_at")
             )
             serializer = ProposalSerializer(proposals, many=True)
 
             return Response(
                 {
                     "message": "Danh sách đề nghị",
-                    "count": proposals.count(),
                     "proposals": serializer.data,
                 },
                 status=status.HTTP_200_OK,
             )
 
         elif Proposal.objects.filter(proposal_id=pk).exists():
-            proposal = Proposal.objects.get(proposal_id=pk)
+            proposal = Proposal.objects.select_related("negotiation", "user").get(
+                proposal_id=pk
+            )
             serializer = ProposalSerializer(proposal)
 
             return Response(
@@ -343,7 +350,10 @@ class ProposalView(APIView):
             )
 
     def post(self, request, negotiation_id):
-        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+        negotiation = get_object_or_404(
+            Negotiation.objects.select_related("post", "user"),
+            negotiation_id=negotiation_id,
+        )
         post = negotiation.post
         negotiator = negotiation.user
         author = post.user_id
@@ -398,7 +408,9 @@ class ProposalView(APIView):
 
         # Đưa đề nghị mới lên đầu danh sách
         proposals = list(
-            Proposal.objects.filter(negotiation=negotiation).order_by("-created_at")
+            Proposal.objects.filter(negotiation=negotiation)
+            .select_related("user")
+            .order_by("-created_at")
         )
         proposals.insert(0, proposal)
 
@@ -408,12 +420,13 @@ class ProposalView(APIView):
         negotiator_noti = f"{author.username} đã gửi 1 đề nghị với thương lượng cho bạn"
         author_id = author.user_id
         author_username = author.username
-        author_avatar = author.profile.avatar if author.profile.avatar else None
+        author_avatar = author.profile.avatar.url if author.profile.avatar else None
         additional_info = {
             "type": NotificationType.PROPOSAL,
             "author_id": str(author_id),
             "author_username": str(author_username),
             "author_avatar": author_avatar,
+            "post_id": str(post.post_id),
             "negotiation_id": str(negotiation_id),
             "proposal_id": str(serializer.data[0]["proposal_id"]),
         }
@@ -434,7 +447,12 @@ class AcceptProposalView(APIView):
     permission_classes = [IsAuthenticated, IsUser]
 
     def post(self, request, proposal_id):
-        proposal = get_object_or_404(Proposal, proposal_id=proposal_id)
+        proposal = get_object_or_404(
+            Proposal.objects.select_related(
+                "negotiation__post", "negotiation__user", "user"
+            ),
+            proposal_id=proposal_id,
+        )
         negotiation = proposal.negotiation
         post = negotiation.post
         author = post.user_id
@@ -491,7 +509,7 @@ class AcceptProposalView(APIView):
             author_noti = f"{negotiator.username} đã gửi yêu cầu thương lượng mới theo lời đề nghị cho bài đăng của bạn"
             negotiator_id = negotiator.user_id
             negotiator_avatar = (
-                negotiator.profile.avatar if negotiator.profile.avatar else None
+                negotiator.profile.avatar.url if negotiator.profile.avatar else None
             )
             additional_info = {
                 "type": "accept" + NotificationType.PROPOSAL,
@@ -528,9 +546,11 @@ class ConsideredNegotiationsView(APIView):
 
     def get(self, request, post_id):
         post = get_object_or_404(Post, post_id=post_id)
-        negotiations = Negotiation.objects.filter(
-            post=post, is_considered=True
-        ).order_by("-created_at")
+        negotiations = (
+            Negotiation.objects.filter(post=post, is_considered=True)
+            .select_related("user", "post")
+            .order_by("-created_at")
+        )
         serializer = NegotiationSerializer(negotiations, many=True)
 
         return Response(
@@ -551,7 +571,10 @@ class ConsideredNegotiationsView(APIView):
             )
 
         # Lấy thương lượng từ negotiation_id
-        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+        negotiation = get_object_or_404(
+            Negotiation.objects.select_related("post", "user"),
+            negotiation_id=negotiation_id,
+        )
         post = negotiation.post
         author = post.user_id
         negotiator = negotiation.user
@@ -594,7 +617,7 @@ class ConsideredNegotiationsView(APIView):
             negotiator_noti = f"{author.username} đã xem xét thương lượng của bạn, chatroom giữa 2 người đã được tạo"
             author_id = author.user_id
             author_username = author.username
-            author_avatar = author.profile.avatar if author.profile.avatar else None
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
             additional_info = {
                 "type": NotificationType.CONSIDERATION,
                 "author_id": str(author_id),
@@ -641,7 +664,10 @@ class AcceptNegotiationView(APIView):
 
     def get(self, request, negotiation_id=None):
         if negotiation_id:
-            negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+            negotiation = get_object_or_404(
+                Negotiation.objects.select_related("post", "user"),
+                negotiation_id=negotiation_id,
+            )
             serializer = NegotiationSerializer(negotiation)
 
             if negotiation.is_accepted:
@@ -659,9 +685,11 @@ class AcceptNegotiationView(APIView):
             )
 
         else:
-            negotiations = Negotiation.objects.filter(
-                post__user_id=request.user, is_accepted=True
-            ).order_by("-created_at")
+            negotiations = (
+                Negotiation.objects.filter(post__user_id=request.user, is_accepted=True)
+                .select_related("post", "user")
+                .order_by("-created_at")
+            )
             serializer = NegotiationSerializer(negotiations, many=True)
 
             return Response(
@@ -685,7 +713,10 @@ class AcceptNegotiationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        negotiation = get_object_or_404(Negotiation, negotiation_id=negotiation_id)
+        negotiation = get_object_or_404(
+            Negotiation.objects.select_related("post", "user"),
+            negotiation_id=negotiation_id,
+        )
         post = negotiation.post
         author = post.user_id
         negotiator = negotiation.user
@@ -725,40 +756,73 @@ class AcceptNegotiationView(APIView):
 
             # Cập nhật số lần thương lượng thành công cho người mua và người bán
             seller_profile = UserProfile.objects.get(user=post.user_id)
-            seller_profile.successful_transactions += 1
-            seller_profile.reputation_score += 10
+            seller_profile.successful_transactions = F("successful_transactions") + 1
+            seller_profile.reputation_score = F("reputation_score") + 10
             seller_profile.save()
 
             buyer_profile = UserProfile.objects.get(user=negotiation.user)
-            buyer_profile.successful_transactions += 1
-            buyer_profile.reputation_score += 10
+            buyer_profile.successful_transactions = F("successful_transactions") + 1
+            buyer_profile.reputation_score = F("reputation_score") + 10
             buyer_profile.save()
 
             Negotiation.objects.filter(post=post, is_accepted=False).update(
                 is_accepted=False
             )
-
             serializer = NegotiationSerializer(negotiation)
 
-            # Thông báo cho người thương lượng
-            negotiator_noti = f"{author.username} đã chấp nhận thương lượng của bạn"
+            # Xóa tất cả các chatroom liên quan tới tất cả thương lượng của bài đăng
+            ChatRoom.objects.filter(negotiation__post=post).delete()
+
+            # Thông báo cho người thương lượng được chấp nhận
+            negotiator_noti = f"{author.username} đã chấp nhận thương lượng của bạn. Chatroom trao đổi đã xóa"
             author_id = author.user_id
             author_username = author.username
-            author_avatar = author.profile.avatar if author.profile.avatar else None
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
             additional_info = {
                 "type": "accept" + NotificationType.NEGOTIATION,
                 "author_id": str(author_id),
                 "author_username": str(author_username),
                 "author_avatar": author_avatar,
                 "negotiation_id": str(negotiation_id),
+                "post_id": str(post.post_id),
             }
             NotificationService.add_notification(
                 negotiator, negotiator_noti, additional_info
             )
 
+            # Thông báo cho những người thương lượng khác tự động bị từ chối khi bài đăng đã được chấp nhận
+            other_negotiations = Negotiation.objects.filter(
+                post=post, is_considered=True, is_accepted=False
+            ).select_related("user", "post")
+            for other_negotiation in other_negotiations:
+                other_negotiation.is_considered = False
+                other_negotiation.save()
+
+                # Thông báo cho người thương lượng khác
+                other_negotiator = other_negotiation.user
+                other_noti = f"{author.username} đã chấp nhận thương lượng của người khác, thương lượng của bạn đã bị từ chối"
+                other_negotiator_id = other_negotiator.user_id
+                other_negotiator_username = other_negotiator.username
+                other_negotiator_avatar = (
+                    other_negotiator.profile.avatar.url
+                    if other_negotiator.profile.avatar
+                    else None
+                )
+                other_additional_info = {
+                    "type": "accept" + NotificationType.NEGOTIATION,
+                    "author_id": str(author_id),
+                    "author_username": str(author_username),
+                    "author_avatar": author_avatar,
+                    "negotiation_id": str(other_negotiation.negotiation_id),
+                    "post_id": str(post.post_id),
+                }
+                NotificationService.add_notification(
+                    other_negotiator, other_noti, other_additional_info
+                )
+
             return Response(
                 {
-                    "message": "Thương lượng đã được chấp nhận và bài đăng chuyển sang trạng thái đã cọc",
+                    "message": "Thương lượng đã được chấp nhận, chatroom trao đổi đã bị xóa và bài đăng chuyển sang trạng thái đã cọc",
                     "data": serializer.data,
                 },
                 status=status.HTTP_200_OK,
@@ -768,8 +832,24 @@ class AcceptNegotiationView(APIView):
             # Không chấp nhận thương lượng
             negotiation.is_accepted = False
             negotiation.save()
-
             ChatRoom.objects.filter(negotiation=negotiation).delete()
+
+            # Thông báo cho người thương lượng
+            negotiator_noti = f"{author.username} đã từ chối thương lượng của bạn"
+            author_id = author.user_id
+            author_username = author.username
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
+            additional_info = {
+                "type": "accept" + NotificationType.NEGOTIATION,
+                "author_id": str(author_id),
+                "author_username": str(author_username),
+                "author_avatar": author_avatar,
+                "negotiation_id": str(negotiation_id),
+                "post_id": str(post.post_id),
+            }
+            NotificationService.add_notification(
+                negotiator, negotiator_noti, additional_info
+            )
 
             return Response(
                 {"message": "Thương lượng đã bị từ chối"},

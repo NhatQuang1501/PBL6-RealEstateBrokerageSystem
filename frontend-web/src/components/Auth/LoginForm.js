@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../AppProvider";
+import House_Login from "../../assets/image/House_Login.jpg";
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -14,16 +15,19 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/login/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: username,
-          password: password,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.REACT_APP_SWEETHOME_API_ENDPOINT}/auth/login/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: username,
+            password: password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -38,7 +42,8 @@ const LoginForm = () => {
 
         if (data.data && role === "admin") {
           setName(data.data.username);
-          setId(data.data.user_id);
+          setId(data.user_id);
+          console.log("Id: ", data.user_id);
         } else if (data.data && role === "user") {
           setName(data.data.user.username);
           setId(data.data.user_id);
@@ -65,10 +70,9 @@ const LoginForm = () => {
     <div
       className="flex items-center w-full h-full justify-center bg-gray-200 font-montserrat m-auto relative"
       style={{
-        backgroundImage: `url('https://ww1.prweb.com/prfiles/2015/03/02/12556168/Geneva_Q1_Facade.jpg')`,
+        backgroundImage: `url(${House_Login})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        // filter: "blur(8px)",
       }}
     >
       <div className="absolute inset-0 bg-black opacity-50"></div>
@@ -119,16 +123,14 @@ const LoginForm = () => {
               </button>
             </div>
             <p
-              className="text-red-500 pt-1 font-semibold "
-              style={{
-                height: "0.5rem",
-              }}
+              className="text-red-500 pt-1 font-semibold text-center mt-5"
+              
               dangerouslySetInnerHTML={{ __html: error }}
             ></p>
           </form>
         </div>
 
-        <div className="w-1/2 bg-[#3CA9F9] text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
+        <div className="w-1/2 bg-blue-500 text-white p-8 flex flex-col items-center justify-center rounded-tr-2xl rounded-br-2xl rounded-tl-[6rem] rounded-bl-[6rem] gap-[22px] text-center">
           <h2 className="text-2xl font-bold mb-4">Chào mừng trở lại</h2>
           <p className="mb-6 text-[14px]">
             Hãy đăng nhập để tiếp tục Hoặc đăng ký nếu bạn chưa có tài khoản
