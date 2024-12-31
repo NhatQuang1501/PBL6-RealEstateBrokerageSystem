@@ -62,8 +62,8 @@ jobs:
           python manage.py migrate
           python manage.py collectstatic --noinput
           sudo systemctl daemon-reload
-          sudo systemctl restart celery-worker.service
-          sudo systemctl restart celery-beat.service
           sudo systemctl restart gunicorn.socket
           sudo systemctl restart gunicorn.service
+          sudo systemctl restart celery-worker.service
+          sudo systemctl restart celery-beat.service
           sudo systemctl restart nginx
