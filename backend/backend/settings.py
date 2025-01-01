@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "68.183.191.212", "165.232.170.169"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "165.232.170.169", "192.168.1.19"]
 
 
 # Application definition
@@ -157,12 +157,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^http:\/\/172\.20\.10\.3(:\d+)?$",  # Allow from IP with any port
-    r"^http:\/\/localhost(:\d+)?$",  # Allow from localhost
-    r"^http:\/\/.*(:\d+)?$",  # Allow from any domain
-    r"^https:\/\/172\.20\.10\.3(:\d+)?$",
+    r"^http:\/\/192\.168\.1\.19(:\d+)?$",  # Expo IP
+    r"^exp:\/\/192\.168\.1\.19(:\d+)?$",  # Expo protocol
+    r"^http:\/\/localhost(:\d+)?$",
     r"^https:\/\/localhost(:\d+)?$",
-    r"^https:\/\/.*(:\d+)?$",
+    r"^http:\/\/165\.232\.170\.169(:\d+)?$",
+    r"^https:\/\/165\.232\.170\.169(:\d+)?$",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
