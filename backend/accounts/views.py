@@ -310,34 +310,32 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data.get("refresh", None)
+            refresh_token = request.data.get("refresh")
+
+            if not refresh_token:
+                return Response(
+                    {"error": "Refresh token is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Try to blacklist the token
             if token_blacklisted(refresh_token):
-                return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
-        except Exception as e:
+                return Response(
+                    {"message": "Đăng xuất thành công"}, status=status.HTTP_200_OK
+                )
+
+            # If blacklisting failed
             return Response(
-                {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": "Không thể đăng xuất. Token không hợp lệ hoặc đã hết hạn"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-    # def post(self, request):
-    #     try:
-    #         refresh_token = request.data.get("refresh", None)
-    #         if refresh_token is None:
-    #             return Response(
-    #                 {"message": "Token refresh không được cung cấp"},
-    #                 status=status.HTTP_400_BAD_REQUEST,
-    #             )
-
-    #         # Kiểm tra và blacklist token refresh
-    #         token = RefreshToken(refresh_token)
-    #         token.blacklist()
-
-    #         return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
-    #     except TokenError as e:
-    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    #     except Exception as e:
-    #         return Response(
-    #             {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-    #         )
+        except Exception as e:
+            logger.error(f"Logout error: {str(e)}")
+            return Response(
+                {"error": "Đã xảy ra lỗi trong quá trình đăng xuất"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class VerifyEmailView(View):

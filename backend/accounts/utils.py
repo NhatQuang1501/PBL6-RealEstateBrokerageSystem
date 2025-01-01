@@ -91,11 +91,21 @@ def decode_token(token):
 def token_blacklisted(token):
     try:
         refresh_token = RefreshToken(token)
-        if BlacklistedToken.objects.filter(token=refresh_token).exists():
+
+        if BlacklistedToken.objects.filter(
+            token__jti=refresh_token.payload["jti"]
+        ).exists():
             return True
-        refresh_token.blacklist()
-        return True
+
+        try:
+            refresh_token.blacklist()
+            return True
+        except Exception as e:
+            logger.error(f"Error blacklisting token: {str(e)}")
+            return False
+
     except Exception as e:
+        logger.error(f"Invalid token error: {str(e)}")
         return False
 
 
