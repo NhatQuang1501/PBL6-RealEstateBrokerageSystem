@@ -195,16 +195,16 @@ class PostSerializer(serializers.ModelSerializer):
         width = data.get("width")
 
         try:
-            area = float(area)
-            length = float(length)
-            width = float(width)
+            area = float(area) if area else None
+            length = float(length) if length else None
+            width = float(width) if width else None
         except (TypeError, ValueError):
             raise serializers.ValidationError(
                 "Diện tích, chiều dài và chiều rộng phải là số."
             )
 
-        error = area * 0.1
         if area is not None and length is not None and width is not None:
+            error = area * 0.1
             if abs(area - (length * width)) >= error:
                 raise serializers.ValidationError(
                     f"Diện tích bất động sản không bằng chiều dài nhân chiều rộng (chấp nhận sai số 10% so với diện tích): {length * width} không tương đương {area} sai số {error} m2"
@@ -280,7 +280,7 @@ class PostCommentSerializer(serializers.ModelSerializer):
     def get_fullname(self, obj):
         user_profile = UserProfile.objects.get(user=obj.user_id)
         return user_profile.fullname
-    
+
     def get_avatar(self, obj):
         try:
             user = UserProfile.objects.get(user=obj.user_id)
