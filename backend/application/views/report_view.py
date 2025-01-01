@@ -50,6 +50,7 @@ class ReportView(APIView):
 
             admins = User.objects.filter(role=Role.ADMIN)
             for admin in admins:
+                report_id = report.data["report_id"]
                 reportee_id = report.data["reportee_id"]
                 reportee_name = report.data["reportee_name"]
                 reportee_avatar = report.data["reportee_avt"]
@@ -63,6 +64,7 @@ class ReportView(APIView):
 
                 additional_info = {
                     "type": NotificationType.REPORT,
+                    "report_id": str(report_id),
                     "reportee_id": str(reportee_id),
                     "reportee_name": str(reportee_name),
                     "reportee_avatar": reportee_avatar,
