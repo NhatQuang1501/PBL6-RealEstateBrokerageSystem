@@ -491,13 +491,33 @@ class PostImageView(APIView):
         list_images = request.data.getlist("image")
         image_data_list = [{"post_id": pk, "image": image} for image in list_images]
         image_serializer = PostImageSerializer(data=image_data_list, many=True)
+        author = request.user
 
         if image_serializer.is_valid():
+            image_serializer.save()
             post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
             if post.status == Status.APPROVED:
                 post.status = Status.PENDING_APPROVAL
                 post.save(update_fields=["status"])
-            image_serializer.save()
+
+            admins = User.objects.filter(role=Role.ADMIN)
+            for admin in admins:
+                admin_noti = f"{author.username} đã thêm ảnh của 1 bài đăng"
+                author_id = author.user_id
+                author_avatar = (
+                    author.profile.avatar.url if author.profile.avatar else None
+                )
+                additional_info = {
+                    "type": NotificationType.POST,
+                    "author_id": str(author_id),
+                    "author_avatar": author_avatar,
+                    "post_id": str(post.post_id),
+                }
+                NotificationService.add_notification(admin, admin_noti, additional_info)
+
+            author_noti = f"Bạn đã thêm ảnh của 1 bài đăng, đang chờ duyệt bởi admin"
+            NotificationService.add_notification(author, author_noti, additional_info)
+
             return Response(
                 {"message": "Tạo ảnh thành công"}, status=status.HTTP_201_CREATED
             )
@@ -538,10 +558,27 @@ class PostImageView(APIView):
 
     def delete(self, request, pk):
         post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
+        author = request.user
         PostImage.objects.filter(post_id=post).delete()
         if post.status == Status.APPROVED:
             post.status = Status.PENDING_APPROVAL
             post.save(update_fields=["status"])
+
+        admins = User.objects.filter(role=Role.ADMIN)
+        for admin in admins:
+            admin_noti = f"{author.username} đã xóa ảnh của 1 bài đăng"
+            author_id = author.user_id
+            author_avatar = author.profile.avatar.url if author.profile.avatar else None
+            additional_info = {
+                "type": NotificationType.POST,
+                "author_id": str(author_id),
+                "author_avatar": author_avatar,
+                "post_id": str(post.post_id),
+            }
+            NotificationService.add_notification(admin, admin_noti, additional_info)
+
+        author_noti = f"Bạn đã xóa ảnh của 1 bài đăng, đang chờ duyệt bởi admin"
+        NotificationService.add_notification(author, author_noti, additional_info)
 
         return Response({"message": "Xoá ảnh thành công"}, status=status.HTTP_200_OK)
 
