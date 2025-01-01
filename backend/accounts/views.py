@@ -310,34 +310,32 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data.get("refresh", None)
+            refresh_token = request.data.get("refresh")
+
+            if not refresh_token:
+                return Response(
+                    {"error": "Refresh token is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Try to blacklist the token
             if token_blacklisted(refresh_token):
-                return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
-        except Exception as e:
+                return Response(
+                    {"message": "Đăng xuất thành công"}, status=status.HTTP_200_OK
+                )
+
+            # If blacklisting failed
             return Response(
-                {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {"error": "Không thể đăng xuất. Token không hợp lệ hoặc đã hết hạn"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-    # def post(self, request):
-    #     try:
-    #         refresh_token = request.data.get("refresh", None)
-    #         if refresh_token is None:
-    #             return Response(
-    #                 {"message": "Token refresh không được cung cấp"},
-    #                 status=status.HTTP_400_BAD_REQUEST,
-    #             )
-
-    #         # Kiểm tra và blacklist token refresh
-    #         token = RefreshToken(refresh_token)
-    #         token.blacklist()
-
-    #         return Response({"message": "Đã đăng xuất"}, status=status.HTTP_200_OK)
-    #     except TokenError as e:
-    #         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-    #     except Exception as e:
-    #         return Response(
-    #             {"message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-    #         )
+        except Exception as e:
+            logger.error(f"Logout error: {str(e)}")
+            return Response(
+                {"error": "Đã xảy ra lỗi trong quá trình đăng xuất"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class VerifyEmailView(View):
@@ -804,7 +802,7 @@ class RequestPasswordResetEmail(generics.GenericAPIView):
             relativeLink = reverse(
                 "password-reset-confirm", kwargs={"uidb64": uidb64, "token": token}
             )
-            absurl = f"http://{current_site}{relativeLink}"
+            absurl = f"https://{current_site}{relativeLink}"
             email_body = f"Xin chào,\n\nNhấn vào link dưới đây để đặt lại mật khẩu của bạn:\n{absurl}"
             send_email_async(user, "Đặt lại mật khẩu tài khoản Sweet Home", email_body)
         return Response(

@@ -26,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-uz(0w&01=0zj@^4$ks=ys1cq%1z$5i$zn*xt8&ywk*r3(_xtq2"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "68.183.191.212"]
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "68.183.191.212", "165.232.170.169"]
 
 
 # Application definition
@@ -96,11 +96,14 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": os.getenv("DB_NAME_PROD"),
+        "USER": os.getenv("DB_USER_PROD"),
+        "PASSWORD": os.getenv("DB_PASSWORD_PROD"),
+        "HOST": os.getenv("DB_HOST_PROD"),
+        "PORT": os.getenv("DB_PORT_PROD"),
+        "OPTIONS": {
+            "sslmode": "require",  # Đảm bảo kết nối SSL
+        },
     }
 }
 
@@ -141,10 +144,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = "/var/www/pbl6/static/"
 
-MEDIA_URL = "/media/"
-
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "media/"
+MEDIA_ROOT = "/var/www/pbl6/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -152,7 +155,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOWS_CREDENTIALS = True
 
 AUTH_USER_MODEL = "accounts.User"
 

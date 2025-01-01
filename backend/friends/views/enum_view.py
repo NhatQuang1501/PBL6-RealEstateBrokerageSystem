@@ -11,5 +11,5 @@ class EnumView(APIView):
         friendrequest_enum = FriendRequest_status.get_choices_display()
 
         return Response(
-            {"friendrequest_enum": friendrequest_enum},
+            {"friendrequest_enum": friendrequest_enum, "message": "Success"},
         )

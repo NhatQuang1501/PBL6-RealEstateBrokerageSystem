@@ -1,6 +1,7 @@
 /backend/env/
 venv/
 /backend/.env
+/frontend-web/.env
 .venv
 *.pyc
 __pycache__/
