@@ -493,6 +493,10 @@ class PostImageView(APIView):
         image_serializer = PostImageSerializer(data=image_data_list, many=True)
 
         if image_serializer.is_valid():
+            post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
+            if post.status == Status.APPROVED:
+                post.status = Status.PENDING_APPROVAL
+                post.save(update_fields=["status"])
             image_serializer.save()
             return Response(
                 {"message": "Tạo ảnh thành công"}, status=status.HTTP_201_CREATED
@@ -535,6 +539,9 @@ class PostImageView(APIView):
     def delete(self, request, pk):
         post = get_object_or_404(Post.objects.select_related("user_id"), post_id=pk)
         PostImage.objects.filter(post_id=post).delete()
+        if post.status == Status.APPROVED:
+            post.status = Status.PENDING_APPROVAL
+            post.save(update_fields=["status"])
 
         return Response({"message": "Xoá ảnh thành công"}, status=status.HTTP_200_OK)
 
