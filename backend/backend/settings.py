@@ -155,31 +155,8 @@ MEDIA_ROOT = "/var/www/pbl6/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^http:\/\/192\.168\.1\.19(:\d+)?$",  # Expo IP with any port
-#     r"^https:\/\/192\.168\.1\.19(:\d+)?$",  # Expo IP with any port (HTTPS)
-#     r"^exp:\/\/192\.168\.1\.19(:\d+)?$",  # Expo protocol
-#     r"^http:\/\/localhost(:\d+)?$",
-#     r"^https:\/\/localhost(:\d+)?$",
-#     r"^http:\/\/165\.232\.170\.169(:\d+)?$",
-#     r"^https:\/\/165\.232\.170\.169(:\d+)?$",
-#     r"^http:\/\/172\.20\.10\.3(:\d+)?$",  # Cho phép từ IP với cổng bất kỳ
-#     r"^http:\/\/localhost(:\d+)?$",  # Cho phép từ localhost
-#     r"^http:\/\/127\.0\.0\.1(:\d+)?$",  # Cho phép từ 127.0.0.1
-#     r"^http:\/\/192\.168\.1\.31(:\d+)?$",  # http://192.168.1.31:8000
-# ]
-CORS_ALLOW_HEADERS = [
-    "Origin",
-    "Content-Type",
-    "Authorization",
-    "Accept",
-    "X-Requested-With",
-    "Access-Control-Allow-Origin",
-    "Access-Control-Allow-Methods",
-    "Access-Control-Allow-Headers",
-    "Access-Control-Allow-Credentials",
-]
+CORS_ALLOW_CREDENTIALS = True
+
 
 AUTH_USER_MODEL = "accounts.User"
 
