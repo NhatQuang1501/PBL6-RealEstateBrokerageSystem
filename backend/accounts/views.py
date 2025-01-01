@@ -336,7 +336,7 @@ class VerifyEmailView(View):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        login_redirect_url = request.build_absolute_uri("/auth/login/")
+        login_redirect_url = "https://sweet-home-eight.vercel.app/authen/login"
         re_verify_url = request.build_absolute_uri("/auth/email-reverify/")
 
         try:
@@ -373,7 +373,7 @@ class ReverifyEmailView(APIView):
                 )
             else:
                 send_email_verification(user, request)
-                login_redirect_url = request.build_absolute_uri("/login/")
+                login_redirect_url = "https://sweet-home-eight.vercel.app/authen/login"
                 return Response(
                     {
                         "message": "Email xác thực đã được gửi",
