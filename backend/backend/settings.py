@@ -155,7 +155,7 @@ MEDIA_ROOT = "/var/www/pbl6/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^http:\/\/192\.168\.1\.19(:\d+)?$",  # Expo IP
     r"^exp:\/\/192\.168\.1\.19(:\d+)?$",  # Expo protocol
@@ -163,6 +163,13 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/localhost(:\d+)?$",
     r"^http:\/\/165\.232\.170\.169(:\d+)?$",
     r"^https:\/\/165\.232\.170\.169(:\d+)?$",
+    # Thêm cấu hình mới cho IP 192.168.1.19 với port 8081
+    r"^http:\/\/192\.168\.1\.19:8081$",
+    r"^https:\/\/192\.168\.1\.19:8081$",
+]
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
