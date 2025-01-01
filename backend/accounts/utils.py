@@ -91,7 +91,6 @@ def decode_token(token):
 def token_blacklisted(token):
     try:
         refresh_token = RefreshToken(token)
-
         if BlacklistedToken.objects.filter(
             token__jti=refresh_token.payload["jti"]
         ).exists():
