@@ -310,19 +310,18 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            auth_header = request.META.get("HTTP_AUTHORIZATION", "")
-            if not auth_header.startswith("Bearer "):
+            refresh_token = request.data.get("refresh")
+
+            if not refresh_token:
                 return Response(
-                    {"error": "Invalid authorization header"},
-                    status=status.HTTP_401_UNAUTHORIZED,
+                    {"error": "Refresh token is required"},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            refresh_token = auth_header.split(" ")[1]
             if token_blacklisted(refresh_token):
                 return Response(
                     {"message": "Đăng xuất thành công"}, status=status.HTTP_200_OK
                 )
-
             return Response(
                 {"error": "Không thể đăng xuất. Token không hợp lệ hoặc đã hết hạn"},
                 status=status.HTTP_400_BAD_REQUEST,

@@ -156,6 +156,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http:\/\/172\.20\.10\.3(:\d+)?$",  # Allow from IP with any port
+    r"^http:\/\/localhost(:\d+)?$",  # Allow from localhost
+    r"^http:\/\/.*(:\d+)?$",  # Allow from any domain
+    r"^https:\/\/172\.20\.10\.3(:\d+)?$",
+    r"^https:\/\/localhost(:\d+)?$",
+    r"^https:\/\/.*(:\d+)?$",
+]
 
 AUTH_USER_MODEL = "accounts.User"
 
