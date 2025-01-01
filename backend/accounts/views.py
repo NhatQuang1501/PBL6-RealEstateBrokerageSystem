@@ -310,21 +310,19 @@ class LogoutView(APIView):
 
     def post(self, request):
         try:
-            refresh_token = request.data.get("refresh")
-
-            if not refresh_token:
+            auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+            if not auth_header.startswith("Bearer "):
                 return Response(
-                    {"error": "Refresh token is required"},
-                    status=status.HTTP_400_BAD_REQUEST,
+                    {"error": "Invalid authorization header"},
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
 
-            # Try to blacklist the token
+            refresh_token = auth_header.split(" ")[1]
             if token_blacklisted(refresh_token):
                 return Response(
                     {"message": "Đăng xuất thành công"}, status=status.HTTP_200_OK
                 )
 
-            # If blacklisting failed
             return Response(
                 {"error": "Không thể đăng xuất. Token không hợp lệ hoặc đã hết hạn"},
                 status=status.HTTP_400_BAD_REQUEST,
@@ -836,6 +834,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+
 # class PasswordTokenCheckAPI(generics.GenericAPIView):
 #     def get(self, request, uidb64, token):
 #         try:
@@ -849,7 +848,7 @@ class PasswordTokenCheckAPI(generics.GenericAPIView):
 
 #         except DjangoUnicodeDecodeError as identifier:
 #             return redirect(f'{frontend_url}/password-reset-invalid')
-        
+
 
 class SetNewPasswordAPIView(generics.GenericAPIView):
     permission_classes = [AllowAny]
