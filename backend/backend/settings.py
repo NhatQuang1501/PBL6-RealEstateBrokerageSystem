@@ -166,8 +166,14 @@ CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https:\/\/165\.232\.170\.169(:\d+)?$",
 ]
 CORS_ALLOW_HEADERS = [
+    "Origin",
+    "Content-Type",
+    "Authorization",
+    "Accept",
     "content-type",
     "authorization",
+    "upgrade",
+    "connection",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
