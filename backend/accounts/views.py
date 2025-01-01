@@ -43,49 +43,41 @@ class BaseView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            user = get_object_or_404(User.objects.only("user_id", "role"), user_id=pk)
+            user = get_object_or_404(User.objects.select_related("profile"), user_id=pk)
 
             if user.role == "admin":
-                instance = get_object_or_404(self.model.objects.only("user"), user=user)
-                serializer = self.admin_serializer(instance)
+                serializer = self.admin_serializer(user)
                 admin_data = serializer.data
-                admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
-
+                admin_data["user_id"] = str(user.user_id)
                 return Response(admin_data, status=status.HTTP_200_OK)
-
             else:
-                instance = get_object_or_404(self.model.objects.only("user"), user=user)
-                serializer = self.serializer(instance)
-
+                serializer = self.serializer(user.profile)
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
         else:
-            # Lấy tất cả người dùng từ hệ thống
-            users = User.objects.only("user_id", "role").all().order_by("-created_at")
+            users = User.objects.select_related("profile").order_by("-created_at")
 
-            # Tạo danh sách kết quả chứa từng người dùng với serializer tương ứng
             results = []
             for user in users:
-                if user.role == "admin":
-                    serializer = self.admin_serializer(user)
-                    admin_data = serializer.data
-                    admin_data["user_id"] = str(user.user_id)  # Thêm user_id cho admin
-                    results.append(admin_data)
-                else:
-                    instance = get_object_or_404(
-                        self.model.objects.only("user"), user=user
-                    )
-                    serializer = self.serializer(instance)
-                    results.append(serializer.data)
+                try:
+                    if user.role == "admin":
+                        serializer = self.admin_serializer(user)
+                        admin_data = serializer.data
+                        admin_data["user_id"] = str(user.user_id)
+                        results.append(admin_data)
+                    else:
+                        if hasattr(user, "profile"):
+                            serializer = self.serializer(user.profile)
+                            results.append(serializer.data)
+                except Exception as e:
+                    logger.error(f"Error serializing user {user.user_id}: {str(e)}")
+                    continue
 
-            return Response(
-                results,
-                status=status.HTTP_200_OK,
-            )
+            return Response(results, status=status.HTTP_200_OK)
 
     def put(self, request, pk):
-        user = get_object_or_404(User.objects.only("user_id"), user_id=pk)
-        instance = get_object_or_404(self.model.objects.only("user"), user=user)
+        user = get_object_or_404(User, user_id=pk)
+        instance = get_object_or_404(self.model, user=user)
         serializer = self.serializer(instance, data=request.data, partial=True)
 
         if serializer.is_valid():

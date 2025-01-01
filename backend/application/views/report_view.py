@@ -24,14 +24,25 @@ class ReportView(APIView):
 
     def get(self, request, pk=None):
         if pk:
-            reports = Report.objects.filter(
-                Q(reported_user__user_id=pk) | Q(reportee__user_id=pk) | Q(report_id=pk)
-            ).select_related("reported_user", "reportee", "post", "comment")
+            report = Report.objects.filter(report_id=pk).first()
+            if report:
+                serializer = ReportSerializer(report)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            reports = (
+                Report.objects.filter(
+                    Q(reported_user__user_id=pk) | Q(reportee__user_id=pk)
+                )
+                .select_related("reported_user", "reportee", "post", "comment")
+                .distinct()
+            )
+
             if not reports.exists():
                 return Response(
                     {"message": "Không tìm thấy báo cáo"},
                     status=status.HTTP_404_NOT_FOUND,
                 )
+
             serializer = ReportSerializer(reports, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
