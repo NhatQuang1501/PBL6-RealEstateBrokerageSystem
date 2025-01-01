@@ -37,6 +37,8 @@ ALLOWED_HOSTS = [
     "165.232.170.169",
     "139.59.108.215",
     "192.168.1.19",
+    "sweethomeweb.me",
+    "www.sweethomeweb.me",
 ]
 
 
